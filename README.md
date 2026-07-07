@@ -173,6 +173,47 @@ names that are not part of the public RTL interface.
   This shim is name-only: it does not change dice behavior, reset behavior,
   parameters, clocking, or public ports.
 
+## Interpretation Notes
+
+This setup is intentionally a Verilog-harness comparison. Both lanes are judged
+by the same CVDP cocotb harnesses running against SystemVerilog under Icarus.
+That makes the result directly comparable to direct Verilog generation, but it
+also means the ARCH lane is not using the full ARCH-native verification stack.
+
+In particular, this run does not credit:
+
+- ARCH-native simulation or structured auto-logging.
+- Auto-generated ARCH assertions as simulator-visible checks.
+- Formal backend proofs over ARCH properties or generated safety properties.
+- ARCH-native transaction/testbench features.
+- Richer structured diagnostics than the black-box cocotb/Icarus failure logs.
+
+The CVDP numbers should therefore be read as: can ARCH serve as a source
+language for a Verilog-only benchmark harness? They should not be read as a
+measurement of the full ARCH design/debug workflow.
+
+## Engineering Notes From The Rerun
+
+The final published run is pinned to ARCH `0.70.6` and the matching
+`arch-hdl-release-v0706` MCP/skill guidance. During setup and earlier dry runs,
+several portability and reproducibility issues were identified and folded into
+the final prompt/evaluator rules:
+
+- Keep generated SystemVerilog Icarus-compatible by avoiding ARCH `inside`
+  set-membership in DUT candidates.
+- Avoid `.reverse(...)` for bit manipulation in Icarus-targeted candidates;
+  prefer explicit loops or concatenations.
+- Avoid declaring `let` bindings inside runtime `for` loop bodies.
+- Assign casts, arithmetic, and sign-extension results to named intermediates
+  before slicing or bit-selecting them.
+- Prefer sized counters matched to the required range instead of broad helper
+  counters such as `UInt<32>` when the public interface does not require them.
+- Strip generated assertion regions from simulator input when they are inside
+  synthesis-ignored regions, so the CVDP cocotb/Icarus run evaluates RTL
+  behavior rather than simulator support for generated SVA.
+- Document benchmark harness assumptions that observe implementation-visible
+  names, such as the digital-dice `counter` signal noted above.
+
 ## Benchmark Boundary
 
 Generation agents should read only the prompt exports and should write only into their lane under `runs/`. They should not inspect the full JSONL dataset, `output.response`, reference RTL, archived prior runs, or generated outputs from the other lane.
