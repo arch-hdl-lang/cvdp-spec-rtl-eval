@@ -1,0 +1,3 @@
+Implemented ARCH candidate:
+
+runs/arch/cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001/binary_to_one_hot_decoder_sequential.arch

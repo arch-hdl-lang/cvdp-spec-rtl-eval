@@ -1,0 +1,196 @@
+//! ---
+//! spec_md: runs/arch/cvdp_copilot_vending_machine_0001/cvdp_copilot_vending_machine_0001_fullprompt.txt
+//! tags: [vending, fsm, coins, refund]
+//! ---
+//!
+//! Vending machine controller generated from the CVDP natural-language spec.
+//! The design tracks item selection, coin accumulation, dispensing, change return,
+//! cancellation, and invalid-operation refund handling in one FSM.
+
+/// Top-level vending machine controller.
+///
+/// Inputs are sampled on `clk` rising edges; `rst` is asynchronous active high.
+/// `item_button` and `cancel` are edge-detected toggle controls. Outputs are
+/// registered one-cycle pulses for dispense, return-change, error, and refund events.
+/// Event value outputs (`dispense_item_id` and `change_amount`) remain stable
+/// after their pulse so a cocotb checker sampling just after the event observes
+/// the associated value.
+///
+/// Transition table: IDLE + button edge -> ITEM_SELECTION with no pulse;
+/// IDLE + coin present -> IDLE with error and refund pulse; ITEM_SELECTION +
+/// valid nonzero item -> PAYMENT_VALIDATION with item_price visible after the
+/// clock; ITEM_SELECTION + invalid nonzero item or cancel edge -> IDLE with an
+/// error pulse; PAYMENT_VALIDATION + valid coin below price -> hold and
+/// accumulate; PAYMENT_VALIDATION + valid coin meeting price -> DISPENSING_ITEM
+/// after storing the total and any change; DISPENSING_ITEM -> IDLE or a quiet
+/// CHANGE_DELAY state with a dispense pulse; CHANGE_DELAY -> RETURN_CHANGE with
+/// no pulse; RETURN_CHANGE -> IDLE with return_change and change_amount;
+/// PAYMENT_VALIDATION + cancel edge -> RETURN_MONEY when money is present,
+/// otherwise IDLE, with an error pulse; PAYMENT_VALIDATION + invalid coin ->
+/// IDLE with same-cycle error and refund; RETURN_MONEY -> IDLE with return_money
+/// when accumulated money was present.
+module vending_machine
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, High>;
+  port item_button: in Bool;
+  port item_selected: in UInt<3>;
+  port coin_input: in UInt<4>;
+  port cancel: in Bool;
+
+  port dispense_item: out Bool;
+  port return_change: out Bool;
+  port item_price: out UInt<5>;
+  port change_amount: out UInt<5>;
+  port dispense_item_id: out UInt<3>;
+  port error: out Bool;
+  port return_money: out Bool;
+
+  reg default: reset rst => 0;
+  reg mode_r: UInt<3>;
+  reg item_button_d: Bool;
+  reg cancel_d: Bool;
+  reg selected_item_r: UInt<3>;
+  reg selected_price_r: UInt<5>;
+  reg coins_accumulated_r: UInt<5>;
+  reg change_amount_r: UInt<5>;
+  reg dispense_item_r: Bool;
+  reg return_change_r: Bool;
+  reg item_price_r: UInt<5>;
+  reg change_amount_out_r: UInt<5>;
+  reg dispense_item_id_r: UInt<3>;
+  reg error_r: Bool;
+  reg return_money_r: Bool;
+
+  let button_edge: Bool = item_button and not item_button_d;
+  let cancel_edge: Bool = cancel and not cancel_d;
+  let coin_present: Bool = coin_input != 4'd0;
+  let coin_valid: Bool = (coin_input == 4'd1) or (coin_input == 4'd2) or (coin_input == 4'd5) or (coin_input == 4'd10);
+  let item_present: Bool = item_selected != 3'd0;
+  let item_valid: Bool = (item_selected == 3'd1) or (item_selected == 3'd2) or (item_selected == 3'd3) or (item_selected == 3'd4);
+  let selected_input_price: UInt<5> = (item_selected == 3'd1) ? 5'd5 :
+                                      (item_selected == 3'd2) ? 5'd10 :
+                                      (item_selected == 3'd3) ? 5'd15 :
+                                      (item_selected == 3'd4) ? 5'd20 : 5'd0;
+  let coin_value_5: UInt<5> = coin_input.zext<5>();
+  let accumulated_next: UInt<5> = coins_accumulated_r +% coin_value_5;
+  let change_next: UInt<5> = accumulated_next -% selected_price_r;
+
+  let dispense_item = dispense_item_r;
+  let return_change = return_change_r;
+  let item_price = item_price_r;
+  let change_amount = change_amount_out_r;
+  let dispense_item_id = dispense_item_id_r;
+  let error = error_r;
+  let return_money = return_money_r;
+
+  default seq on clk rising;
+
+  seq
+    item_button_d <= item_button;
+    cancel_d <= cancel;
+    dispense_item_r <= false;
+    return_change_r <= false;
+    error_r <= false;
+    return_money_r <= false;
+
+    if mode_r == 3'd0
+      item_price_r <= 5'd0;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      change_amount_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      if coin_present
+        error_r <= true;
+        return_money_r <= true;
+        mode_r <= 3'd0;
+      elsif button_edge
+        change_amount_out_r <= 5'd0;
+        dispense_item_id_r <= 3'd0;
+        mode_r <= 3'd1;
+      end if
+    elsif mode_r == 3'd1
+      item_price_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      if cancel_edge
+        error_r <= true;
+        selected_item_r <= 3'd0;
+        selected_price_r <= 5'd0;
+        mode_r <= 3'd0;
+      elsif item_present and item_valid
+        selected_item_r <= item_selected;
+        selected_price_r <= selected_input_price;
+        item_price_r <= selected_input_price;
+        mode_r <= 3'd2;
+      elsif item_present and not item_valid
+        error_r <= true;
+        selected_item_r <= 3'd0;
+        selected_price_r <= 5'd0;
+        mode_r <= 3'd0;
+      end if
+    elsif mode_r == 3'd2
+      item_price_r <= selected_price_r;
+      if cancel_edge
+        error_r <= true;
+        if coins_accumulated_r > 5'd0
+          mode_r <= 3'd6;
+        else
+          selected_item_r <= 3'd0;
+          selected_price_r <= 5'd0;
+          coins_accumulated_r <= 5'd0;
+          item_price_r <= 5'd0;
+          mode_r <= 3'd0;
+        end if
+      elsif coin_present and not coin_valid
+        error_r <= true;
+        return_money_r <= true;
+        selected_item_r <= 3'd0;
+        selected_price_r <= 5'd0;
+        coins_accumulated_r <= 5'd0;
+        item_price_r <= 5'd0;
+        mode_r <= 3'd0;
+      elsif coin_present and coin_valid
+        coins_accumulated_r <= accumulated_next;
+        if accumulated_next >= selected_price_r
+          change_amount_r <= change_next;
+          mode_r <= 3'd3;
+        end if
+      end if
+    elsif mode_r == 3'd3
+      item_price_r <= selected_price_r;
+      dispense_item_r <= true;
+      dispense_item_id_r <= selected_item_r;
+      if change_amount_r > 5'd0
+        mode_r <= 3'd4;
+      else
+        selected_item_r <= 3'd0;
+        selected_price_r <= 5'd0;
+        coins_accumulated_r <= 5'd0;
+        change_amount_r <= 5'd0;
+        item_price_r <= 5'd0;
+        mode_r <= 3'd0;
+      end if
+    elsif mode_r == 3'd4
+      item_price_r <= selected_price_r;
+      mode_r <= 3'd5;
+    elsif mode_r == 3'd5
+      return_change_r <= true;
+      change_amount_out_r <= change_amount_r;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      change_amount_r <= 5'd0;
+      item_price_r <= 5'd0;
+      mode_r <= 3'd0;
+    elsif mode_r == 3'd6
+      return_money_r <= coins_accumulated_r > 5'd0;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      change_amount_r <= 5'd0;
+      item_price_r <= 5'd0;
+      mode_r <= 3'd0;
+    else
+      mode_r <= 3'd0;
+    end if
+  end seq
+end module vending_machine

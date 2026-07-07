@@ -1,0 +1,65 @@
+//! ---
+//! tags: [riscv, branch_prediction, rv32i, combinational]
+//! refs:
+//!   - "Problem cvdp_copilot_static_branch_predict_0001"
+//! ---
+//!
+//! Static branch predictor for RV32I control-transfer instructions. The module
+//! assumes any RV32C branch or jump has already been decompressed to its
+//! equivalent 32-bit RV32I encoding before it reaches this combinational block.
+/// Combinational static branch and jump predictor.
+///
+/// Decodes RV32I JAL, JALR, and conditional branch opcodes, predicts jumps as
+/// taken, predicts branches as taken when their encoded offset is negative, and
+/// forms the target address from the fetch PC or JALR register operand plus the
+/// selected sign-extended immediate.
+module static_branch_predict (
+  input logic [31:0] fetch_rdata_i,
+  input logic [31:0] fetch_pc_i,
+  input logic [31:0] register_addr_i,
+  input logic fetch_valid_i,
+  output logic predict_branch_taken_o,
+  output logic [31:0] predict_branch_pc_o
+);
+
+  logic [6:0] opcode;
+  logic [2:0] funct3;
+  logic is_branch_funct3;
+  logic instr_jal;
+  logic instr_jalr;
+  logic instr_branch;
+  logic instr_jump;
+  logic recognized_control;
+  logic [31:0] imm_j_type;
+  logic [31:0] imm_i_type;
+  logic [31:0] imm_b_type;
+  logic [31:0] pc_relative_imm;
+  logic [31:0] pc_relative_target;
+  logic [31:0] jalr_target_sum;
+  logic [31:0] target_pc;
+  logic instr_b_taken;
+  logic predicted_taken;
+  logic target_valid;
+  assign opcode = fetch_rdata_i[6:0];
+  assign funct3 = fetch_rdata_i[14:12];
+  assign is_branch_funct3 = funct3 == 3'd0 || funct3 == 3'd1 || funct3 == 3'd4 || funct3 == 3'd5 || funct3 == 3'd6 || funct3 == 3'd7;
+  assign instr_jal = opcode == 7'd111;
+  assign instr_jalr = opcode == 7'd103 && funct3 == 3'd0;
+  assign instr_branch = opcode == 7'd99 && is_branch_funct3;
+  assign instr_jump = instr_jal || instr_jalr;
+  assign recognized_control = instr_jump || instr_branch;
+  assign imm_j_type = {{12{fetch_rdata_i[31]}}, fetch_rdata_i[19:12], fetch_rdata_i[20], fetch_rdata_i[30:21], 1'd0};
+  assign imm_i_type = {{20{fetch_rdata_i[31]}}, fetch_rdata_i[31:20]};
+  assign imm_b_type = {{19{fetch_rdata_i[31]}}, fetch_rdata_i[31], fetch_rdata_i[7], fetch_rdata_i[30:25], fetch_rdata_i[11:8], 1'd0};
+  assign pc_relative_imm = instr_jal ? imm_j_type : imm_b_type;
+  assign pc_relative_target = 32'(fetch_pc_i + pc_relative_imm);
+  assign jalr_target_sum = 32'(register_addr_i + imm_i_type);
+  assign target_pc = instr_jalr ? jalr_target_sum : pc_relative_target;
+  assign instr_b_taken = instr_branch && imm_b_type[31];
+  assign predicted_taken = fetch_valid_i && (instr_jump || instr_b_taken);
+  assign target_valid = fetch_valid_i && recognized_control;
+  assign predict_branch_taken_o = predicted_taken;
+  assign predict_branch_pc_o = target_valid ? target_pc : 32'd0;
+
+endmodule
+

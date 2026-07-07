@@ -1,0 +1,56 @@
+//! ---
+//! tags: [dice, fsm, counter, button, reset]
+//! refs: []
+//! ---
+//!
+//! Digital dice roller generated from the CVDP natural-language specification.
+//! The design cycles a 1-to-6 display value while the button is pressed, then holds the last value after release.
+
+/// Two-state digital dice roller FSM.
+///
+/// Timing: `button` is sampled on the rising edge of `clk`; `reset` is asynchronous active-low.
+/// `dice_value` is a registered, externally visible display value that is reset to `001`, advances while rolling,
+/// and holds the last rolled value after release.
+///
+/// Transition table:
+/// current state | input condition | next state | externally visible output/action
+/// IDLE          | button == 0     | IDLE       | dice_value holds its displayed register
+/// IDLE          | button == 1     | ROLLING    | dice_value advances modulo 1..6 on this edge
+/// ROLLING       | button == 1     | ROLLING    | dice_value advances modulo 1..6 on this edge
+/// ROLLING       | button == 0     | IDLE       | dice_value holds the last rolled value
+fsm digital_dice_roller
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, Low>;
+  port button: in Bool;
+  port dice_value: out UInt<3>;
+
+  state [IDLE, ROLLING]
+  default state IDLE;
+
+  reg shown_value: UInt<3> reset reset => 3'd1;
+
+  let roll_wrap: Bool = (shown_value == 3'd0) or (shown_value == 3'd6);
+  let roll_next: UInt<3> = roll_wrap ? 3'd1 : (shown_value +% 3'd1);
+  let dice_value = shown_value;
+
+  default
+  end default
+
+  state IDLE
+    seq on clk rising
+      if button
+        shown_value <= roll_next;
+      end if
+    end seq
+    -> ROLLING when button;
+  end state IDLE
+
+  state ROLLING
+    seq on clk rising
+      if button
+        shown_value <= roll_next;
+      end if
+    end seq
+    -> IDLE when not button;
+  end state ROLLING
+end fsm digital_dice_roller

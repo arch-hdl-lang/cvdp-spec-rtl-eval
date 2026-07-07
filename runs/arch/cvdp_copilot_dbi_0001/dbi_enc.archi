@@ -1,0 +1,7 @@
+module dbi_enc
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port data_in: in UInt<40>;
+  port data_out: out pipe_reg<UInt<40>, 1> reset rst_n => 40'd0;
+  port dbi_cntrl: out pipe_reg<UInt<2>, 1> reset rst_n => 2'd0;
+end module dbi_enc

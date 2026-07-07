@@ -1,0 +1,21 @@
+{
+  "problem": "cvdp_copilot_matrix_multiplier_0001",
+  "lane": "arch",
+  "top": "matrix_multiplier",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "status": "pass",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "tests": {
+      "total": 36,
+      "passed": 36,
+      "failed": 0
+    }
+  },
+  "notes": [
+    "ARCH check/build emitted a combinational feedback warning for the partial-sum Vec, but Verilator lint passed and the single required evaluation passed."
+  ],
+  "failure_summary": null
+}

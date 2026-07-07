@@ -1,0 +1,7 @@
+module unpack_one_hot
+  port sign: in UInt<1>;
+  port size: in UInt<1>;
+  port one_hot_selector: in UInt<3>;
+  port source_reg: in UInt<256>;
+  port destination_reg: out UInt<512> comb_dep_on(one_hot_selector, sign, size, source_reg);
+end module unpack_one_hot

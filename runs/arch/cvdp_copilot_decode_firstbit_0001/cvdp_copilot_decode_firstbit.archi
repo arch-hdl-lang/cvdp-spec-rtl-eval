@@ -1,0 +1,14 @@
+module cvdp_copilot_decode_firstbit
+  param InWidth_g: const = 32;
+  param InReg_g: const = 1;
+  param OutReg_g: const = 1;
+  param PlRegs_g: const = 1;
+  local param BinBits_c: const = clog2(InWidth_g);
+  port Clk: in Clock<SysDomain>;
+  port Rst: in Reset<Async>;
+  port In_Data: in UInt<InWidth_g>;
+  port In_Valid: in Bool;
+  port Out_FirstBit: out UInt<BinBits_c> comb_dep_on(In_Data);
+  port Out_Found: out Bool comb_dep_on(In_Data);
+  port Out_Valid: out Bool comb_dep_on(In_Valid);
+end module cvdp_copilot_decode_firstbit

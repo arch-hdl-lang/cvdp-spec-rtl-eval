@@ -1,0 +1,99 @@
+{
+  "id": "cvdp_copilot_decode_firstbit_0001",
+  "lane": "arch",
+  "runtime": "osvb-docker",
+  "status": "fail",
+  "returncode": 1,
+  "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_decode_firstbit_0001_osvb_0ix4_ien"
+}
+============================= test session starts ==============================
+platform linux -- Python 3.9.2, pytest-8.3.2, pluggy-1.5.0 -- /usr/bin/python3
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s cvdp_copilot_decode_firstbit -g2012 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/cvdp_copilot_decode_firstbit.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783353127
+     0.00ns INFO     cocotb.regression                  running test_decode_firstbit.test_decode_firstbit (1/1)
+                                                            Testbench for olo_base_decode_firstbit module.
+    60.00ns INFO     ..otb.cvdp_copilot_decode_firstbit PASS: Input=0x0, No bits set as expected
+    80.00ns ERROR    ..otb.cvdp_copilot_decode_firstbit Out_Found mismatch: Input=0x1, Expected 1, Got 0
+    80.00ns INFO     cocotb.regression                  test_decode_firstbit.test_decode_firstbit failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_decode_firstbit.py", line 55, in test_decode_firstbit
+                                                            await apply_test_vector(dut, data_in, CLK_PERIOD)
+                                                          File "/src/test_decode_firstbit.py", line 89, in apply_test_vector
+                                                            raise TestFailure("Out_Found signal mismatch")
+                                                        AssertionError: Out_Found signal mismatch
+    80.00ns INFO     cocotb.regression                  ***************************************************************************************************
+                                                        ** TEST                                       STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***************************************************************************************************
+                                                        ** test_decode_firstbit.test_decode_firstbit   FAIL          80.00           0.02       3667.15  **
+                                                        ***************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                              80.00           0.03       2625.56  **
+                                                        ***************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/cvdp_copilot_decode_firstbit.fst opened for output.
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+    @pytest.mark.tb
+    def test_runner():
+    
+        runner = get_runner(sim)
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ps"),
+            log_file="sim.log")
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:35: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s cvdp_copilot_decode_firstbit -g2012 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/cvdp_copilot_decode_firstbit.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+=============================== warnings summary ===============================
+../../src/test_runner.py:20
+  /src/test_runner.py:20: PytestUnknownMarkWarning: Unknown pytest.mark.tb - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.tb
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: ERROR: Failed 1 of...
+========================= 1 failed, 1 warning in 0.69s =========================
+
+/src/test_decode_firstbit.py:79: DeprecationWarning: `.integer` property is deprecated. Use `value.to_unsigned()` instead.
+  out_firstbit = dut.Out_FirstBit.value.integer
+/src/test_decode_firstbit.py:80: DeprecationWarning: `.integer` property is deprecated. Use `value.to_unsigned()` instead.
+  out_found = dut.Out_Found.value.integer
+

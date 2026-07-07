@@ -1,0 +1,17 @@
+{
+  "problem_id": "cvdp_copilot_decode_firstbit_0001",
+  "top_module": "cvdp_copilot_decode_firstbit",
+  "arch_version": "arch 0.70.6",
+  "arch_version_status": "pass",
+  "write_and_check_status": "pass",
+  "build_status": "pass",
+  "verilator_lint_status": "pass",
+  "evaluated": false,
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.arch",
+    "generated_sv": "runs/arch/cvdp_copilot_decode_firstbit_0001/generated_sv",
+    "arch_interface": "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.archi",
+    "response": "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit_0001_response.txt",
+    "result": "runs/arch/cvdp_copilot_decode_firstbit_0001/first_pass_worker_result.json"
+  }
+}

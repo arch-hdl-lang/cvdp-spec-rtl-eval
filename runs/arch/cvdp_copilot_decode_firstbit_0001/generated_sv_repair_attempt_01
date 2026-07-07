@@ -1,0 +1,88 @@
+//! ---
+//! tags: [firstbit, decoder, valid, parameterized]
+//! ---
+//!
+//! Parameterized first-set-bit decoder for CVDP. The design can optionally sample inputs and outputs while reporting whether any input bit is asserted independently of the valid bit.
+/// First-set-bit decoder with optional input and output registers.
+///
+/// Timing table:
+/// - InReg_g == 1 samples In_Data and In_Valid on Clk; otherwise current inputs feed the scan.
+/// - OutReg_g == 1 registers the decoded first bit, found flag, and valid flag; otherwise they are combinational.
+/// - Out_Found reports whether selected data contains any asserted bit; Out_Valid reports the selected valid bit.
+module cvdp_copilot_decode_firstbit #(
+  parameter int InWidth_g = 32,
+  parameter int InReg_g = 1,
+  parameter int OutReg_g = 1,
+  parameter int PlRegs_g = 1,
+  localparam int BinBits_c = $clog2(InWidth_g)
+) (
+  input logic Clk,
+  input logic Rst,
+  input logic [InWidth_g-1:0] In_Data,
+  input logic In_Valid,
+  output logic [BinBits_c-1:0] Out_FirstBit,
+  output logic Out_Found,
+  output logic Out_Valid
+);
+
+  logic [InWidth_g-1:0] selected_data;
+  logic selected_valid;
+  logic [InWidth_g-1:0] selected_neg;
+  logic [InWidth_g-1:0] lowest_mask;
+  logic scan_found;
+  logic [InWidth_g-1:0] in_data_q;
+  logic in_valid_q;
+  logic [BinBits_c-1:0] out_first_q;
+  logic out_found_q;
+  logic out_valid_q;
+  assign selected_data = InReg_g == 1 ? in_data_q : In_Data;
+  assign selected_valid = InReg_g == 1 ? in_valid_q : In_Valid;
+  assign selected_neg = (1 > InWidth_g ? 1 : InWidth_g)'(0 - selected_data);
+  assign lowest_mask = selected_data & selected_neg;
+  assign scan_found = selected_data != 0;
+  logic [BinBits_c-1:0] scan_first;
+  logic [BinBits_c-1:0] first_value;
+  logic found_value;
+  logic valid_value;
+  assign first_value = scan_found ? scan_first : 0;
+  assign found_value = scan_found;
+  assign valid_value = selected_valid;
+  always_comb begin
+    scan_first = 0;
+    for (int bit_pos = 0; bit_pos <= InWidth_g - 1; bit_pos++) begin
+      if (lowest_mask[bit_pos] == 1) begin
+        scan_first = bit_pos;
+      end
+    end
+  end
+  always_comb begin
+    if (OutReg_g == 1) begin
+      Out_FirstBit = out_first_q;
+      Out_Found = out_found_q;
+      Out_Valid = out_valid_q;
+    end else begin
+      Out_FirstBit = first_value;
+      Out_Found = found_value;
+      Out_Valid = valid_value;
+    end
+  end
+  always_ff @(posedge Clk or posedge Rst) begin
+    if (Rst) begin
+      in_data_q <= 0;
+      in_valid_q <= 0;
+      out_first_q <= 0;
+      out_found_q <= 0;
+      out_valid_q <= 0;
+    end else begin
+      if (InReg_g == 1) begin
+        in_data_q <= In_Data;
+        in_valid_q <= In_Valid;
+      end
+      out_first_q <= first_value;
+      out_found_q <= found_value;
+      out_valid_q <= valid_value;
+    end
+  end
+
+endmodule
+

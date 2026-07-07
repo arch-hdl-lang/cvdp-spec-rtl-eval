@@ -1,0 +1,9 @@
+{
+  "problem_id": "cvdp_copilot_axi_stream_upscale_0001",
+  "top_module": "axis_upscale",
+  "arch_path": "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.arch",
+  "response_path": "runs/arch/cvdp_copilot_axi_stream_upscale_0001/cvdp_copilot_axi_stream_upscale_0001_response.txt",
+  "check_status": "passed",
+  "build_status": "passed",
+  "failure_summary": ""
+}

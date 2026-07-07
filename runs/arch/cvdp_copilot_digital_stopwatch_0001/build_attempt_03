@@ -1,0 +1,76 @@
+//! ---
+//! tags: [stopwatch, clock-divider, counters, pause-resume]
+//! refs: []
+//! ---
+//!
+//! Digital stopwatch with an internal logical one-second pulse. The stopwatch preserves the displayed time while paused and holds at one hour once reached.
+/// Top-level digital stopwatch implementation.
+///
+/// Timing/type notes:
+/// - `clk` is sampled on its rising edge.
+/// - `reset` is asynchronous active-high and clears divider bookkeeping, one-second pulse, seconds, minutes, and hour.
+/// - `start_stop` is level-sensitive: high runs the stopwatch and low pauses it.
+/// - `one_sec_pulse` is an internal implementation-visible one-cycle pulse asserted when the displayed time updates.
+/// - `seconds`, `minutes`, and `hour` are combinational views of internal registers.
+module dig_stopwatch #(
+  parameter int CLK_FREQ = 50000000,
+  localparam int DIV_WIDTH = $clog2(CLK_FREQ + 1)
+) (
+  input logic clk,
+  input logic reset,
+  input logic start_stop,
+  output logic [5:0] seconds,
+  output logic [5:0] minutes,
+  output logic hour
+);
+
+  logic div_last;
+  logic sec_last;
+  logic min_last;
+  logic tick_enabled;
+  logic [DIV_WIDTH-1:0] div_count;
+  logic [5:0] sec_value;
+  logic [5:0] min_value;
+  logic hour_value;
+  logic one_sec_pulse;
+  assign seconds = sec_value;
+  assign minutes = min_value;
+  assign hour = hour_value;
+  assign div_last = div_count == CLK_FREQ - 1;
+  assign sec_last = sec_value == 6'd59;
+  assign min_last = min_value == 6'd59;
+  assign tick_enabled = start_stop && !hour_value;
+  always_ff @(posedge clk or posedge reset) begin
+    if (reset) begin
+      div_count <= 0;
+      hour_value <= 0;
+      min_value <= 0;
+      one_sec_pulse <= 0;
+      sec_value <= 0;
+    end else begin
+      if (tick_enabled) begin
+        one_sec_pulse <= 1'b1;
+        if (div_last) begin
+          div_count <= 0;
+        end else begin
+          div_count <= (DIV_WIDTH > 1 ? DIV_WIDTH : 1)'(div_count + 1);
+        end
+        if (sec_last) begin
+          sec_value <= 0;
+          if (min_last) begin
+            min_value <= 0;
+            hour_value <= 1'b1;
+          end else begin
+            min_value <= 6'(min_value + 6'd1);
+          end
+        end else begin
+          sec_value <= 6'(sec_value + 6'd1);
+        end
+      end else begin
+        one_sec_pulse <= 1'b0;
+      end
+    end
+  end
+
+endmodule
+

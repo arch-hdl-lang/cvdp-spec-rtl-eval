@@ -1,0 +1,13 @@
+module restoring_division
+  param WIDTH: const = 6;
+  local param COUNT_W: const = clog2((WIDTH + 2));
+  local param REM_W: const = (WIDTH + 1);
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, Low>;
+  port start: in Bool;
+  port dividend: in UInt<WIDTH>;
+  port divisor: in UInt<WIDTH>;
+  port quotient: out UInt<WIDTH> comb_dep_on();
+  port remainder: out UInt<WIDTH> comb_dep_on();
+  port valid: out Bool comb_dep_on();
+end module restoring_division

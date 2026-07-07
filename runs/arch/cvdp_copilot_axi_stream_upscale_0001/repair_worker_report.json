@@ -1,0 +1,55 @@
+{
+  "problem_id": "cvdp_copilot_axi_stream_upscale_0001",
+  "top_module": "axis_upscale",
+  "final_status": "repaired",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The first-pass ready mismatch came from allowing same-cycle input acceptance while the one-entry output register was full; hold s_axis_ready low in Full and drain before accepting another input.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.arch",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.sv",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.archi",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/evaluate_candidate.log"
+      ],
+      "check_status": "passed",
+      "build_status": "passed after retrying arch_build_and_lint without a directory-valued output argument",
+      "eval_status": "failed",
+      "pass": false,
+      "failure_summary": "Evaluator still expected s_axis_ready to be 0 but observed 1 at 250 ns, so the mismatch was not caused by the Full-state simultaneous-transfer ready path."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The ready mismatch came from idle behavior; upstream ready should follow downstream ready in Empty, and input capture should occur only when both s_axis_valid and m_axis_ready are asserted.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.arch",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.sv",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.archi",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/evaluate_candidate.log"
+      ],
+      "check_status": "passed",
+      "build_status": "passed",
+      "eval_status": "failed",
+      "pass": false,
+      "failure_summary": "Initial ready assertion passed, but evaluator later expected m_axis_valid to equal input valid and observed m_axis_valid=0 at 450 ns."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "The expected design is a combinational AXI-stream formatter: s_axis_ready mirrors m_axis_ready, m_axis_valid mirrors s_axis_valid, and m_axis_data is formatted directly from s_axis_data without a registered output stage.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.arch",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.sv",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/axis_upscale.archi",
+        "runs/arch/cvdp_copilot_axi_stream_upscale_0001/evaluate_candidate.log"
+      ],
+      "check_status": "passed",
+      "build_status": "passed",
+      "eval_status": "passed",
+      "pass": true,
+      "failure_summary": ""
+    }
+  ]
+}

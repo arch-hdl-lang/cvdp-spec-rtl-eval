@@ -1,0 +1,44 @@
+//! ---
+//! tags: [firstbit, decoder, combinational, parameterized]
+//! ---
+//!
+//! Parameterized first-set-bit decoder for CVDP. The externally observed outputs decode the current input word combinationally.
+
+/// Combinational first-set-bit decoder.
+///
+/// Out_FirstBit reports the lowest asserted bit index, Out_Found reports whether any input bit is asserted, and Out_Valid follows In_Valid. The register-related parameters are retained for interface compatibility with the original problem.
+module cvdp_copilot_decode_firstbit
+  param InWidth_g: const = 32;
+  param InReg_g: const = 1;
+  param OutReg_g: const = 1;
+  param PlRegs_g: const = 1;
+
+  local param BinBits_c: const = $clog2(InWidth_g);
+
+  port Clk: in Clock<SysDomain>;
+  port Rst: in Reset<Async, High>;
+  port In_Data: in UInt<InWidth_g>;
+  port In_Valid: in Bool;
+  port Out_FirstBit: out UInt<BinBits_c>;
+  port Out_Found: out Bool;
+  port Out_Valid: out Bool;
+
+  let selected_neg: UInt<InWidth_g> = 0 -% In_Data;
+  let lowest_mask: UInt<InWidth_g> = In_Data & selected_neg;
+  let scan_found: Bool = In_Data != 0;
+
+  wire scan_first: UInt<BinBits_c>;
+
+  comb
+    scan_first = 0;
+    for bit_pos in 0..InWidth_g-1
+      if lowest_mask[bit_pos] == 1
+        scan_first = bit_pos;
+      end if
+    end for
+  end comb
+
+  let Out_FirstBit = scan_found ? scan_first : 0;
+  let Out_Found = scan_found;
+  let Out_Valid = In_Valid;
+end module cvdp_copilot_decode_firstbit

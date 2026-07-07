@@ -1,0 +1,5 @@
+module caesar_cipher
+  port input_char: in UInt<8>;
+  port key: in UInt<4>;
+  port output_char: out UInt<8> comb_dep_on(input_char, key);
+end module caesar_cipher

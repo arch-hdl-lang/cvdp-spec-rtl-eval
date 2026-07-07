@@ -1,0 +1,14 @@
+{
+  "problem": "cvdp_copilot_nbit_swizzling_0001",
+  "top": "nbit_swizzling",
+  "lane": "arch",
+  "arch_check_status": "pass",
+  "arch_build_lint_status": "pass",
+  "evaluation_status": "pass",
+  "evaluation_returncode": 0,
+  "runtime": "osvb-docker",
+  "files": {
+    "arch": "runs/arch/cvdp_copilot_nbit_swizzling_0001/nbit_swizzling.arch",
+    "response": "runs/arch/cvdp_copilot_nbit_swizzling_0001/cvdp_copilot_nbit_swizzling_0001_response.txt"
+  }
+}

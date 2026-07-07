@@ -1,0 +1,10 @@
+module signed_unsigned_comparator
+  param WIDTH: const = 5;
+  port i_A: in UInt<WIDTH>;
+  port i_B: in UInt<WIDTH>;
+  port i_enable: in Bool;
+  port i_mode: in Bool;
+  port o_greater: out Bool comb_dep_on(i_A, i_B, i_enable, i_mode);
+  port o_less: out Bool comb_dep_on(i_A, i_B, i_enable, i_mode);
+  port o_equal: out Bool comb_dep_on(i_A, i_B, i_enable);
+end module signed_unsigned_comparator

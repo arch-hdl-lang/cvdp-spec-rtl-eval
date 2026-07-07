@@ -1,0 +1,74 @@
+{
+  "problem_id": "cvdp_copilot_packet_controller_0001",
+  "top_module": "packet_controller",
+  "final_status": "failed",
+  "repaired": false,
+  "active_candidate": "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.arch",
+  "active_candidate_note": "Restored to repair_attempt_02.arch after attempt 04 regressed valid packet tests.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "Invalid header/checksum packets may be expected to produce the same zero-result response as unknown opcodes instead of being silently discarded.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/attempt_01_build",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.sv",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator still reported test_invalid_checksum and test_invalid_header failing; 8/10 tests passed."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "Invalid packets should be discarded immediately on the final received byte so the controller remains in S_IDLE and can accept the next packet without spending validation cycles.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/attempt_02_build",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.sv",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator still reported test_invalid_checksum and test_invalid_header failing; 8/10 tests passed."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "Invalid header/checksum packets may be expected to generate an explicit error response with result 16'hFFFF.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/attempt_03_build",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.sv",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator still reported test_invalid_checksum and test_invalid_header failing; 8/10 tests passed."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "The transmit handshake may require tx_start_o to pulse for one cycle per byte; held-high tx_start_o could leak into invalid-packet no-response checks.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.arch",
+        "runs/arch/cvdp_copilot_packet_controller_0001/attempt_04_build",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.sv",
+        "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator regressed to 0/10 tests passing; all packet tests failed."
+    }
+  ]
+}

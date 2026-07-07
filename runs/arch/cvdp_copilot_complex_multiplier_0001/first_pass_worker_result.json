@@ -1,0 +1,12 @@
+{
+  "id": "cvdp_copilot_complex_multiplier_0001",
+  "top": "complex_multiplier",
+  "lane": "arch",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "runtime": "osvb-docker",
+    "status": "pass",
+    "returncode": 0
+  }
+}

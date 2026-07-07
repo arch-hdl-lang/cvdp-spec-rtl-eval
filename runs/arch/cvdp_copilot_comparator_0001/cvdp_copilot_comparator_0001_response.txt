@@ -1,0 +1,36 @@
+//! ---
+//! tags: [comparator, signed, unsigned, combinational]
+//! ---
+//!
+//! Parameterized combinational comparator with enable gating and selectable signed or unsigned interpretation.
+
+/// Compares two WIDTH-bit operands and reports greater-than, less-than, or equality.
+///
+/// The comparison is active only when i_enable is high; i_mode selects signed interpretation when high and unsigned magnitude interpretation when low.
+module signed_unsigned_comparator
+  param WIDTH: const = 5;
+
+  port i_A: in UInt<WIDTH>;
+  port i_B: in UInt<WIDTH>;
+  port i_enable: in Bool;
+  port i_mode: in Bool;
+  port o_greater: out Bool;
+  port o_less: out Bool;
+  port o_equal: out Bool;
+
+  let signed_a: SInt<WIDTH> = signed(i_A);
+  let signed_b: SInt<WIDTH> = signed(i_B);
+
+  let signed_greater: Bool = signed_a > signed_b;
+  let signed_less: Bool = signed_a < signed_b;
+  let unsigned_greater: Bool = i_A > i_B;
+  let unsigned_less: Bool = i_A < i_B;
+  let values_equal: Bool = i_A == i_B;
+
+  let selected_greater: Bool = i_mode ? signed_greater : unsigned_greater;
+  let selected_less: Bool = i_mode ? signed_less : unsigned_less;
+
+  let o_greater = i_enable and selected_greater;
+  let o_less = i_enable and selected_less;
+  let o_equal = i_enable and values_equal;
+end module signed_unsigned_comparator

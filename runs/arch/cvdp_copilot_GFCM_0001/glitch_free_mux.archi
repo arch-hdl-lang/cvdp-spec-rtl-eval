@@ -1,0 +1,7 @@
+module glitch_free_mux
+  port clk1: in Clock<SysDomain>;
+  port clk2: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port sel: in Bool;
+  port clkout: out Clock<SysDomain>;
+end module glitch_free_mux

@@ -1,0 +1,14 @@
+{
+  "problem_id": "cvdp_copilot_64b66b_encoder_0001",
+  "top_module": "encoder_64b66b",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_64b66b_encoder_0001/encoder_64b66b.arch",
+    "response": "runs/arch/cvdp_copilot_64b66b_encoder_0001/cvdp_copilot_64b66b_encoder_0001_response.txt",
+    "build_dir": "runs/arch/cvdp_copilot_64b66b_encoder_0001/build",
+    "systemverilog": "runs/arch/cvdp_copilot_64b66b_encoder_0001/encoder_64b66b.sv"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

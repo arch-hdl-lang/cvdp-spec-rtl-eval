@@ -1,0 +1,14 @@
+module data_bus_controller
+  param AFINITY: const = 0;
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port m0_read: out Bool comb_dep_on(s_ready);
+  port m0_valid: in Bool;
+  port m0_data: in UInt<32>;
+  port m1_read: out Bool comb_dep_on(s_ready);
+  port m1_valid: in Bool;
+  port m1_data: in UInt<32>;
+  port s_ready: in Bool;
+  port s_valid: out pipe_reg<Bool, 1> reset rst_n => false;
+  port s_data: out pipe_reg<UInt<32>, 1> reset rst_n => 0;
+end module data_bus_controller

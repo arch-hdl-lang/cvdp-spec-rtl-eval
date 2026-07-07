@@ -1,0 +1,60 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `sync_lifo` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_sync_lifo_0001
+
+Natural-language specification:
+Design a System Verilog module that implements a **synchronous LIFO (Last-In, First-Out)** memory with configurable data width and depth. The design allows data to be written to and read from the LIFO structure based on specific control signals. 
+
+### Interface of the Module `sync_lifo`
+2. **Parameter Definitions**:
+   - `DATA_WIDTH` (default = 8): Specifies the bit-width of the data to be stored in the LIFO.
+   - `ADDR_WIDTH` (default = 3): Specifies the number of address bits, determining the depth of the LIFO. The depth is ( 2^{ADDR_WIDTH} ). 
+   
+3. **Input Ports**:
+   - `clock` (1 bit): Clock signal. All operations are synchronized with the rising edge of the clock.
+   - `reset` (1 bit): Synchronous reset, active high.
+   - `write_en` (1 bit): Write enable signal. When asserted high, new data is written into the LIFO if it is not full.
+   - `read_en` (1 bit): Read enable signal. When asserted high, data is read from the LIFO if it is not empty.
+   - `data_in` (DATA_WIDTH bits): The data input that will be written to the LIFO when `write_en` is active.
+
+4. **Output Ports**:
+   - `empty` (1 bit): High when the LIFO is empty, indicating no data is available to be read.
+   - `full` (1 bit): High when the LIFO is full, indicating no more data can be written.
+   - `data_out` (DATA_WIDTH bits): The output data that is read from the LIFO when `read_en` is active.
+
+### Specifications:
+
+1. **Write Operation**: 
+	- On the rising edge of the clock, if `write_en` is high and the LIFO is not full, the `data_in` is written to the memory array. 
+	
+2. **Read Operation**: 
+	- On the rising edge of the clock, if `read_en` is high and the LIFO is not empty, the data from the top of the LIFO (the last written value) should be read and output through `data_out`. 
+	
+3. **Reset Behavior**:
+   	-  When reset is asserted (active high), the output clears to zero. The memory should also be cleared at reset and after reset is de-asserted, the LIFO write operation should start fresh.
+
+ 4. **Edge Cases**:
+   	-  Overflow: If write_en is asserted while the LIFO is full, no new data will be written, and the contents and pointer remain unchanged.
+   	-  Underflow: If read_en is asserted while the LIFO is empty, data_out will hold its previous value, and the LIFO pointer and memory remain unchanged.
+### Assumptions:
+-    Assume that the input data is bounded within DATA_WIDTH bits
+	
+

@@ -1,0 +1,13 @@
+{
+  "problem_id": "cvdp_copilot_load_store_unit_0001",
+  "top_module": "load_store_unit",
+  "arch_version": "arch 0.70.6",
+  "candidate_path": "runs/arch/cvdp_copilot_load_store_unit_0001/load_store_unit.arch",
+  "raw_response_path": "runs/arch/cvdp_copilot_load_store_unit_0001/cvdp_copilot_load_store_unit_0001_response.txt",
+  "generated_sv_dir": "runs/arch/cvdp_copilot_load_store_unit_0001/generated_sv",
+  "interface_path": "runs/arch/cvdp_copilot_load_store_unit_0001/load_store_unit.archi",
+  "write_and_check_status": "pass",
+  "build_status": "pass",
+  "verilator_lint_status": "pass",
+  "evaluated": false
+}

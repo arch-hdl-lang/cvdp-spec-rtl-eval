@@ -1,0 +1,21 @@
+fsm load_store_unit
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port dmem_req_o: out Bool comb_dep_on();
+  port dmem_gnt_i: in Bool;
+  port dmem_req_addr_o: out UInt<32> comb_dep_on();
+  port dmem_req_we_o: out Bool comb_dep_on();
+  port dmem_req_be_o: out UInt<4> comb_dep_on();
+  port dmem_req_wdata_o: out UInt<32> comb_dep_on();
+  port dmem_rvalid_i: in Bool;
+  port dmem_rsp_rdata_i: in UInt<32>;
+  port ex_if_req_i: in Bool;
+  port ex_if_we_i: in Bool;
+  port ex_if_type_i: in UInt<2>;
+  port ex_if_wdata_i: in UInt<32>;
+  port ex_if_addr_base_i: in UInt<32>;
+  port ex_if_addr_offset_i: in UInt<32>;
+  port ex_if_ready_o: out Bool comb_dep_on();
+  port wb_if_rdata_o: out UInt<32> comb_dep_on();
+  port wb_if_rvalid_o: out Bool comb_dep_on();
+end fsm load_store_unit

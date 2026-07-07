@@ -1,0 +1,5 @@
+module morse_encoder
+  port ascii_in: in UInt<8>;
+  port morse_out: out UInt<10> comb_dep_on(ascii_in);
+  port morse_length: out UInt<4> comb_dep_on(ascii_in);
+end module morse_encoder

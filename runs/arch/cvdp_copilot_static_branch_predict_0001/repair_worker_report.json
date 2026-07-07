@@ -1,0 +1,71 @@
+{
+  "problem_id": "cvdp_copilot_static_branch_predict_0001",
+  "top_module": "static_branch_predict",
+  "final_status": "repaired",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The evaluator expects a register_addr_i input and JALR targets should use register_addr_i plus the I-type immediate.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_01_build",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.sv",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Interface mismatch was fixed, but JALR negative-offset target expected 00000F63 and got FFFFFF63, showing register_addr_i should not be used for target calculation in this evaluator."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The missing register_addr_i port is required for interface compatibility, but target calculation should preserve the original PC-relative behavior.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_02_build",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.sv",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Invalid fetch case expected predict_branch_pc_o to be 00002000 and got 00000000, indicating the PC output should not be forced to zero when fetch_valid_i is low."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "fetch_valid_i should gate only predict_branch_taken_o; recognized control instructions should still report their computed target PC when fetch_valid_i is low.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_03_build",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.sv",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "The same invalid fetch case still expected 00002000 and got 00000000, implying the instruction was non-control and non-control PC output should pass through fetch_pc_i."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "predict_branch_pc_o should be the computed target for recognized control instructions and otherwise pass through fetch_pc_i; predict_branch_taken_o remains gated by fetch_valid_i.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_04_build",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.arch",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.sv",
+        "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "pass",
+      "pass": true,
+      "failure_summary": ""
+    }
+  ]
+}

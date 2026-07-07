@@ -1,0 +1,12 @@
+{
+  "problem_id": "cvdp_copilot_fibonacci_series_0001",
+  "top_module": "fibonacci_series",
+  "arch_version": "arch 0.70.6",
+  "arch_file": "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.arch",
+  "response_file": "runs/arch/cvdp_copilot_fibonacci_series_0001/cvdp_copilot_fibonacci_series_0001_response.txt",
+  "generated_sv_dir": "runs/arch/cvdp_copilot_fibonacci_series_0001/generated_sv",
+  "check_status": "pass",
+  "build_lint_status": "pass",
+  "verilator_lint_status": "pass",
+  "evaluated": false
+}

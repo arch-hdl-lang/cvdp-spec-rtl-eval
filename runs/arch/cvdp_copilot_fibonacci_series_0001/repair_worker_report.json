@@ -1,0 +1,67 @@
+{
+  "problem_id": "cvdp_copilot_fibonacci_series_0001",
+  "top_module": "fibonacci_series",
+  "final_status": "not_repaired_max_attempts",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The DUT was one or more samples ahead because Running wrote fib_out with next_fib_low; emit the current reg_a value during normal running instead.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.sv",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator still failed both tests; black-box tail showed calculate_fibonacci expected 0 but observed 1 from DUT."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The first sampled value still advanced too early, so add a one-cycle priming hold after reset before advancing the Fibonacci state.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.sv",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Initial sequence advanced far enough to reach the overflow boundary, but DUT skipped F(46): expected 1836311903, observed 2971215073."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "Overflow handling skipped the penultimate valid 32-bit Fibonacci value; split final-value handling so F(46) and F(47) are emitted before reset.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.sv",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "First full Fibonacci run progressed through overflow, but the post-overflow restarted sequence had an extra zero: expected 1, observed 0."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "After the overflow pulse, restart should be considered primed so the next sequence is 0, 1 rather than 0, 0, 1.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.arch",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.sv",
+        "runs/arch/cvdp_copilot_fibonacci_series_0001/fibonacci_series.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "test_overflow_and_reset passed, including the full Fibonacci sequence and overflow detection, but test_reset_scenario still failed at 20 ns; stdout tail did not include the specific reset assertion."
+    }
+  ]
+}

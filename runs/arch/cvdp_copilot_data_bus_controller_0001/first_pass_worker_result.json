@@ -1,0 +1,13 @@
+{
+  "problem_id": "cvdp_copilot_data_bus_controller_0001",
+  "top_module": "data_bus_controller",
+  "arch_version": "arch 0.70.6",
+  "check_status": "pass",
+  "build_status": "pass",
+  "lint_status": "pass",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_data_bus_controller_0001/data_bus_controller.arch",
+    "response": "runs/arch/cvdp_copilot_data_bus_controller_0001/cvdp_copilot_data_bus_controller_0001_response.txt",
+    "generated_sv": "runs/arch/cvdp_copilot_data_bus_controller_0001/generated_sv"
+  }
+}

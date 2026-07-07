@@ -1,0 +1,86 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `gf_multiplier` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_gf_multiplier_0001
+
+Natural-language specification:
+Design the System Verilog module `gf_multiplier` for a 4-bit Galois Field Multiplier (GF(2<sup>4</sup>)) by utilizing the irreducible polynomial **x<sup>4</sup> + x + 1**. The multiplication should be operated between two 4-bit values to result in a 4-bit product output.
+
+### Interface
+
+#### Inputs:
+
+- **A ([3:0], 4-bit)**: The multiplicand. It should contain a 4-bit value between 0000 and 1111.
+- **B ([3:0], 4-bit)**: The multiplier. It should contain a 4-bit value between 0000 and 1111.
+
+#### Output:
+
+- **result ([3:0], 4-bit)**: The product of the two input values using the GF multiplication algorithm.
+
+## Design Specification:
+
+- This design has to ensure that any overflow occurring during the multiplication process is reduced by the irreducible polynomial, ensuring the result remains within 4 bits.
+- The design should follow combinational logic and produce the multiplication output whenever the input changes
+- **Registers**: A set of 4-bit internal registers are to be used to hold the multiplicand and the intermediate result.
+- **Polynomial Reduction**: The irreducible polynomial **x<sup>4</sup> + x + 1** (represented as `5'b10011`) has to be used for polynomial reduction in case of overflow during the multiplication process.
+- For each bit of the multiplier, the multiplicand has to be conditionally XORed with the result and shifted to left by one bit. If overflow occurs, polynomial reduction is performed using the irreducible polynomial.
+
+The algorithm of the GF multiplier to be followed in the RTL design is given below:
+
+### Algorithm:
+
+```
+1. Initialize `result` = 0
+2. Set multiplicand = `A`
+3. For each bit (i) of the multiplier `B` (from LSB to MSB):
+   - If the bit (i) of `B` is 1, `result` = `result` XOR multiplicand
+      - Shift multiplicand to the left by 1 bit
+      - If the MSB of the multiplicand is 1 after shifting, perform polynomial reduction:
+         multiplicand = multiplicand XOR binary representation of irreducible polynomial (5'b10011)
+   - else if the bit (i) of B is 0, result remains the same as `result` = `result` XOR 0
+     - Shift multiplicand to the left by 1 bit
+     - If the MSB of the multiplicand is 1 after shifting, perform polynomial reduction:
+         multiplicand = multiplicand XOR binary representation of irreducible polynomial (5'b10011)
+4. Return the final result
+```
+
+### Example computation:
+
+Assume A = 3 (`0011`) and B = 7 (`0111`)
+
+1. **Initialization**:
+   - `A` = 3 (`0011`)
+   - `B` = 7 (`0111`)
+   - `result` = 0
+2. **Iteration 1** (Multiplier's LSB is 1, index B[0]):
+   - `result` = 0 XOR `0011` = `0011`
+   - Shift multiplicand: `0011` << 1 = `0110` (No polynomial reduction as MSB is 0)
+3. **Iteration 2** (Next bit is 1, index B[1]):
+   - `result` = `0011` XOR `0110` = `0101`
+   - Shift multiplicand: `0110` << 1 = `1100` (No polynomial reduction as MSB is 0)
+4. **Iteration 3** (Next bit is 1, index B[2]):
+   - `result` = `0101` XOR `1100` = `1001`
+   - Shift multiplicand: `1100` << 1 = `11000` (Perform polynomial reduction as MSB is 1)
+   - Polynomial reduction: `11000` XOR `10011` = `01011` (Multiplicand becomes `1011`)
+5. **Iteration 4** (Next bit is 0, index B[3]):
+   - `result` = `1001` XOR 0 = `1001`
+6. **Final Step**:
+   - The final result of GF multiplication after all iterations is `1001`, which is 9 in decimal.
+

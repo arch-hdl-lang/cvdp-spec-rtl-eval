@@ -1,0 +1,136 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `hebb_gates` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_hebbian_rule_0017
+
+Natural-language specification:
+Design a SystemVerilog RTL module `hebbian_rule` that implements a Moore Finite State Machine (FSM) to train a Hebbian learning model. The module takes signed 4-bit inputs (`a` and `b`), a 2-bit gate selector, and control signals for starting the FSM and resetting the system. It sequentially performs training steps such as weight initialization, target selection, weight/bias updates, and convergence checks using the Hebbian learning rule. The module outputs the updated weights (`w1` and `w2`), bias, and the FSM's current state and next state. The system uses a gate selection module to determine the target outputs based on logical gate operations for training.
+
+## Design Specifications:
+- Hebbian rule is a type of unsupervised neural network learning algorithm
+
+## Abstract Algorithm:
+- The hebbian or hebb rule works based on the following algorithm
+
+-  **Step 1**: Initialize all the weights and bias to zero.
+                                  w<sub>I</sub> = 0 for i = 1 to n , n is the number of input vectors
+
+- **Step 2**: For each input training vector and target output pair, do the following:
+
+    - **Step 2a**: Set activation for input units
+                         x<sub>i</sub>=s<sub>i</sub>, x is a register to store the input vector, where x is a register to store the input vector
+
+    -  **Step 2b**: Set activation for output unit
+                            y = t, where t is the target vector and y is the output vector
+
+    -  **Step 2c**: Adjust the weights and bias
+                         w<sub>i</sub>(new) = w<sub>i</sub>(old) + delta_w
+                         bias(new) = bias(old) + delta_b
+                          Where:
+                            delta_w = x<sub>I</sub> * t
+                            delta_b = t
+                   
+## Inputs and Outputs:
+## Inputs:
+- `clk` (1-bit): Posedge Clock signal.
+- `rst` (1-bit): Asynchronous Negedge Reset signal. When asserted LOW , the FSM is initialized to State_0 and iteration counter is initialized to 0.
+- `start `(1-bit): Active HIGH Signal to initiate the FSM.
+- `a`, `b` (4-bit each, [3:0],signed): Bipolar input signals [-1 ,1]. Only -1 and 1 have to be considered as valid inputs
+- `gate_select` (2-bit,[1:0]): Selector to specify the target for a given gate
+## Outputs:
+- `w1`, `w2` (4-bit each,[3:0], signed): Trained weights for the inputs.
+- `bias` (4-bit, signed,[3:0]): Trained bias value.
+- `present_state`, `next_state` (4-bit each,[3:0]): Current and next states of the Training FSM.
+
+## Learning Logic:
+- Weights (w1, w2) and bias are updated incrementally based on the input values and a computed error:
+    delta_w1 = x1 * target
+    delta_w2 = x2 * target
+    delta_b = target 
+    w1 = w1 + delta_w1
+    w2 = w2 + delta_w2
+    bias = bias + delta_b
+
+- Target values are determined using a `gate_target` submodule based on `gate_select`:
+  - gate_select = 2'b00: AND gate behavior.
+  - gate_select = 2'b01: OR gate behavior.
+  - gate_select = 2'b10: NAND gate behavior.
+  - gate_select = 2'b11: NOR gate behavior.
+
+## FSM Design:
+There are totally 11 states handled by Moore FSM.
+- State_0: Reset state.
+- State_1: Capture inputs.
+- State_2-State_6: Assign targets based on the selected gate.
+- State_7: Compute deltas for weights and bias.
+- State_8: Update weights and bias.
+- State_9: Loop through training iterations.
+- State_10: Return to the initial state.
+
+## Functional Requirements:
+- Weight adjustment must follow the Hebbian learning rule.
+- The FSM must support multiple training iterations for every possible input combination of a two-input logic gate.
+- Outputs (`w1`, `w2`, `bias`) should reflect trained values at the end of the process.
+
+## Testbench:
+- Validate learning for all gates (`gate_select` = 2'b00 to 2'b11).
+- Test with various input combinations (`a`, `b`) to observe weight and bias updates.
+- Ensure the FSM transitions and outputs align with the design.
+
+## Example Calculation:
+Let us take the AND gate for explaining the working of the module.
+Let the 4-bit inputs be : `a = 4'b0001` and `b = 4'b0001`.
+The target expected for this input combination is `4'b0001`.
+
+## Algorithmic Explanation :
+-  1. Initialize the weights and bias registers to 0
+            `w1 = 4'b0000` , `w2 = 4'b0000` , `bias = 4'b0000`;
+-  2. Capture the inputs `a` and `b` into two internal registers namely x1 and x2.
+            `x1 = 4'b0001` (Holds the contents of operand `a`)
+            `x2 = 4'b0001` (Holds the contents of operand `b`)
+-  3. Select the target required for the given input combination 
+          ` t1 = 4'b0001`
+-  4. Calculate the incremental values of w1(`delta_w1`), w2(`delta_w2`), b(`delta_b`)
+            `delta_w1 = x1 * t = 4'b0001 * 4'b0001 = 4'b0001`
+            `delta_w2 = x2 * t = 4'b0001 * 4'b0001 = 4'b0001`
+            `delta_b  = t = 4'b0001`
+-  5. Calculate the values of w1 , w2 , bias
+            `w1   = w1 + delta_w1  = 4'b0000 + 4'b0001 = 4'b0001`; (1 in decimal)
+            `w2   = w2 + delta_w2  = 4'b0000 + 4'b0001 = 4'b0001`; (1 in decimal)
+            `bias = bias + delta_b = 4'b0000 + 4'b1111 = 4'b0001`; (1 in decimal)
+
+Example Waveform:
+```wavedrom
+{
+  "signal": [
+    {"name": "clk", "wave": "p................"},
+    {"name": "rst", "wave": "0...1............", "data": []},
+    {"name": "a[3:0]", "wave": "0...3444.........", "data": ["4'd1","4'd1","-4'd1","-4'd1"]},
+    {"name": "b[3:0]", "wave": "0...3444.........", "data": ["4'd1","-4'd1","4'd1","-4'd1"]},
+    {"name": "gate_select[1:0]", "wave": "x...3............", "data": ["2'b00"]},
+    {"name": "w1[3:0]", "wave": "0...4444.........", "data": ["4'd1","4'd0","4'd1","4'd2"]},
+    {"name": "w2[3:0]", "wave": "0...4444.........", "data": ["4'd1","4'd2","4'd1","4'd2"]},
+    {"name": "bias[3:0]", "wave": "0...4444.........", "data": ["4'd1","4'd0","-4'd1","-4'd2"]},
+    {"name": "present_state[3:0]", "wave": "0...3333.........", "data": ["4'd0..49","4'd0..4'd9","4'd0..4'd9","4'd0..4'd10"]}
+    ],
+  "config": {"hscale": 3}
+}
+```
+

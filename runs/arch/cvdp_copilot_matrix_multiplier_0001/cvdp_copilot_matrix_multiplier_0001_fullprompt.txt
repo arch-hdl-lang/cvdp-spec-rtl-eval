@@ -1,0 +1,101 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `matrix_multiplier` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_matrix_multiplier_0001
+
+Natural-language specification:
+Design and implement a parameterized matrix multiplier using System Verilog. The matrix multiplier should take two input matrices with configurable dimensions and output the result of their multiplication. The design should support any matrix sizes as long as the dimensions are compatible for matrix multiplication (i.e., the number of columns in matrix A matches the number of rows in matrix B). The module should operate as a combinational logic block, updating the output immediately based on changes in the input.
+
+---
+
+### Specifications for module `matrix_multiplier`:
+
+#### Inputs:
+- **matrix_a[ (ROW_A x COL_A x INPUT_DATA_WIDTH) -1 : 0]**: The first input matrix with dimensions `[ROW_A x COL_A x INPUT_DATA_WIDTH]`, where `ROW_A` represents the number of rows,  `COL_A` represents the number of columns and `INPUT_DATA_WIDTH` represents the bit-width of each unsigned input element in the matrix.
+- **matrix_b[ (ROW_B x COL_B x INPUT_DATA_WIDTH) -1 : 0]**: The second input matrix with dimensions `[ROW_B x COL_B x INPUT_DATA_WIDTH]`, where `ROW_B` represents the number of rows,  `COL_B` represents the number of columns and `INPUT_DATA_WIDTH` represents the bit-width of each unsigned input element in the matrix.
+
+#### Output:
+- **matrix_c[(ROW_A x COL_B x OUTPUT_DATA_WIDTH) -1 : 0]**: The resulting matrix with dimensions `[ROW_A x COL_B x OUTPUT_DATA_WIDTH]`, containing the result of the multiplication of `matrix_a` and `matrix_b`. The elements of this matrix are unsigned values.
+
+### Parameters:
+
+- `ROW_A`: Number of rows in `matrix_a`. Default value 4.
+- `COL_A`: Number of columns in `matrix_a`. Default value 4.
+- `ROW_B`: Number of rows in `matrix_b` (It must be equal to number of columns in `matrix_a`). Default value 4.
+- `COL_B`: Number of columns in `matrix_b`. Default value 4.
+- `INPUT_DATA_WIDTH`: The bit-width of each unsigned element in the input matrices. Default value 8.
+- `OUTPUT_DATA_WIDTH`: The bit-width of each unsigned element in the output matrix, should be calculated to handle potential overflow from multiplication.
+
+### Additional Details:
+
+- Ensure that the design supports only unsigned inputs and any parameterized sizes for the matrices, so it can be scaled easily for different applications, including **non-square matrices** (e.g., 2x3, 4x5, or 3x2 matrices).
+- The design should handle all input combinations, including cases where one or both matrices contain zero-valued elements.
+- The output matrix should be updated immediately whenever there is a change in the input matrices.
+- Internal arrays and output must have a sufficient bit-width to avoid potential overflow
+
+### Example of Matrix Flattening:
+
+Suppose you have two input matrices A and B to multiply:
+
+- **Matrix A (2x3)**:
+
+```text
+| a11  a12  a13 |
+| a21  a22  a23 |
+```
+
+- **Matrix B (3x2)**:
+
+```text
+| b11  b12 |
+| b21  b22 |
+| b31  b32 |
+```
+
+The resulting output matrix from the multiplication of the above matrices would be:
+
+- **Matrix C (2x2)**:
+
+```text
+| c11  c12 |
+| c21  c22 |
+```
+
+The flattened representation of these matrices will be as follows:
+
+- **Flattened Matrix A (2x3)**:
+
+```text
+matrix_a = {a23, a22, a21, a13, a12, a11}
+```
+
+- **Flattened Matrix B (3x2)**:
+
+```text
+matrix_b = {b32, b31, b22, b21, b12, b11}
+```
+
+- **Flattened Matrix C (2x2)**:
+
+```text
+matrix_c = {c22, c21, c12, c11}
+```
+
+

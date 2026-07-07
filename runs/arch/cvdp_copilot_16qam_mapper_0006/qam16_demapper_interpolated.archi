@@ -1,0 +1,10 @@
+module qam16_demapper_interpolated
+  param N: const = 4;
+  param OUT_WIDTH: const = 4;
+  param IN_WIDTH: const = 3;
+  param ERROR_THRESHOLD: const = 1;
+  port I: in UInt<((N + (N / 2)) * IN_WIDTH)>;
+  port Q: in UInt<((N + (N / 2)) * IN_WIDTH)>;
+  port bits: out UInt<(N * OUT_WIDTH)> comb_dep_on(I, Q);
+  port error_flag: out Bool comb_dep_on(I, Q);
+end module qam16_demapper_interpolated

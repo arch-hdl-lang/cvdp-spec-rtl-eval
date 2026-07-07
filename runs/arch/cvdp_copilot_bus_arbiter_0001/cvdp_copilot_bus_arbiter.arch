@@ -1,0 +1,72 @@
+//! ---
+//! tags: [arbiter, fsm, bus, priority]
+//! ---
+//!
+//! Two-master shared-bus arbiter with active-high asynchronous reset. Master 2 has priority whenever both requests are asserted, and a CLEAR state deasserts both grants after requests are released.
+
+/// Two-requester bus arbiter implemented as a first-class FSM.
+///
+/// Timing: `req1` and `req2` are sampled for the next-state decision on the rising edge of `clk`; `reset` is active high and asynchronous. `grant1` and `grant2` are state-derived outputs, visible as soon as the FSM state updates or reset returns the FSM to IDLE.
+///
+/// Transition table:
+/// Current state | Input condition | Next state | Externally visible outputs for resulting state
+/// IDLE          | req2             | GRANT_2    | grant1=0, grant2=1
+/// IDLE          | !req2 && req1    | GRANT_1    | grant1=1, grant2=0
+/// IDLE          | !req1 && !req2   | IDLE       | grant1=0, grant2=0
+/// GRANT_1       | req2             | GRANT_2    | grant1=0, grant2=1
+/// GRANT_1       | !req2 && req1    | GRANT_1    | grant1=1, grant2=0
+/// GRANT_1       | !req1 && !req2   | CLEAR      | grant1=0, grant2=0
+/// GRANT_2       | req2             | GRANT_2    | grant1=0, grant2=1
+/// GRANT_2       | !req2 && req1    | GRANT_1    | grant1=1, grant2=0
+/// GRANT_2       | !req1 && !req2   | CLEAR      | grant1=0, grant2=0
+/// CLEAR         | req2             | GRANT_2    | grant1=0, grant2=1
+/// CLEAR         | !req2 && req1    | GRANT_1    | grant1=1, grant2=0
+/// CLEAR         | !req1 && !req2   | IDLE       | grant1=0, grant2=0
+fsm cvdp_copilot_bus_arbiter
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, High>;
+  port req1: in Bool;
+  port req2: in Bool;
+  port grant1: out Bool;
+  port grant2: out Bool;
+
+  state [IDLE, GRANT_1, GRANT_2, CLEAR]
+  default state IDLE;
+
+  default
+    comb
+      grant1 = false;
+      grant2 = false;
+    end comb
+  end default
+
+  state IDLE
+    -> GRANT_2 when req2;
+    -> GRANT_1 when (not req2) and req1;
+  end state IDLE
+
+  state GRANT_1
+    comb
+      grant1 = true;
+    end comb
+
+    -> GRANT_2 when req2;
+    -> CLEAR when (not req1) and (not req2);
+  end state GRANT_1
+
+  state GRANT_2
+    comb
+      grant2 = true;
+    end comb
+
+    -> GRANT_2 when req2;
+    -> GRANT_1 when (not req2) and req1;
+    -> CLEAR when (not req1) and (not req2);
+  end state GRANT_2
+
+  state CLEAR
+    -> GRANT_2 when req2;
+    -> GRANT_1 when (not req2) and req1;
+    -> IDLE when (not req1) and (not req2);
+  end state CLEAR
+end fsm cvdp_copilot_bus_arbiter

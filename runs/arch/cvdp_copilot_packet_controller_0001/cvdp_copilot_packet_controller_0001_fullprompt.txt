@@ -1,0 +1,110 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `packet_controller` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_packet_controller_0001
+
+Natural-language specification:
+Design a packet controller module in `verilog` to handle data reception and transmission. The design must implement a finite state machine (FSM) to process received packets, validate their integrity, compute appropriate responses, and manage transmission. The module should emphasize precise functionality and align with the following specifications.
+
+---
+
+### **Specifications**
+- **Module Name**: `packet_controller`
+
+#### **1. Input/Output Interface**
+- **Inputs**:
+  - `clk`: System clock signal (active on the rising edge).
+  - `rst`: Active-high asynchronous reset.
+  - `rx_valid_i`: Indicates valid incoming data (strobe signal).
+  - `rx_data_8_i [7:0]`: 8-bit data received from the RX interface.
+  - `tx_done_tick_i`: Indicates the successful transmission of a byte.
+- **Outputs**:
+  - `tx_start_o`: High during transmission; low otherwise.
+  - `tx_data_8_o [7:0]`: 8-bit data to transmit.
+
+---
+
+#### **2. FSM Behavior**
+- **States**:
+  - `S_IDLE`: Waits for 8 bytes of data to accumulate in the buffer.
+  - `S_GOT_8_BYTES`: Checks the header and computes the checksum.
+  - `S_RECV_CHECKSUM`: Validates the checksum. If valid, transitions to response building; otherwise, resets to `S_IDLE`.
+  - `S_BUILD_RESPONSE`: Prepares the outgoing response packet.
+  - `S_SEND_FIRST_BYTE`: Initiates the response transmission by sending the first byte.
+  - `S_RESPONSE_READY`: Handles the remaining response transmission.
+  - **Error Handling**: Returns to `S_IDLE` on invalid checksum or unexpected header.
+
+---
+
+#### **3. Functional Details**
+- **Packet Format**:
+  - **Header**: The first 16 bits of the packet must match `16'hBACD` for valid packets.
+  - **Payload**: Two 16-bit integers (`num1`, `num2`), an 8-bit opcode, and an 8-bit checksum.
+  - **Checksum**: The sum of all bytes (modulo 256) must equal zero for valid packets.
+
+- **Outgoing Response**:
+  - Header: Fixed as `16'hABCD`.
+  - Payload: The computed result of `num1` and `num2` based on the opcode:
+    - `opcode = 8'h00`: Addition (`num1 + num2`).
+    - `opcode = 8'h01`: Subtraction (`num1 - num2`).
+    - Other opcodes result in `0`.
+  - Checksum: Calculated to ensure the outgoing packet meets checksum validation.
+
+---
+
+#### **4. Error Handling**
+- Invalid packets (e.g., checksum mismatch, unexpected header) reset the FSM to `S_IDLE`. 
+
+---
+
+#### **5. Edge Case Scenarios**
+1. **Invalid Headers**:
+   - Headers other than `16'hBACD` are treated as invalid, causing the FSM to reset to `S_IDLE`.
+2. **Checksum Failures**:
+   - Packets with incorrect checksum are discarded, resetting the FSM to `S_IDLE`.
+3. **Arithmetic Operations**:
+   - Handles addition and subtraction but does not explicitly address signed arithmetic or overflow/underflow scenarios.
+4. **Rapid Consecutive Packets**:
+   - Designed to handle valid packets one at a time without specific provisions for back-to-back packet handling.
+
+---
+
+#### **6. Timing Constraints**
+- **FSM Synchronization**:
+  - State transitions and output updates are synchronized with the system clock.
+- **Transmission Latency**:
+  - Transmission continues until all 5 bytes of the response are sent, synchronized to `tx_done_tick_i`.
+
+---
+
+### **RTL Implementation Requirements**
+1. **FSM Design**:
+   - Implement states (`S_IDLE`, `S_GOT_8_BYTES`, etc.) with appropriate transitions.
+2. **Checksum Logic**:
+   - Validate incoming packets and generate outgoing packet checksums.
+3. **Arithmetic Operations**:
+   - Implement addition and subtraction for `num1` and `num2` based on `opcode`.
+4. **Error Handling**:
+   - Reset FSM to `S_IDLE` for invalid headers or checksum mismatches.
+5. **Timing and Synchronization**:
+   - Ensure all state transitions and signal updates occur on the rising edge of `clk`.
+
+---
+

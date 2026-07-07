@@ -1,0 +1,63 @@
+//! ---
+//! tags: [adder, reduction, registered, async_reset]
+//! ---
+//!
+//! Cascaded adder for flattened input elements. Valid input data is captured on
+//! the rising clock edge, reduced through a combinational cascaded sum, and then
+//! published through registered valid/data outputs with active-low async reset.
+
+/// Parameterized cascaded adder with registered input and registered output.
+///
+/// `clk` samples `i_valid` and `i_data` on rising edges, `rst_n` asynchronously
+/// clears all state low, and `o_valid`/`o_data` are registered output signals.
+module cascaded_adder
+  param IN_DATA_WIDTH: const = 16;
+  param IN_DATA_NS: const = 4;
+  local param IN_TOTAL_WIDTH: const = IN_DATA_WIDTH * IN_DATA_NS;
+  local param OUT_DATA_WIDTH: const = IN_DATA_WIDTH + $clog2(IN_DATA_NS);
+
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port i_valid: in Bool;
+  port i_data: in UInt<IN_TOTAL_WIDTH>;
+  port o_valid: out pipe_reg<Bool, 1> reset rst_n => false;
+  port o_data: out pipe_reg<UInt<OUT_DATA_WIDTH>, 1> reset rst_n => 0;
+
+  reg data_r: UInt<IN_TOTAL_WIDTH> reset rst_n => 0;
+  reg valid_r: Bool reset rst_n => false;
+
+  wire elem_slice: UInt<IN_DATA_WIDTH>;
+  wire elem_wide: UInt<OUT_DATA_WIDTH>;
+  wire sum_comb: UInt<OUT_DATA_WIDTH>;
+
+  comb
+    sum_comb = 0;
+    elem_slice = 0;
+    elem_wide = 0;
+    for idx in 0..IN_DATA_NS-1
+      elem_slice = 0;
+      for bit_idx in 0..IN_DATA_WIDTH-1
+        elem_slice[bit_idx] = data_r[(idx * IN_DATA_WIDTH) + bit_idx];
+      end for
+      elem_wide = elem_slice.resize<OUT_DATA_WIDTH>();
+      sum_comb = sum_comb +% elem_wide;
+    end for
+  end comb
+
+  default seq on clk rising;
+
+  seq
+    if i_valid
+      data_r <= i_data;
+    end if
+
+    valid_r <= i_valid;
+    o_valid@1 <= valid_r;
+
+    if valid_r
+      o_data@1 <= sum_comb;
+    else
+      o_data@1 <= 0;
+    end if
+  end seq
+end module cascaded_adder

@@ -1,0 +1,143 @@
+//! ---
+//! tags: [load_store, memory_stage, data_cache, ready_valid]
+//! ---
+//!
+//! Load/store unit for a five-stage processor memory-access stage. It accepts aligned EX load/store requests, drives a data-cache request until grant, and returns load responses to writeback one cycle after memory read-valid.
+
+/// Load/store unit controlling a single outstanding data-cache transaction.
+///
+/// Input timing: EX request/control and memory grant/read-valid are sampled on the rising edge of `clk`; `rst_n` is an active-low asynchronous reset.
+/// Output timing: data-cache request outputs and EX ready are state-derived/combinational after registered state changes; writeback valid/data are visible in `Resp`, one cycle after sampled `dmem_rvalid_i`.
+///
+/// Transition table:
+/// | Current state | Input condition | Next state | Externally visible outputs in current state |
+/// | Idle | `ex_if_req_i && aligned` | Req | `ex_if_ready_o=1`, no data-cache request, `wb_if_rvalid_o=0` |
+/// | Idle | otherwise | Idle | `ex_if_ready_o=1`, no data-cache request, `wb_if_rvalid_o=0` |
+/// | Req | `dmem_gnt_i && saved write` | Idle | `dmem_req_o=1`, saved address/control/write-data, ready low |
+/// | Req | `dmem_gnt_i && saved load` | WaitLoad | `dmem_req_o=1`, saved address/control, ready low |
+/// | Req | otherwise | Req | data-cache request remains asserted, ready low |
+/// | WaitLoad | `dmem_rvalid_i` | Resp | no data-cache request, ready low |
+/// | WaitLoad | otherwise | WaitLoad | no data-cache request, ready low |
+/// | Resp | `ex_if_req_i && aligned` | Req | `ex_if_ready_o=1`, `wb_if_rvalid_o=1` for one cycle, held read data on `wb_if_rdata_o` |
+/// | Resp | otherwise | Idle | `ex_if_ready_o=1`, `wb_if_rvalid_o=1` for one cycle, held read data on `wb_if_rdata_o` |
+fsm load_store_unit
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+
+  port dmem_req_o: out Bool;
+  port dmem_gnt_i: in Bool;
+  port dmem_req_addr_o: out UInt<32>;
+  port dmem_req_we_o: out Bool;
+  port dmem_req_be_o: out UInt<4>;
+  port dmem_req_wdata_o: out UInt<32>;
+  port dmem_rvalid_i: in Bool;
+  port dmem_rsp_rdata_i: in UInt<32>;
+
+  port ex_if_req_i: in Bool;
+  port ex_if_we_i: in Bool;
+  port ex_if_type_i: in UInt<2>;
+  port ex_if_wdata_i: in UInt<32>;
+  port ex_if_addr_base_i: in UInt<32>;
+  port ex_if_addr_offset_i: in UInt<32>;
+  port ex_if_ready_o: out Bool;
+
+  port wb_if_rdata_o: out UInt<32>;
+  port wb_if_rvalid_o: out Bool;
+
+  state [Idle, Req, WaitLoad, Resp]
+  default state Idle;
+
+  reg req_addr_r: UInt<32> reset rst_n => 0;
+  reg req_we_r: Bool reset rst_n => false;
+  reg req_be_r: UInt<4> reset rst_n => 0;
+  reg req_wdata_r: UInt<32> reset rst_n => 0;
+  reg rsp_data_r: UInt<32> reset rst_n => 0;
+
+  let eff_addr: UInt<32> = ex_if_addr_base_i +% ex_if_addr_offset_i;
+  let addr_lsb: UInt<2> = eff_addr[1:0];
+  let is_byte_req: Bool = ex_if_type_i == 2'b00;
+  let is_half_req: Bool = ex_if_type_i == 2'b01;
+  let is_word_req: Bool = ex_if_type_i == 2'b10;
+  let half_aligned: Bool = addr_lsb[0] == 1'b0;
+  let word_aligned: Bool = addr_lsb == 2'b00;
+  let aligned_req: Bool = is_byte_req or (is_half_req and half_aligned) or (is_word_req and word_aligned);
+  let accept_req: Bool = ex_if_req_i and aligned_req;
+  let next_be: UInt<4> = is_word_req ? 4'b1111 :
+                         is_half_req ? (addr_lsb[1] ? 4'b1100 : 4'b0011) :
+                         (addr_lsb == 2'b00) ? 4'b0001 :
+                         (addr_lsb == 2'b01) ? 4'b0010 :
+                         (addr_lsb == 2'b10) ? 4'b0100 : 4'b1000;
+
+  default
+    comb
+      dmem_req_o = false;
+      dmem_req_addr_o = 0;
+      dmem_req_we_o = false;
+      dmem_req_be_o = 0;
+      dmem_req_wdata_o = 0;
+      ex_if_ready_o = false;
+      wb_if_rdata_o = rsp_data_r;
+      wb_if_rvalid_o = false;
+    end comb
+  end default
+
+  state Idle
+    comb
+      ex_if_ready_o = true;
+    end comb
+
+    seq on clk rising
+      if accept_req
+        req_addr_r <= eff_addr;
+        req_we_r <= ex_if_we_i;
+        req_be_r <= next_be;
+        req_wdata_r <= ex_if_wdata_i;
+      end if
+    end seq
+
+    -> Req when accept_req;
+  end state Idle
+
+  state Req
+    comb
+      dmem_req_o = true;
+      dmem_req_addr_o = req_addr_r;
+      dmem_req_we_o = req_we_r;
+      dmem_req_be_o = req_be_r;
+      dmem_req_wdata_o = req_wdata_r;
+    end comb
+
+    -> Idle when dmem_gnt_i and req_we_r;
+    -> WaitLoad when dmem_gnt_i and not req_we_r;
+  end state Req
+
+  state WaitLoad
+    seq on clk rising
+      if dmem_rvalid_i
+        rsp_data_r <= dmem_rsp_rdata_i;
+      end if
+    end seq
+
+    -> Resp when dmem_rvalid_i;
+  end state WaitLoad
+
+  state Resp
+    comb
+      ex_if_ready_o = true;
+      wb_if_rvalid_o = true;
+      wb_if_rdata_o = rsp_data_r;
+    end comb
+
+    seq on clk rising
+      if accept_req
+        req_addr_r <= eff_addr;
+        req_we_r <= ex_if_we_i;
+        req_be_r <= next_be;
+        req_wdata_r <= ex_if_wdata_i;
+      end if
+    end seq
+
+    -> Req when accept_req;
+    -> Idle;
+  end state Resp
+end fsm load_store_unit

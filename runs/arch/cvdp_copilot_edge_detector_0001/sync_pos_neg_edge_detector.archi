@@ -1,0 +1,7 @@
+module sync_pos_neg_edge_detector
+  port i_clk: in Clock<SysDomain>;
+  port i_rstb: in Reset<Async, Low>;
+  port i_detection_signal: in Bool;
+  port o_positive_edge_detected: out pipe_reg<Bool, 1> reset i_rstb => 0;
+  port o_negative_edge_detected: out pipe_reg<Bool, 1> reset i_rstb => 0;
+end module sync_pos_neg_edge_detector

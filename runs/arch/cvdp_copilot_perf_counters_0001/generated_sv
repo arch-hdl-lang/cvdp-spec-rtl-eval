@@ -1,0 +1,42 @@
+//! ---
+//! tags: [performance-counter, software-read, async-reset]
+//! ---
+//!
+//! Parameterized performance counter for CPU-triggered events with a software-visible read gate.
+//! The counter uses an asynchronous active-high reset and clears after a software read request.
+/// Counts CPU trigger events and exposes the current count only while software requests a read.
+///
+/// Timing table:
+/// | reset | sw_req_i | cpu_trig_i | count_q next | p_count_o visible now |
+/// | 1     | x        | x          | 0            | 0                     |
+/// | 0     | 1        | x          | 0            | count_q               |
+/// | 0     | 0        | 1          | count_q + 1  | 0                     |
+/// | 0     | 0        | 0          | count_q      | 0                     |
+module cvdp_copilot_perf_counters #(
+  parameter int CNT_W = 8
+) (
+  input logic clk,
+  input logic reset,
+  input logic sw_req_i,
+  input logic cpu_trig_i,
+  output logic [CNT_W-1:0] p_count_o
+);
+
+  logic [CNT_W-1:0] inc_value;
+  logic event_seen;
+  logic [CNT_W-1:0] count_q;
+  assign inc_value = 1;
+  assign event_seen = sw_req_i || cpu_trig_i;
+  assign p_count_o = count_q;
+  always_ff @(posedge clk or negedge reset) begin
+    if ((!reset)) begin
+      count_q <= 0;
+    end else begin
+      if (event_seen) begin
+        count_q <= CNT_W'(count_q + inc_value);
+      end
+    end
+  end
+
+endmodule
+

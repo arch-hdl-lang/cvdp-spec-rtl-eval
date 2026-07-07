@@ -1,0 +1,63 @@
+//! ---
+//! tags: [ready_valid, bus_controller, arbitration, latency]
+//! ---
+//!
+//! Data bus controller for two independent ready-valid masters sharing one ready-valid slave.
+//! The controller forwards the selected accepted transaction to the slave after one clock cycle.
+/// One-cycle two-master data bus controller.
+///
+/// Input sampling: m0_valid, m1_valid, m0_data, m1_data, and s_read are sampled on the rising edge of clk.
+/// Reset behavior: rst_n is asynchronous active low and clears the registered slave outputs.
+/// Output timing: m0_read and m1_read are combinational pass-throughs of s_read; s_valid and s_data are registered with one-cycle latency.
+/// Selection table:
+/// current condition | selected input | externally visible registered output after one cycle
+/// !m0_valid && !m1_valid | none | s_valid=0, s_data=0
+/// m0_valid && !m1_valid && s_read | m0 | s_valid=1, s_data=m0_data
+/// !m0_valid && m1_valid && s_read | m1 | s_valid=1, s_data=m1_data
+/// m0_valid && m1_valid && s_read && AFINITY==0 | m0 | s_valid=1, s_data=m0_data; m1 is ignored
+/// m0_valid && m1_valid && s_read && AFINITY==1 | m1 | s_valid=1, s_data=m1_data; m0 is ignored
+/// any valid condition with !s_read | none accepted | s_valid=0, s_data=0
+module data_bus_controller #(
+  parameter int AFINITY = 0
+) (
+  input logic clk,
+  input logic rst_n,
+  output logic m0_read,
+  input logic m0_valid,
+  input logic [31:0] m0_data,
+  output logic m1_read,
+  input logic m1_valid,
+  input logic [31:0] m1_data,
+  input logic s_read,
+  output logic s_valid,
+  output logic [31:0] s_data
+);
+
+  logic affinity_m1;
+  logic choose_m1;
+  logic any_valid;
+  logic accepted;
+  logic [31:0] selected_data;
+  assign m0_read = s_read;
+  assign m1_read = s_read;
+  assign affinity_m1 = AFINITY == 1;
+  assign choose_m1 = m1_valid && !m0_valid || m0_valid && m1_valid && affinity_m1;
+  assign any_valid = m0_valid || m1_valid;
+  assign accepted = any_valid && s_read;
+  assign selected_data = choose_m1 ? m1_data : m0_data;
+  always_ff @(posedge clk or negedge rst_n) begin
+    if ((!rst_n)) begin
+      s_data <= 0;
+      s_valid <= 1'b0;
+    end else begin
+      s_valid <= accepted;
+      if (accepted) begin
+        s_data <= selected_data;
+      end else begin
+        s_data <= 0;
+      end
+    end
+  end
+
+endmodule
+

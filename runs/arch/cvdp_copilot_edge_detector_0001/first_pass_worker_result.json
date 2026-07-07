@@ -1,0 +1,19 @@
+{
+  "problem": "cvdp_copilot_edge_detector_0001",
+  "top": "sync_pos_neg_edge_detector",
+  "lane": "arch",
+  "arch_file": "runs/arch/cvdp_copilot_edge_detector_0001/sync_pos_neg_edge_detector.arch",
+  "response_file": "runs/arch/cvdp_copilot_edge_detector_0001/cvdp_copilot_edge_detector_0001_response.txt",
+  "write_and_check": "pass",
+  "build_and_lint": "pass",
+  "evaluation": {
+    "command": "./scripts/evaluate_candidate.py --lane arch --problem cvdp_copilot_edge_detector_0001 --runtime osvb-docker",
+    "runtime": "osvb-docker",
+    "status": "pass",
+    "returncode": 0,
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "failure_summary": null
+}

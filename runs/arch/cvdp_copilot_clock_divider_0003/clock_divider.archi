@@ -1,0 +1,6 @@
+module clock_divider
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port sel: in UInt<2>;
+  port clk_out: out Bool comb_dep_on(sel);
+end module clock_divider

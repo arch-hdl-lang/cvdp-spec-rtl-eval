@@ -1,0 +1,184 @@
+//! ---
+//! tags: [axis, stream, joiner, fsm, buffering]
+//! refs: []
+//! ---
+//!
+//! Three AXI Stream inputs are packet-joined onto one AXI Stream output.
+//! The controller selects one source at a time, tags output data with the
+//! source ID, and holds one stalled output beat in a temporary buffer.
+
+/// Packet-level AXI Stream joiner for three 8-bit sources.
+///
+/// Input sampling and state transitions occur on the rising edge of clk with
+/// an asynchronous active-high reset. Outputs are combinational from the
+/// current FSM state and the temporary stall buffer.
+fsm axis_joiner
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, High>;
+
+  port s_axis_tdata_1: in UInt<8>;
+  port s_axis_tvalid_1: in Bool;
+  port s_axis_tready_1: out Bool;
+  port s_axis_tlast_1: in Bool;
+
+  port s_axis_tdata_2: in UInt<8>;
+  port s_axis_tvalid_2: in Bool;
+  port s_axis_tready_2: out Bool;
+  port s_axis_tlast_2: in Bool;
+
+  port s_axis_tdata_3: in UInt<8>;
+  port s_axis_tvalid_3: in Bool;
+  port s_axis_tready_3: out Bool;
+  port s_axis_tlast_3: in Bool;
+
+  port m_axis_tdata: out UInt<8>;
+  port m_axis_tvalid: out Bool;
+  port m_axis_tready: in Bool;
+  port m_axis_tlast: out Bool;
+  port m_axis_tuser: out UInt<2>;
+  port busy: out Bool;
+
+  reg temp_valid: Bool reset rst => false;
+  reg temp_data: UInt<8> reset rst => 0;
+  reg temp_last: Bool reset rst => false;
+  reg temp_user: UInt<2> reset rst => 0;
+
+  let can_select: Bool = not temp_valid;
+  let take_1: Bool = can_select and s_axis_tvalid_1;
+  let take_2: Bool = can_select and s_axis_tvalid_2;
+  let take_3: Bool = can_select and s_axis_tvalid_3;
+  let stall_output: Bool = not m_axis_tready;
+
+  state [STATE_IDLE, STATE_1, STATE_2, STATE_3]
+  default state STATE_IDLE;
+
+  default
+    comb
+      s_axis_tready_1 = false;
+      s_axis_tready_2 = false;
+      s_axis_tready_3 = false;
+      m_axis_tdata = 0;
+      m_axis_tvalid = false;
+      m_axis_tlast = false;
+      m_axis_tuser = 0;
+      busy = temp_valid;
+    end comb
+  end default
+
+  state STATE_IDLE
+    comb
+      if temp_valid
+        m_axis_tdata = temp_data;
+        m_axis_tvalid = true;
+        m_axis_tlast = temp_last;
+        m_axis_tuser = temp_user;
+        busy = true;
+      else
+        busy = false;
+      end if
+    end comb
+
+    seq on clk rising
+      if temp_valid and m_axis_tready
+        temp_valid <= false;
+      end if
+    end seq
+
+    -> STATE_1 when can_select and s_axis_tvalid_1;
+    -> STATE_2 when can_select and not s_axis_tvalid_1 and s_axis_tvalid_2;
+    -> STATE_3 when can_select and not s_axis_tvalid_1 and not s_axis_tvalid_2 and s_axis_tvalid_3;
+  end state STATE_IDLE
+
+  state STATE_1
+    comb
+      busy = true;
+      if temp_valid
+        m_axis_tdata = temp_data;
+        m_axis_tvalid = true;
+        m_axis_tlast = temp_last;
+        m_axis_tuser = temp_user;
+      else
+        s_axis_tready_1 = true;
+        m_axis_tdata = s_axis_tdata_1;
+        m_axis_tvalid = s_axis_tvalid_1;
+        m_axis_tlast = s_axis_tlast_1;
+        m_axis_tuser = 2'h1;
+      end if
+    end comb
+
+    seq on clk rising
+      if temp_valid and m_axis_tready
+        temp_valid <= false;
+      elsif not temp_valid and s_axis_tvalid_1 and stall_output
+        temp_valid <= true;
+        temp_data <= s_axis_tdata_1;
+        temp_last <= s_axis_tlast_1;
+        temp_user <= 2'h1;
+      end if
+    end seq
+
+    -> STATE_IDLE when take_1 and s_axis_tlast_1;
+  end state STATE_1
+
+  state STATE_2
+    comb
+      busy = true;
+      if temp_valid
+        m_axis_tdata = temp_data;
+        m_axis_tvalid = true;
+        m_axis_tlast = temp_last;
+        m_axis_tuser = temp_user;
+      else
+        s_axis_tready_2 = true;
+        m_axis_tdata = s_axis_tdata_2;
+        m_axis_tvalid = s_axis_tvalid_2;
+        m_axis_tlast = s_axis_tlast_2;
+        m_axis_tuser = 2'h2;
+      end if
+    end comb
+
+    seq on clk rising
+      if temp_valid and m_axis_tready
+        temp_valid <= false;
+      elsif not temp_valid and s_axis_tvalid_2 and stall_output
+        temp_valid <= true;
+        temp_data <= s_axis_tdata_2;
+        temp_last <= s_axis_tlast_2;
+        temp_user <= 2'h2;
+      end if
+    end seq
+
+    -> STATE_IDLE when take_2 and s_axis_tlast_2;
+  end state STATE_2
+
+  state STATE_3
+    comb
+      busy = true;
+      if temp_valid
+        m_axis_tdata = temp_data;
+        m_axis_tvalid = true;
+        m_axis_tlast = temp_last;
+        m_axis_tuser = temp_user;
+      else
+        s_axis_tready_3 = true;
+        m_axis_tdata = s_axis_tdata_3;
+        m_axis_tvalid = s_axis_tvalid_3;
+        m_axis_tlast = s_axis_tlast_3;
+        m_axis_tuser = 2'h3;
+      end if
+    end comb
+
+    seq on clk rising
+      if temp_valid and m_axis_tready
+        temp_valid <= false;
+      elsif not temp_valid and s_axis_tvalid_3 and stall_output
+        temp_valid <= true;
+        temp_data <= s_axis_tdata_3;
+        temp_last <= s_axis_tlast_3;
+        temp_user <= 2'h3;
+      end if
+    end seq
+
+    -> STATE_IDLE when take_3 and s_axis_tlast_3;
+  end state STATE_3
+end fsm axis_joiner

@@ -1,0 +1,119 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `cvdp_copilot_decode_firstbit` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_decode_firstbit_0001
+
+Natural-language specification:
+The first-bit decoder RTL module implements a decoder logic that returns the index of the lowest bit set in a vector. It decodes the first set bit in a parameterized input data vector (`In_Data`). It uses pipelined stages to distribute the processing load, with the number of pipeline registers determined by the parameter `PlRegs_g`. The goal is to locate the first set bit in the input data and propagate the result through the pipeline stages while maintaining output validity.
+
+---
+Design and implement an RTL design for this first-bit decoder module with the following design specifications :
+
+### **Design Specifications:**
+
+1. **Pipeline Architecture:**
+   - The input data vector (`In_Data`) is processed across multiple pipeline stages. Each stage is responsible for passing the intermediate result (i.e., the first set bit) through the pipeline until it reaches the output.
+   - The pipeline depth is controlled by `PlRegs_g`. As `PlRegs_g` increases, more stages are introduced, which increases the number of clock cycles (latency) required for the valid signal (`Out_Valid`) to propagate from input to output.
+
+2. **Parameterization and Scalability:**
+   - The design must efficiently scale with varying input widths (`InWidth_g`). The module supports input widths that are not powers of two, handling them without unnecessary resource utilization.
+   - To handle non-power-of-two input widths, the input vector is padded internally to the nearest power of two, ensuring accurate processing.
+   
+3. **Input and Output Specifications:**
+   - **Input Handling:** If `InReg_g` is enabled (`InReg_g = 1`), the input data (`In_Data`) and its validity signal (`In_Valid`) are registered on the rising clock edge. Otherwise, the input is passed directly to the logic.
+   - **Output Behavior:** If `OutReg_g` is enabled (`OutReg_g = 1`), the outputs (`Out_FirstBit`, `Out_Found`, and `Out_Valid`) are registered before being sent out. These outputs indicate the position of the first set bit, the presence of any set bit, and the validity of the output, respectively.
+
+4. **Latency and Pipeline Depth:**
+   - The parameter `PlRegs_g` determines the pipeline depth, introducing additional clock cycles to propagate valid signals. The design should ensure that as `PlRegs_g` increases, the number of clock cycles required to produce valid output also increases.
+   The module's total latency is affected by the depth of the pipeline. For example, when `PlRegs_g = 0`, the detection happens in one cycle, whereas `PlRegs_g = 1` splits the detection across two stages, requiring two cycles.
+
+5. **Edge Case Handling:**
+   - If `In_Data` contains no set bits (i.e., all zeros), the output `Out_Found` should be `0`, and `Out_FirstBit` should be reset to `0`.
+   - For inputs containing a single set bit, the module should correctly detect and output the position of that bit.
+
+---
+
+### **Parameters:**
+
+| Name      | Default | Description                                                  |
+|-----------|---------|--------------------------------------------------------------|
+| InWidth_g | 32      | Width of the input data vector                                |
+| InReg_g   | 1       | Enables input register for latching data                      |
+| OutReg_g  | 1       | Enables output register for latching results                  |
+| PlRegs_g  | 1       | Number of pipeline registers for first-bit decoding logic. The value of `PlRegs_g` controls the number of stages |
+
+### **Interfaces:**
+
+#### Control Signals:
+
+| Name | In/Out | Length | Description                                   |
+| :--- | :----- | :----- | :-------------------------------------------- |
+| Clk  | in     | 1      | Clock signal (rising edge)                    |
+| Rst  | in     | 1      | Reset signal (high-active, asynchronous)       |
+
+#### Input Data:
+
+| Name     | In/Out | Length       | Description                                  |
+| :------- | :----- | :----------- | :------------------------------------------- |
+| In_Data  | in     | `InWidth_g`  | Input data vector                            |
+| In_Valid | in     | 1            | Valid indication for `In_Data`               |
+
+#### Output Data:
+
+| Name         | In/Out | Length                  | Description                                                  |
+| :----------- | :----- | :---------------------- | :----------------------------------------------------------- |
+| Out_FirstBit | out    | $clog2(`InWidth_g`)      | Index of the lowest set bit in `In_Data`                      |
+| Out_Found    | out    | 1                       | Set to '1' if any bit in `In_Data` was set                    |
+| Out_Valid    | out    | 1                       | Indicates valid data on `Out_FirstBit` and `Out_Found`        |
+
+---
+
+### **Behavioral Definition:**
+
+- **Reset Behavior:** The reset signal (`Rst`) is asynchronous and active-high. On reset, the internal pipeline registers and output signals are set to zero.
+- **Clocking:** The module operates on the rising edge of the clock (`Clk`), and all sequential elements must be synchronized with this clock.
+
+---
+
+### **Example:**
+
+1. **Input Data:** `In_Data = 32'h0000_0080`, `In_Valid = 1'b1`
+   - Expected Output: `Out_FirstBit = 7`, `Out_Found = 1`, `Out_Valid = 1`
+
+2. **Reset:** Upon asserting the reset (`Rst = 1`), the outputs should reset to `Out_FirstBit = 0`, `Out_Found = 0`, and `Out_Valid = 0`.
+
+---
+
+### **Constraints:**
+
+The parameter `PlRegs_g` should remain within a reasonable range based on the input width (`InWidth_g`) to ensure efficient performance and avoid excessive pipeline depth. A suitable range for `PlRegs_g` is:
+
+```
+0 <= PlRegs_g <= (BinBits_c / 2) - 1
+```
+
+where `BinBits_c = $clog2(InWidth_g)` represents the number of bits required to encode the index of the first set bit.
+
+For example:
+- If `InWidth_g = 32`, then `BinBits_c = 5`, and the valid range for `PlRegs_g` is 0 to 1.
+- This ensures that the number of pipeline stages is balanced, avoiding unnecessary delays while distributing the decoding logic efficiently across multiple cycles.
+
+---
+

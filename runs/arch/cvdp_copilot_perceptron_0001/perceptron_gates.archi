@@ -1,0 +1,20 @@
+module perceptron_gates
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port x1: in SInt<4>;
+  port x2: in SInt<4>;
+  port learning_rate: in Bool;
+  port threshold: in SInt<4>;
+  port gate_select: in UInt<2>;
+  port percep_w1: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port percep_w2: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port percep_bias: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port present_addr: out pipe_reg<UInt<4>, 1> reset rst_n => 0;
+  port stop: out pipe_reg<Bool, 1> reset rst_n => false;
+  port input_index: out pipe_reg<UInt<3>, 1> reset rst_n => 0;
+  port y_in: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port y: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port prev_percep_wt_1: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port prev_percep_wt_2: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+  port prev_percep_bias: out pipe_reg<SInt<4>, 1> reset rst_n => 0;
+end module perceptron_gates

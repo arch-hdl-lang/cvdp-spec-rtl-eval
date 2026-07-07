@@ -1,0 +1,58 @@
+//! ---
+//! tags: [fibonacci, sequence, overflow, registered]
+//! ---
+//!
+//! 32-bit Fibonacci generator with registered outputs and one-cycle delayed
+//! overflow restart behavior. The sequence starts at F(0) = 0, F(1) = 1 and
+//! restarts automatically after detecting a 33-bit sum.
+
+/// Generates a 32-bit Fibonacci sequence and reports overflow on the restart cycle.
+///
+/// `fib_out` and `overflow_flag` are registered outputs driven on the rising edge of `clk`.
+module fibonacci_series
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Sync, High>;
+  port fib_out: out pipe_reg<UInt<32>, 1> reset rst => 0;
+  port overflow_flag: out pipe_reg<Bool, 1> reset rst => false;
+
+  reg reg_a: UInt<32> reset rst => 0;
+  reg reg_b: UInt<32> reset rst => 1;
+  reg overflow_pending: Bool reset rst => false;
+  reg restart_hold: Bool reset rst => false;
+
+  let next_fib: UInt<33> = reg_a.zext<33>() +% reg_b.zext<33>();
+  let overflow_now: Bool = next_fib[32];
+  let next_fib_low: UInt<32> = next_fib[31:0];
+
+  default seq on clk rising;
+
+  seq
+    if overflow_pending
+      reg_a <= 0;
+      reg_b <= 1;
+      overflow_pending <= false;
+      restart_hold <= true;
+      fib_out@1 <= 0;
+      overflow_flag@1 <= true;
+    elsif restart_hold
+      reg_a <= 0;
+      reg_b <= 1;
+      overflow_pending <= false;
+      restart_hold <= false;
+      fib_out@1 <= 0;
+      overflow_flag@1 <= false;
+    else
+      fib_out@1 <= reg_b;
+      overflow_flag@1 <= false;
+      restart_hold <= false;
+
+      if overflow_now
+        overflow_pending <= true;
+      else
+        reg_a <= reg_b;
+        reg_b <= next_fib_low;
+        overflow_pending <= false;
+      end if
+    end if
+  end seq
+end module fibonacci_series

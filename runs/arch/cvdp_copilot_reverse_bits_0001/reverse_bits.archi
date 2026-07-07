@@ -1,0 +1,4 @@
+module reverse_bits
+  port num_in: in UInt<32>;
+  port num_out: out UInt<32> comb_dep_on(num_in);
+end module reverse_bits

@@ -1,0 +1,97 @@
+//! ---
+//! tags: [qam16, mapper, interpolation, combinational]
+//! ---
+//!
+//! Pure combinational QAM16 mapper with one interpolated sample inserted
+//! between each adjacent two-symbol group. Packed output lanes carry signed
+//! 3-bit two's-complement I and Q amplitudes.
+
+/// Map a two-bit QAM16 quadrant selector to a signed 3-bit amplitude.
+///
+/// The mapping is 00 -> -3, 01 -> -1, 10 -> 1, and 11 -> 3.
+function MapQam16Amp(sel: UInt<2>) -> SInt<3>
+  return sel == 2'b00 ? signed(3'b101) :
+         sel == 2'b01 ? signed(3'b111) :
+         sel == 2'b10 ? signed(3'b001) :
+                         signed(3'b011);
+end function MapQam16Amp
+
+/// Compute the arithmetic mean of two signed QAM16 amplitudes.
+///
+/// The temporary sum is widened by one bit before division by two.
+function AvgQam16Amp(a: SInt<3>, b: SInt<3>) -> SInt<3>
+  let a_ext: SInt<4> = a.sext<4>();
+  let b_ext: SInt<4> = b.sext<4>();
+  let sum_ext: SInt<4> = a_ext +% b_ext;
+  let avg_ext: SInt<4> = sum_ext / 2;
+  let avg_bits4: UInt<4> = unsigned(avg_ext);
+  let avg_bits3: UInt<3> = avg_bits4[2:0];
+  return signed(avg_bits3);
+end function AvgQam16Amp
+
+/// Packed combinational QAM16 mapper and interpolator.
+///
+/// Each pair of 4-bit symbols produces output lanes ordered as first mapped
+/// symbol, interpolated mean, and second mapped symbol for both I and Q.
+module qam16_mapper_interpolated
+  param N: const = 4;
+  param IN_WIDTH: const = 4;
+  param OUT_WIDTH: const = 3;
+
+  local param PAIRS: const = N / 2;
+  local param OUT_COUNT: const = N + PAIRS;
+
+  port bits: in UInt<N * IN_WIDTH>;
+  port I: out UInt<OUT_COUNT * OUT_WIDTH>;
+  port Q: out UInt<OUT_COUNT * OUT_WIDTH>;
+
+  wire sym0: UInt<4>;
+  wire sym1: UInt<4>;
+  wire i0_amp: SInt<3>;
+  wire q0_amp: SInt<3>;
+  wire i1_amp: SInt<3>;
+  wire q1_amp: SInt<3>;
+  wire i_mid_amp: SInt<3>;
+  wire q_mid_amp: SInt<3>;
+  wire i0_bits: UInt<3>;
+  wire q0_bits: UInt<3>;
+  wire i1_bits: UInt<3>;
+  wire q1_bits: UInt<3>;
+  wire i_mid_bits: UInt<3>;
+  wire q_mid_bits: UInt<3>;
+
+  comb
+    I = 0;
+    Q = 0;
+
+    for pair_idx in 0..PAIRS-1
+      for bit_idx in 0..IN_WIDTH-1
+        sym0[bit_idx] = bits[(pair_idx * 2 * IN_WIDTH) + bit_idx];
+        sym1[bit_idx] = bits[((pair_idx * 2 + 1) * IN_WIDTH) + bit_idx];
+      end for
+
+      i0_amp = MapQam16Amp(sym0[3:2]);
+      q0_amp = MapQam16Amp(sym0[1:0]);
+      i1_amp = MapQam16Amp(sym1[3:2]);
+      q1_amp = MapQam16Amp(sym1[1:0]);
+      i_mid_amp = AvgQam16Amp(i0_amp, i1_amp);
+      q_mid_amp = AvgQam16Amp(q0_amp, q1_amp);
+
+      i0_bits = unsigned(i0_amp);
+      q0_bits = unsigned(q0_amp);
+      i_mid_bits = unsigned(i_mid_amp);
+      q_mid_bits = unsigned(q_mid_amp);
+      i1_bits = unsigned(i1_amp);
+      q1_bits = unsigned(q1_amp);
+
+      for lane_bit in 0..OUT_WIDTH-1
+        I[(pair_idx * 3 * OUT_WIDTH) + lane_bit] = i0_bits[lane_bit];
+        Q[(pair_idx * 3 * OUT_WIDTH) + lane_bit] = q0_bits[lane_bit];
+        I[((pair_idx * 3 + 1) * OUT_WIDTH) + lane_bit] = i_mid_bits[lane_bit];
+        Q[((pair_idx * 3 + 1) * OUT_WIDTH) + lane_bit] = q_mid_bits[lane_bit];
+        I[((pair_idx * 3 + 2) * OUT_WIDTH) + lane_bit] = i1_bits[lane_bit];
+        Q[((pair_idx * 3 + 2) * OUT_WIDTH) + lane_bit] = q1_bits[lane_bit];
+      end for
+    end for
+  end comb
+end module qam16_mapper_interpolated

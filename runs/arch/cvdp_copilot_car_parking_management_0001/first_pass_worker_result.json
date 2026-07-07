@@ -1,0 +1,16 @@
+{
+  "id": "cvdp_copilot_car_parking_management_0001",
+  "top": "car_parking_system",
+  "lane": "arch",
+  "typecheck_status": "pass",
+  "build_lint_status": "pass",
+  "evaluation_status": "pass",
+  "evaluation_runtime": "osvb-docker",
+  "evaluation_returncode": 0,
+  "passed": true,
+  "failure_summary": null,
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_car_parking_management_0001/car_parking_system.arch",
+    "response": "runs/arch/cvdp_copilot_car_parking_management_0001/cvdp_copilot_car_parking_management_0001_response.txt"
+  }
+}

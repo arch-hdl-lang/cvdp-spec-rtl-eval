@@ -1,0 +1,24 @@
+archives/
+run_logs/
+results/
+a.out
+*.vcd
+*.fst
+*.pyc
+__pycache__/
+.DS_Store
+.venv-cvdp-cocotb192/
+
+# Local investigation artifacts; canonical run inputs/results remain tracked.
+runs/**/*manual*
+runs/**/*experiment*
+runs/**/*debug*
+runs/**/*baseline_wave*
+runs/**/*full_sim*
+runs/**/*keepwork*
+runs/**/*before_*
+runs/**/*restored*
+runs/**/*shim*
+runs/**/*smoke.log
+runs/**/*timeout_fix*
+runs/**/wave_debug_summary.md

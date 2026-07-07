@@ -1,0 +1,42 @@
+//! ---
+//! tags: [fibonacci, sequence, overflow]
+//! ---
+//!
+//! 32-bit Fibonacci sequence generator with synchronous reset and overflow reporting before the sequence automatically restarts.
+
+/// Top-level Fibonacci generator.
+///
+/// The visible output starts at F(0)=0 after reset. On each rising edge while not reset, the current term is emitted, then the internal pair advances. Overflow is detected before advancing past 32 bits and causes a restart pulse.
+module fibonacci_series
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Sync, High>;
+  port fib_out: out UInt<32>;
+  port overflow_flag: out Bool;
+
+  reg reg_a: UInt<32> reset rst => 0;
+  reg reg_b: UInt<32> reset rst => 1;
+  reg overflow_flag_r: Bool reset rst => false;
+
+  let reg_a_wide: UInt<33> = reg_a.zext<33>();
+  let reg_b_wide: UInt<33> = reg_b.zext<33>();
+  let next_fib_wide: UInt<33> = reg_a_wide +% reg_b_wide;
+  let overflow_now: Bool = next_fib_wide[32];
+  let next_fib_low: UInt<32> = next_fib_wide[31:0];
+
+  let fib_out = reg_a;
+  let overflow_flag = overflow_flag_r;
+
+  default seq on clk rising;
+
+  seq
+    if overflow_now
+      reg_a <= 0;
+      reg_b <= 1;
+      overflow_flag_r <= true;
+    else
+      reg_a <= reg_b;
+      reg_b <= next_fib_low;
+      overflow_flag_r <= false;
+    end if
+  end seq
+end module fibonacci_series

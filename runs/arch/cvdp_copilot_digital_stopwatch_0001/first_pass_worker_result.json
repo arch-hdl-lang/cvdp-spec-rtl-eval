@@ -1,0 +1,12 @@
+{
+  "problem_id": "cvdp_copilot_digital_stopwatch_0001",
+  "top_module": "dig_stopwatch",
+  "arch_version": "arch 0.70.6",
+  "check_status": "pass",
+  "build_status": "pass",
+  "lint_status": "pass",
+  "arch_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.arch",
+  "response_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/cvdp_copilot_digital_stopwatch_0001_response.txt",
+  "generated_sv_dir": "runs/arch/cvdp_copilot_digital_stopwatch_0001/generated_sv",
+  "interface_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.archi"
+}

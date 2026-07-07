@@ -1,0 +1,12 @@
+{
+  "problem_id": "cvdp_copilot_ttc_lite_0001",
+  "top_module": "ttc_counter_lite",
+  "arch_version": "arch 0.70.6",
+  "arch_file": "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.arch",
+  "raw_response": "runs/arch/cvdp_copilot_ttc_lite_0001/cvdp_copilot_ttc_lite_0001_response.txt",
+  "generated_sv": "runs/arch/cvdp_copilot_ttc_lite_0001/generated_sv",
+  "interface_file": "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.archi",
+  "write_and_check": "pass",
+  "build_and_lint": "pass",
+  "verilator_lint": "pass"
+}

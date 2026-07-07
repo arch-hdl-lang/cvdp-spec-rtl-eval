@@ -1,0 +1,264 @@
+//! ---
+//! tags: [packet, fsm, checksum, arithmetic, response]
+//! ---
+//!
+//! Packet controller generated from the CVDP packet-controller specification. It receives one 8-byte command packet at a time, validates the BACD header and modulo-256 checksum, computes a 16-bit result, and transmits a 5-byte ABCD response packet.
+/// Byte-serial packet controller with integrated receive validation and transmit sequencing.
+///
+/// Port timing/types:
+/// - `clk` samples RX strobes and TX-done ticks on the rising edge.
+/// - `rst` is active-high asynchronous reset for state and datapath registers.
+/// - `rx_valid_i`, `rx_data_8_i`, and `tx_done_tick_i` are sampled inputs.
+/// - `tx_start_o` and `tx_data_8_o` are state-derived combinational outputs from registered response bytes.
+///
+/// Transition table:
+/// current state        | input condition                              | next state           | externally visible outputs
+/// S_IDLE              | rx_valid_i with byte_count_r != 7            | S_IDLE               | tx_start_o=0, tx_data_8_o=0
+/// S_IDLE              | rx_valid_i with byte_count_r == 7            | S_GOT_8_BYTES        | tx_start_o=0, tx_data_8_o=0
+/// S_GOT_8_BYTES       | header bytes equal 16'hBACD                 | S_RECV_CHECKSUM      | tx_start_o=0, tx_data_8_o=0
+/// S_GOT_8_BYTES       | header bytes do not equal 16'hBACD          | S_IDLE               | tx_start_o=0, tx_data_8_o=0
+/// S_RECV_CHECKSUM     | sum of all 8 received bytes is 8'h00        | S_BUILD_RESPONSE     | tx_start_o=0, tx_data_8_o=0
+/// S_RECV_CHECKSUM     | sum of all 8 received bytes is not 8'h00    | S_IDLE               | tx_start_o=0, tx_data_8_o=0
+/// S_BUILD_RESPONSE    | always                                       | S_SEND_FIRST_BYTE    | tx_start_o=0, tx_data_8_o=0 while response registers load
+/// S_SEND_FIRST_BYTE   | tx_done_tick_i == 0                         | S_SEND_FIRST_BYTE    | tx_start_o=1, tx_data_8_o=response byte 0
+/// S_SEND_FIRST_BYTE   | tx_done_tick_i == 1                         | S_RESPONSE_READY     | tx_start_o=1, tx_data_8_o=response byte 0
+/// S_RESPONSE_READY    | tx_done_tick_i == 0                         | S_RESPONSE_READY     | tx_start_o=1, tx_data_8_o=response byte selected by send_idx_r
+/// S_RESPONSE_READY    | tx_done_tick_i == 1 and send_idx_r != 4     | S_RESPONSE_READY     | tx_start_o=1, tx_data_8_o=current response byte
+/// S_RESPONSE_READY    | tx_done_tick_i == 1 and send_idx_r == 4     | S_IDLE               | tx_start_o=1 for final byte cycle, then 0 in S_IDLE
+module packet_controller (
+  input logic clk,
+  input logic rst,
+  input logic rx_valid_i,
+  input logic [7:0] rx_data_8_i,
+  input logic tx_done_tick_i,
+  output logic tx_start_o,
+  output logic [7:0] tx_data_8_o
+);
+
+  typedef enum logic [2:0] {
+    S_IDLE = 3'd0,
+    S_GOT_8_BYTES = 3'd1,
+    S_RECV_CHECKSUM = 3'd2,
+    S_BUILD_RESPONSE = 3'd3,
+    S_SEND_FIRST_BYTE = 3'd4,
+    S_RESPONSE_READY = 3'd5
+  } packet_controller_state_t;
+  
+  packet_controller_state_t state_r, state_next;
+  
+  logic [3:0] byte_count_r;
+  logic [7:0] byte0_r;
+  logic [7:0] byte1_r;
+  logic [7:0] byte2_r;
+  logic [7:0] byte3_r;
+  logic [7:0] byte4_r;
+  logic [7:0] byte5_r;
+  logic [7:0] byte6_r;
+  logic [7:0] byte7_r;
+  logic [7:0] resp0_r;
+  logic [7:0] resp1_r;
+  logic [7:0] resp2_r;
+  logic [7:0] resp3_r;
+  logic [7:0] resp4_r;
+  logic [2:0] send_idx_r;
+  
+  logic header_ok;
+  assign header_ok = byte0_r == 8'd186 && byte1_r == 8'd205;
+  logic [7:0] sum01;
+  assign sum01 = 8'(byte0_r + byte1_r);
+  logic [7:0] sum02;
+  assign sum02 = ($bits(sum01) > 8 ? $bits(sum01) : 8)'(sum01 + byte2_r);
+  logic [7:0] sum03;
+  assign sum03 = ($bits(sum02) > 8 ? $bits(sum02) : 8)'(sum02 + byte3_r);
+  logic [7:0] sum04;
+  assign sum04 = ($bits(sum03) > 8 ? $bits(sum03) : 8)'(sum03 + byte4_r);
+  logic [7:0] sum05;
+  assign sum05 = ($bits(sum04) > 8 ? $bits(sum04) : 8)'(sum04 + byte5_r);
+  logic [7:0] sum06;
+  assign sum06 = ($bits(sum05) > 8 ? $bits(sum05) : 8)'(sum05 + byte6_r);
+  logic [7:0] packet_sum;
+  assign packet_sum = ($bits(sum06) > 8 ? $bits(sum06) : 8)'(sum06 + byte7_r);
+  logic checksum_ok;
+  assign checksum_ok = packet_sum == 8'd0;
+  logic [15:0] num1_value;
+  assign num1_value = {byte2_r, byte3_r};
+  logic [15:0] num2_value;
+  assign num2_value = {byte4_r, byte5_r};
+  logic [15:0] add_value;
+  assign add_value = ($bits(num1_value) > $bits(num2_value) ? $bits(num1_value) : $bits(num2_value))'(num1_value + num2_value);
+  logic [15:0] sub_value;
+  assign sub_value = ($bits(num1_value) > $bits(num2_value) ? $bits(num1_value) : $bits(num2_value))'(num1_value - num2_value);
+  logic [15:0] result_value;
+  assign result_value = byte6_r == 8'd0 ? add_value : byte6_r == 8'd1 ? sub_value : 16'd0;
+  logic [7:0] result_hi;
+  assign result_hi = result_value[15:8];
+  logic [7:0] result_lo;
+  assign result_lo = result_value[7:0];
+  logic [7:0] resp_sum0;
+  assign resp_sum0 = 8'(8'd171 + 8'd205);
+  logic [7:0] resp_sum1;
+  assign resp_sum1 = ($bits(resp_sum0) > $bits(result_hi) ? $bits(resp_sum0) : $bits(result_hi))'(resp_sum0 + result_hi);
+  logic [7:0] resp_sum2;
+  assign resp_sum2 = ($bits(resp_sum1) > $bits(result_lo) ? $bits(resp_sum1) : $bits(result_lo))'(resp_sum1 + result_lo);
+  logic [7:0] response_checksum;
+  assign response_checksum = (8 > $bits(resp_sum2) ? 8 : $bits(resp_sum2))'(8'd0 - resp_sum2);
+  
+  always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+      state_r <= S_IDLE;
+      byte_count_r <= 0;
+      byte0_r <= 0;
+      byte1_r <= 0;
+      byte2_r <= 0;
+      byte3_r <= 0;
+      byte4_r <= 0;
+      byte5_r <= 0;
+      byte6_r <= 0;
+      byte7_r <= 0;
+      resp0_r <= 0;
+      resp1_r <= 0;
+      resp2_r <= 0;
+      resp3_r <= 0;
+      resp4_r <= 0;
+      send_idx_r <= 0;
+    end else begin
+      state_r <= state_next;
+      unique case (state_r)
+        S_IDLE: begin
+          if (rx_valid_i) begin
+            if (byte_count_r == 4'd0) begin
+              byte0_r <= rx_data_8_i;
+              byte_count_r <= 4'd1;
+            end else if (byte_count_r == 4'd1) begin
+              byte1_r <= rx_data_8_i;
+              byte_count_r <= 4'd2;
+            end else if (byte_count_r == 4'd2) begin
+              byte2_r <= rx_data_8_i;
+              byte_count_r <= 4'd3;
+            end else if (byte_count_r == 4'd3) begin
+              byte3_r <= rx_data_8_i;
+              byte_count_r <= 4'd4;
+            end else if (byte_count_r == 4'd4) begin
+              byte4_r <= rx_data_8_i;
+              byte_count_r <= 4'd5;
+            end else if (byte_count_r == 4'd5) begin
+              byte5_r <= rx_data_8_i;
+              byte_count_r <= 4'd6;
+            end else if (byte_count_r == 4'd6) begin
+              byte6_r <= rx_data_8_i;
+              byte_count_r <= 4'd7;
+            end else begin
+              byte7_r <= rx_data_8_i;
+              byte_count_r <= 4'd0;
+            end
+          end
+        end
+        S_BUILD_RESPONSE: begin
+          resp0_r <= 8'd171;
+          resp1_r <= 8'd205;
+          resp2_r <= result_hi;
+          resp3_r <= result_lo;
+          resp4_r <= response_checksum;
+          send_idx_r <= 3'd0;
+        end
+        S_SEND_FIRST_BYTE: begin
+          if (tx_done_tick_i) begin
+            send_idx_r <= 3'd1;
+          end
+        end
+        S_RESPONSE_READY: begin
+          if (tx_done_tick_i) begin
+            if (send_idx_r == 3'd4) begin
+              send_idx_r <= 3'd0;
+            end else begin
+              send_idx_r <= 3'(send_idx_r + 3'd1);
+            end
+          end
+        end
+        default: ;
+      endcase
+    end
+  end
+  
+  always_comb begin
+    state_next = state_r; // hold by default
+    unique case (state_r)
+      S_IDLE: begin
+        if (rx_valid_i && byte_count_r == 4'd7) state_next = S_GOT_8_BYTES;
+      end
+      S_GOT_8_BYTES: begin
+        if (header_ok) state_next = S_RECV_CHECKSUM;
+        else if (!header_ok) state_next = S_IDLE;
+      end
+      S_RECV_CHECKSUM: begin
+        if (checksum_ok) state_next = S_BUILD_RESPONSE;
+        else if (!checksum_ok) state_next = S_IDLE;
+      end
+      S_BUILD_RESPONSE: begin
+        state_next = S_SEND_FIRST_BYTE;
+      end
+      S_SEND_FIRST_BYTE: begin
+        if (tx_done_tick_i) state_next = S_RESPONSE_READY;
+      end
+      S_RESPONSE_READY: begin
+        if (tx_done_tick_i && send_idx_r == 3'd4) state_next = S_IDLE;
+      end
+      default: state_next = state_r;
+    endcase
+  end
+  
+  always_comb begin
+    tx_start_o = 1'b0;
+    tx_data_8_o = 8'd0;
+    unique case (state_r)
+      S_IDLE: begin
+      end
+      S_GOT_8_BYTES: begin
+      end
+      S_RECV_CHECKSUM: begin
+      end
+      S_BUILD_RESPONSE: begin
+      end
+      S_SEND_FIRST_BYTE: begin
+        tx_start_o = 1'b1;
+        tx_data_8_o = resp0_r;
+      end
+      S_RESPONSE_READY: begin
+        tx_start_o = 1'b1;
+        if (send_idx_r == 3'd0) begin
+          tx_data_8_o = resp0_r;
+        end else if (send_idx_r == 3'd1) begin
+          tx_data_8_o = resp1_r;
+        end else if (send_idx_r == 3'd2) begin
+          tx_data_8_o = resp2_r;
+        end else if (send_idx_r == 3'd3) begin
+          tx_data_8_o = resp3_r;
+        end else begin
+          tx_data_8_o = resp4_r;
+        end
+      end
+      default: ;
+    endcase
+  end
+  
+  // synopsys translate_off
+  _auto_legal_state: assert property (@(posedge clk) !rst |-> state_r < 6)
+    else $fatal(1, "FSM ILLEGAL STATE: packet_controller.state_r = %0d", state_r);
+  _auto_reach_S_IDLE: cover property (@(posedge clk) state_r == S_IDLE);
+  _auto_reach_S_GOT_8_BYTES: cover property (@(posedge clk) state_r == S_GOT_8_BYTES);
+  _auto_reach_S_RECV_CHECKSUM: cover property (@(posedge clk) state_r == S_RECV_CHECKSUM);
+  _auto_reach_S_BUILD_RESPONSE: cover property (@(posedge clk) state_r == S_BUILD_RESPONSE);
+  _auto_reach_S_SEND_FIRST_BYTE: cover property (@(posedge clk) state_r == S_SEND_FIRST_BYTE);
+  _auto_reach_S_RESPONSE_READY: cover property (@(posedge clk) state_r == S_RESPONSE_READY);
+  _auto_tr_S_IDLE_to_S_GOT_8_BYTES: cover property (@(posedge clk) state_r == S_IDLE && state_next == S_GOT_8_BYTES);
+  _auto_tr_S_GOT_8_BYTES_to_S_RECV_CHECKSUM: cover property (@(posedge clk) state_r == S_GOT_8_BYTES && state_next == S_RECV_CHECKSUM);
+  _auto_tr_S_GOT_8_BYTES_to_S_IDLE: cover property (@(posedge clk) state_r == S_GOT_8_BYTES && state_next == S_IDLE);
+  _auto_tr_S_RECV_CHECKSUM_to_S_BUILD_RESPONSE: cover property (@(posedge clk) state_r == S_RECV_CHECKSUM && state_next == S_BUILD_RESPONSE);
+  _auto_tr_S_RECV_CHECKSUM_to_S_IDLE: cover property (@(posedge clk) state_r == S_RECV_CHECKSUM && state_next == S_IDLE);
+  _auto_tr_S_BUILD_RESPONSE_to_S_SEND_FIRST_BYTE: cover property (@(posedge clk) state_r == S_BUILD_RESPONSE && state_next == S_SEND_FIRST_BYTE);
+  _auto_tr_S_SEND_FIRST_BYTE_to_S_RESPONSE_READY: cover property (@(posedge clk) state_r == S_SEND_FIRST_BYTE && state_next == S_RESPONSE_READY);
+  _auto_tr_S_RESPONSE_READY_to_S_IDLE: cover property (@(posedge clk) state_r == S_RESPONSE_READY && state_next == S_IDLE);
+  // synopsys translate_on
+
+endmodule
+

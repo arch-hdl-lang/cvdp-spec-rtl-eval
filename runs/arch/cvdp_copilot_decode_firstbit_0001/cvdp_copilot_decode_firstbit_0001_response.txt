@@ -1,0 +1,245 @@
+//! ---
+//! tags: [firstbit, decoder, pipeline, valid]
+//! ---
+//!
+//! Parameterized first-set-bit decoder for CVDP. The design samples optional
+//! input registers, scans for the lowest asserted input bit, delays the result
+//! through a parameterized pipeline, and optionally registers the outputs.
+
+/// First-set-bit decoder with optional input/output registers.
+///
+/// Timing table:
+/// - Input selection: InReg_g == 1 uses data and valid sampled on Clk; otherwise current inputs feed the decoder.
+/// - Decode pipeline: PlRegs_g selects the registered decode tap, with PlRegs_g == 0 using stage 0.
+/// - Output selection: OutReg_g == 1 returns one additional registered stage; otherwise the decode pipeline output is visible directly.
+module cvdp_copilot_decode_firstbit
+  param InWidth_g: const = 32;
+  param InReg_g: const = 1;
+  param OutReg_g: const = 1;
+  param PlRegs_g: const = 1;
+
+  local param BinBits_c: const = $clog2(InWidth_g);
+
+  port Clk: in Clock<SysDomain>;
+  port Rst: in Reset<Async, High>;
+  port In_Data: in UInt<InWidth_g>;
+  port In_Valid: in Bool;
+  port Out_FirstBit: out UInt<BinBits_c>;
+  port Out_Found: out Bool;
+  port Out_Valid: out Bool;
+
+  reg default: reset Rst => 0;
+  reg in_data_q: UInt<InWidth_g>;
+  reg in_valid_q: Bool;
+
+  reg first_s0: UInt<BinBits_c>;
+  reg first_s1: UInt<BinBits_c>;
+  reg first_s2: UInt<BinBits_c>;
+  reg first_s3: UInt<BinBits_c>;
+  reg first_s4: UInt<BinBits_c>;
+  reg first_s5: UInt<BinBits_c>;
+  reg first_s6: UInt<BinBits_c>;
+  reg first_s7: UInt<BinBits_c>;
+  reg first_s8: UInt<BinBits_c>;
+  reg first_s9: UInt<BinBits_c>;
+  reg first_s10: UInt<BinBits_c>;
+  reg first_s11: UInt<BinBits_c>;
+  reg first_s12: UInt<BinBits_c>;
+  reg first_s13: UInt<BinBits_c>;
+  reg first_s14: UInt<BinBits_c>;
+  reg first_s15: UInt<BinBits_c>;
+
+  reg found_s0: Bool;
+  reg found_s1: Bool;
+  reg found_s2: Bool;
+  reg found_s3: Bool;
+  reg found_s4: Bool;
+  reg found_s5: Bool;
+  reg found_s6: Bool;
+  reg found_s7: Bool;
+  reg found_s8: Bool;
+  reg found_s9: Bool;
+  reg found_s10: Bool;
+  reg found_s11: Bool;
+  reg found_s12: Bool;
+  reg found_s13: Bool;
+  reg found_s14: Bool;
+  reg found_s15: Bool;
+
+  reg valid_s0: Bool;
+  reg valid_s1: Bool;
+  reg valid_s2: Bool;
+  reg valid_s3: Bool;
+  reg valid_s4: Bool;
+  reg valid_s5: Bool;
+  reg valid_s6: Bool;
+  reg valid_s7: Bool;
+  reg valid_s8: Bool;
+  reg valid_s9: Bool;
+  reg valid_s10: Bool;
+  reg valid_s11: Bool;
+  reg valid_s12: Bool;
+  reg valid_s13: Bool;
+  reg valid_s14: Bool;
+  reg valid_s15: Bool;
+
+  reg out_first_q: UInt<BinBits_c>;
+  reg out_found_q: Bool;
+  reg out_valid_q: Bool;
+
+  let selected_data: UInt<InWidth_g> = (InReg_g == 1) ? in_data_q : In_Data;
+  let selected_valid: Bool = (InReg_g == 1) ? in_valid_q : In_Valid;
+  let selected_neg: UInt<InWidth_g> = 0 -% selected_data;
+  let lowest_mask: UInt<InWidth_g> = selected_data & selected_neg;
+  let scan_found: Bool = selected_data != 0;
+
+  wire scan_first: UInt<BinBits_c>;
+  wire pipe_first_out: UInt<BinBits_c>;
+  wire pipe_found_out: Bool;
+  wire pipe_valid_out: Bool;
+
+  comb
+    scan_first = 0;
+    for bit_pos in 0..InWidth_g-1
+      if lowest_mask[bit_pos] == 1
+        scan_first = bit_pos;
+      end if
+    end for
+  end comb
+
+  let decode_valid_in: Bool = selected_valid;
+  let decode_found_in: Bool = selected_valid and scan_found;
+  let decode_first_in: UInt<BinBits_c> = (selected_valid and scan_found) ? scan_first : 0;
+
+  comb
+    pipe_first_out = first_s15;
+    pipe_found_out = found_s15;
+    pipe_valid_out = valid_s15;
+    if PlRegs_g == 0
+      pipe_first_out = first_s0;
+      pipe_found_out = found_s0;
+      pipe_valid_out = valid_s0;
+    elsif PlRegs_g == 1
+      pipe_first_out = first_s1;
+      pipe_found_out = found_s1;
+      pipe_valid_out = valid_s1;
+    elsif PlRegs_g == 2
+      pipe_first_out = first_s2;
+      pipe_found_out = found_s2;
+      pipe_valid_out = valid_s2;
+    elsif PlRegs_g == 3
+      pipe_first_out = first_s3;
+      pipe_found_out = found_s3;
+      pipe_valid_out = valid_s3;
+    elsif PlRegs_g == 4
+      pipe_first_out = first_s4;
+      pipe_found_out = found_s4;
+      pipe_valid_out = valid_s4;
+    elsif PlRegs_g == 5
+      pipe_first_out = first_s5;
+      pipe_found_out = found_s5;
+      pipe_valid_out = valid_s5;
+    elsif PlRegs_g == 6
+      pipe_first_out = first_s6;
+      pipe_found_out = found_s6;
+      pipe_valid_out = valid_s6;
+    elsif PlRegs_g == 7
+      pipe_first_out = first_s7;
+      pipe_found_out = found_s7;
+      pipe_valid_out = valid_s7;
+    elsif PlRegs_g == 8
+      pipe_first_out = first_s8;
+      pipe_found_out = found_s8;
+      pipe_valid_out = valid_s8;
+    elsif PlRegs_g == 9
+      pipe_first_out = first_s9;
+      pipe_found_out = found_s9;
+      pipe_valid_out = valid_s9;
+    elsif PlRegs_g == 10
+      pipe_first_out = first_s10;
+      pipe_found_out = found_s10;
+      pipe_valid_out = valid_s10;
+    elsif PlRegs_g == 11
+      pipe_first_out = first_s11;
+      pipe_found_out = found_s11;
+      pipe_valid_out = valid_s11;
+    elsif PlRegs_g == 12
+      pipe_first_out = first_s12;
+      pipe_found_out = found_s12;
+      pipe_valid_out = valid_s12;
+    elsif PlRegs_g == 13
+      pipe_first_out = first_s13;
+      pipe_found_out = found_s13;
+      pipe_valid_out = valid_s13;
+    elsif PlRegs_g == 14
+      pipe_first_out = first_s14;
+      pipe_found_out = found_s14;
+      pipe_valid_out = valid_s14;
+    end if
+  end comb
+
+  default seq on Clk rising;
+
+  seq
+    in_data_q <= In_Data;
+    in_valid_q <= In_Valid;
+
+    first_s0 <= decode_first_in;
+    found_s0 <= decode_found_in;
+    valid_s0 <= decode_valid_in;
+
+    first_s1 <= first_s0;
+    found_s1 <= found_s0;
+    valid_s1 <= valid_s0;
+    first_s2 <= first_s1;
+    found_s2 <= found_s1;
+    valid_s2 <= valid_s1;
+    first_s3 <= first_s2;
+    found_s3 <= found_s2;
+    valid_s3 <= valid_s2;
+    first_s4 <= first_s3;
+    found_s4 <= found_s3;
+    valid_s4 <= valid_s3;
+    first_s5 <= first_s4;
+    found_s5 <= found_s4;
+    valid_s5 <= valid_s4;
+    first_s6 <= first_s5;
+    found_s6 <= found_s5;
+    valid_s6 <= valid_s5;
+    first_s7 <= first_s6;
+    found_s7 <= found_s6;
+    valid_s7 <= valid_s6;
+    first_s8 <= first_s7;
+    found_s8 <= found_s7;
+    valid_s8 <= valid_s7;
+    first_s9 <= first_s8;
+    found_s9 <= found_s8;
+    valid_s9 <= valid_s8;
+    first_s10 <= first_s9;
+    found_s10 <= found_s9;
+    valid_s10 <= valid_s9;
+    first_s11 <= first_s10;
+    found_s11 <= found_s10;
+    valid_s11 <= valid_s10;
+    first_s12 <= first_s11;
+    found_s12 <= found_s11;
+    valid_s12 <= valid_s11;
+    first_s13 <= first_s12;
+    found_s13 <= found_s12;
+    valid_s13 <= valid_s12;
+    first_s14 <= first_s13;
+    found_s14 <= found_s13;
+    valid_s14 <= valid_s13;
+    first_s15 <= first_s14;
+    found_s15 <= found_s14;
+    valid_s15 <= valid_s14;
+
+    out_first_q <= pipe_first_out;
+    out_found_q <= pipe_found_out;
+    out_valid_q <= pipe_valid_out;
+  end seq
+
+  let Out_FirstBit = (OutReg_g == 1) ? out_first_q : pipe_first_out;
+  let Out_Found = (OutReg_g == 1) ? out_found_q : pipe_found_out;
+  let Out_Valid = (OutReg_g == 1) ? out_valid_q : pipe_valid_out;
+end module cvdp_copilot_decode_firstbit

@@ -1,0 +1,8 @@
+module binary_to_one_hot_decoder_sequential
+  param BINARY_WIDTH: const = 5;
+  param OUTPUT_WIDTH: const = 32;
+  port i_clk: in Clock<SysDomain>;
+  port i_rstb: in Reset<Async, Low>;
+  port i_binary_in: in UInt<BINARY_WIDTH>;
+  port o_one_hot_out: out pipe_reg<UInt<OUTPUT_WIDTH>, 1> reset i_rstb => 0;
+end module binary_to_one_hot_decoder_sequential

@@ -1,0 +1,28 @@
+//! ---
+//! tags: [encoder, 64b66b, datapath, registered-output]
+//! ---
+//!
+//! Implements the requested first-pass 64b/66b encoder behavior for pure data words.
+//! The output is registered with one clock cycle of latency and resets to zero on active-high asynchronous reset.
+
+/// 64b/66b encoder with one-cycle registered output.
+///
+/// When all control bits are zero, prefixes the 64-bit data with sync header 2'b01.
+/// Unsupported control-character cases emit sync header 2'b10 with a zero payload.
+module encoder_64b66b
+  port clk_in: in Clock<SysDomain>;
+  port rst_in: in Reset<Async, High>;
+  port encoder_data_in: in UInt<64>;
+  port encoder_control_in: in UInt<8>;
+  port encoder_data_out: out pipe_reg<UInt<66>, 1> reset rst_in => 0;
+
+  default seq on clk_in rising;
+
+  seq
+    if encoder_control_in == 8'b00000000
+      encoder_data_out@1 <= {2'b01, encoder_data_in};
+    else
+      encoder_data_out@1 <= {2'b10, 64'd0};
+    end if
+  end seq
+end module encoder_64b66b

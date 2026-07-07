@@ -1,0 +1,15 @@
+{
+  "problem": "cvdp_copilot_factorial_0001",
+  "lane": "arch",
+  "top": "factorial",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "status": "pass",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "passed": 1,
+    "failed": 0
+  },
+  "failure_summary": null
+}

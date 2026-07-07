@@ -1,0 +1,468 @@
+{
+  "lane": "arch",
+  "arch_release": "0.70.6",
+  "arch_bin": "/Users/shuqingzhao/github/arch-com-latest/target/release/arch",
+  "runtime": "osvb-docker",
+  "source_first_pass_accounting": "runs/arch/first_pass_accounting.json",
+  "first_pass_total": 50,
+  "first_pass_passed": 35,
+  "first_pass_failed": 15,
+  "repaired_count": 12,
+  "unrepaired_count": 3,
+  "final_effective_pass_count": 47,
+  "results": [
+    {
+      "problem_id": "cvdp_copilot_axi_stream_upscale_0001",
+      "top_module": "axis_upscale",
+      "first_pass_failure_summary": "Protocol/timing mismatch: evaluator expected s_axis_ready to be 0 but observed 1 at 250 ns; check/build/lint passed.",
+      "attempt_count": 1,
+      "repaired": true,
+      "passing_attempt": 1,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_axi_stream_upscale_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_axi_stream_upscale_0001/evaluate_repair_attempt_01.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_clock_jitter_detection_module_0003",
+      "top_module": "clock_jitter_detection_module",
+      "first_pass_failure_summary": "Algorithmic/timing mismatch: jitter detection cocotb parameterizations failed after Icarus simulation; check/build/lint passed.",
+      "attempt_count": 2,
+      "repaired": true,
+      "passing_attempt": 2,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/evaluate_repair_attempt_02.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_convolutional_encoder_0001",
+      "top_module": "convolutional_encoder",
+      "first_pass_failure_summary": "Protocol/timing mismatch: reset-focused cocotb test failed while other encoder tests passed; check/build/lint passed.",
+      "attempt_count": 1,
+      "repaired": true,
+      "passing_attempt": 1,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_convolutional_encoder_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_convolutional_encoder_0001/evaluate_repair_attempt_01.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_data_bus_controller_0001",
+      "top_module": "data_bus_controller",
+      "first_pass_failure_summary": "Interface mismatch: evaluator expected DUT child port s_ready, but generated module did not expose it; check/build/lint passed.",
+      "attempt_count": 1,
+      "repaired": true,
+      "passing_attempt": 1,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_data_bus_controller_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_data_bus_controller_0001/evaluate_repair_attempt_01.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_decode_firstbit_0001",
+      "top_module": "cvdp_copilot_decode_firstbit",
+      "first_pass_failure_summary": "Algorithmic mismatch: evaluator reported Out_Found signal mismatch; check/build/lint passed.",
+      "attempt_count": 2,
+      "repaired": true,
+      "passing_attempt": 2,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_decode_firstbit_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_decode_firstbit_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_decode_firstbit_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_decode_firstbit_0001/evaluate_repair_attempt_02.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_digital_dice_roller_0001",
+      "top_module": "digital_dice_roller",
+      "first_pass_failure_summary": "Interface mismatch: evaluator expected DUT child port reset, but generated module did not expose it; check/build/lint passed.",
+      "attempt_count": 2,
+      "repaired": true,
+      "passing_attempt": 2,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_digital_dice_roller_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_digital_dice_roller_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_digital_dice_roller_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_digital_dice_roller_0001/evaluate_repair_attempt_02.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_digital_stopwatch_0001",
+      "top_module": "dig_stopwatch",
+      "first_pass_failure_summary": "Protocol/timing mismatch: stopwatch cocotb parameterizations failed after simulation; check/build/lint passed.",
+      "attempt_count": 4,
+      "repaired": false,
+      "passing_attempt": "",
+      "final_status": "fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_digital_stopwatch_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_digital_stopwatch_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 3,
+          "arch_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_03.arch",
+          "eval_log": "runs/arch/cvdp_copilot_digital_stopwatch_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 4,
+          "arch_path": "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_04.arch",
+          "eval_log": "runs/arch/cvdp_copilot_digital_stopwatch_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_fibonacci_series_0001",
+      "top_module": "fibonacci_series",
+      "first_pass_failure_summary": "Algorithmic mismatch: evaluator expected 0 but observed 3 from DUT; check/build/lint passed.",
+      "attempt_count": 3,
+      "repaired": true,
+      "passing_attempt": 3,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_fibonacci_series_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_fibonacci_series_0001/evaluate_repair_attempt_02.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 3,
+          "arch_path": "runs/arch/cvdp_copilot_fibonacci_series_0001/repair_attempt_03.arch",
+          "eval_log": "runs/arch/cvdp_copilot_fibonacci_series_0001/evaluate_repair_attempt_03.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_packet_controller_0001",
+      "top_module": "packet_controller",
+      "first_pass_failure_summary": "Algorithmic/protocol mismatch: packet controller failed invalid checksum/header cocotb cases; check/build/lint passed.",
+      "attempt_count": 4,
+      "repaired": false,
+      "passing_attempt": "",
+      "final_status": "fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_01_eval.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_02_eval.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 3,
+          "arch_path": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_03.arch",
+          "eval_log": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_03_eval.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 4,
+          "arch_path": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_04.arch",
+          "eval_log": "runs/arch/cvdp_copilot_packet_controller_0001/repair_attempt_04_eval.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_perf_counters_0001",
+      "top_module": "cvdp_copilot_perf_counters",
+      "first_pass_failure_summary": "Algorithmic mismatch: performance counter cocotb tests failed, including overflow behavior; check/build/lint passed.",
+      "attempt_count": 4,
+      "repaired": true,
+      "passing_attempt": 4,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_perf_counters_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_perf_counters_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_perf_counters_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_perf_counters_0001/evaluate_repair_attempt_02.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 3,
+          "arch_path": "runs/arch/cvdp_copilot_perf_counters_0001/repair_attempt_03.arch",
+          "eval_log": "runs/arch/cvdp_copilot_perf_counters_0001/evaluate_repair_attempt_03.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 4,
+          "arch_path": "runs/arch/cvdp_copilot_perf_counters_0001/repair_attempt_04.arch",
+          "eval_log": "runs/arch/cvdp_copilot_perf_counters_0001/evaluate_repair_attempt_04.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_prbs_gen_0003",
+      "top_module": "cvdp_prbs_gen",
+      "first_pass_failure_summary": "Build/lint/simulation mismatch: evaluator failed multiple PRBS parameterizations via subprocess failure; ARCH check/build/lint passed with a comb-SCC warning.",
+      "attempt_count": 1,
+      "repaired": true,
+      "passing_attempt": 1,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_prbs_gen_0003/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_prbs_gen_0003/evaluate_repair_attempt_01.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_restoring_division_0001",
+      "top_module": "restoring_division",
+      "first_pass_failure_summary": "Algorithmic mismatch: restoring division failed parameterized WIDTH tests after simulation; check/build/lint passed.",
+      "attempt_count": 2,
+      "repaired": true,
+      "passing_attempt": 2,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_restoring_division_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_restoring_division_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_restoring_division_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_restoring_division_0001/evaluate_repair_attempt_02.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_static_branch_predict_0001",
+      "top_module": "static_branch_predict",
+      "first_pass_failure_summary": "Interface mismatch: evaluator expected DUT child port register_addr_i, but generated module did not expose it; check/build/lint passed.",
+      "attempt_count": 3,
+      "repaired": true,
+      "passing_attempt": 3,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_static_branch_predict_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_static_branch_predict_0001/evaluate_repair_attempt_02.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 3,
+          "arch_path": "runs/arch/cvdp_copilot_static_branch_predict_0001/repair_attempt_03.arch",
+          "eval_log": "runs/arch/cvdp_copilot_static_branch_predict_0001/evaluate_repair_attempt_03.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_ttc_lite_0001",
+      "top_module": "ttc_counter_lite",
+      "first_pass_failure_summary": "Interface mismatch: evaluator expected DUT child port enable, but generated module did not expose it; check/build/lint passed.",
+      "attempt_count": 2,
+      "repaired": true,
+      "passing_attempt": 2,
+      "final_status": "pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_ttc_lite_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_ttc_lite_0001/evaluate_repair_attempt_01.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_ttc_lite_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_ttc_lite_0001/evaluate_repair_attempt_02.log",
+          "status": "pass",
+          "passed": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "problem_id": "cvdp_copilot_vending_machine_0001",
+      "top_module": "vending_machine",
+      "first_pass_failure_summary": "Protocol/timing mismatch: vending machine failed all parameterized cocotb cases after simulation; check/build/lint passed.",
+      "attempt_count": 4,
+      "repaired": false,
+      "passing_attempt": "",
+      "final_status": "fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "arch_path": "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_01.arch",
+          "eval_log": "runs/arch/cvdp_copilot_vending_machine_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 2,
+          "arch_path": "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_02.arch",
+          "eval_log": "runs/arch/cvdp_copilot_vending_machine_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 3,
+          "arch_path": "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_03.arch",
+          "eval_log": "runs/arch/cvdp_copilot_vending_machine_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        },
+        {
+          "attempt": 4,
+          "arch_path": "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_04.arch",
+          "eval_log": "runs/arch/cvdp_copilot_vending_machine_0001/evaluate_candidate.log",
+          "status": "fail",
+          "passed": false,
+          "returncode": 1
+        }
+      ]
+    }
+  ]
+}

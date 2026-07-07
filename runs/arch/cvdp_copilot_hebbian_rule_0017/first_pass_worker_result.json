@@ -1,0 +1,15 @@
+{
+  "problem_id": "cvdp_copilot_hebbian_rule_0017",
+  "top_module": "hebb_gates",
+  "arch_version": "arch 0.70.6",
+  "check_status": "pass",
+  "build_status": "pass",
+  "lint_status": "pass",
+  "evaluated": false,
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_hebbian_rule_0017/hebb_gates.arch",
+    "generated_sv": "runs/arch/cvdp_copilot_hebbian_rule_0017/generated_sv",
+    "interface": "runs/arch/cvdp_copilot_hebbian_rule_0017/hebb_gates.archi",
+    "response": "runs/arch/cvdp_copilot_hebbian_rule_0017/cvdp_copilot_hebbian_rule_0017_response.txt"
+  }
+}

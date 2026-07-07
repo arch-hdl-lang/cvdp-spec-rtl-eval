@@ -1,0 +1,50 @@
+//! ---
+//! tags: [fibonacci, sequence, overflow]
+//! ---
+//!
+//! 32-bit Fibonacci sequence generator with synchronous reset and overflow reporting before the sequence automatically restarts.
+/// Top-level Fibonacci generator.
+///
+/// The visible output starts at F(0)=0 after reset. On each rising edge while not reset, the current term is emitted, then the internal pair advances. Overflow is detected before advancing past 32 bits and causes a restart pulse.
+module fibonacci_series (
+  input logic clk,
+  input logic rst,
+  output logic [31:0] fib_out,
+  output logic overflow_flag
+);
+
+  logic [32:0] reg_a_wide;
+  logic [32:0] reg_b_wide;
+  logic [32:0] next_fib_wide;
+  logic overflow_now;
+  logic [31:0] next_fib_low;
+  logic [31:0] reg_a;
+  logic [31:0] reg_b;
+  logic overflow_flag_r;
+  assign reg_a_wide = 33'($unsigned(reg_a));
+  assign reg_b_wide = 33'($unsigned(reg_b));
+  assign next_fib_wide = 33'(reg_a_wide + reg_b_wide);
+  assign overflow_now = next_fib_wide[32];
+  assign next_fib_low = next_fib_wide[31:0];
+  assign fib_out = reg_a;
+  assign overflow_flag = overflow_flag_r;
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      overflow_flag_r <= 1'b0;
+      reg_a <= 0;
+      reg_b <= 1;
+    end else begin
+      if (overflow_now) begin
+        reg_a <= 0;
+        reg_b <= 1;
+        overflow_flag_r <= 1'b1;
+      end else begin
+        reg_a <= reg_b;
+        reg_b <= next_fib_low;
+        overflow_flag_r <= 1'b0;
+      end
+    end
+  end
+
+endmodule
+

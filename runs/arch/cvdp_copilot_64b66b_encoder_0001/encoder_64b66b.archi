@@ -1,0 +1,7 @@
+module encoder_64b66b
+  port clk_in: in Clock<SysDomain>;
+  port rst_in: in Reset<Async>;
+  port encoder_data_in: in UInt<64>;
+  port encoder_control_in: in UInt<8>;
+  port encoder_data_out: out pipe_reg<UInt<66>, 1> reset rst_in => 0;
+end module encoder_64b66b

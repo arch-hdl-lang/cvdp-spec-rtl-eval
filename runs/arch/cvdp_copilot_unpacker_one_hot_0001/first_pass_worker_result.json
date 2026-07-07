@@ -1,0 +1,16 @@
+{
+  "problem": "cvdp_copilot_unpacker_one_hot_0001",
+  "top": "unpack_one_hot",
+  "lane": "arch",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "status": "pass",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "tests_passed": 1,
+    "tests_failed": 0,
+    "score": "6/6"
+  },
+  "failure_summary": null
+}

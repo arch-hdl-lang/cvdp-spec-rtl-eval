@@ -1,0 +1,11 @@
+{
+  "problem_id": "cvdp_copilot_sync_lifo_0001",
+  "top": "sync_lifo",
+  "lane": "arch",
+  "typecheck_status": "pass",
+  "build_lint_status": "pass",
+  "evaluation_status": "pass",
+  "evaluation_runtime": "osvb-docker",
+  "evaluation_returncode": 0,
+  "passed": true
+}

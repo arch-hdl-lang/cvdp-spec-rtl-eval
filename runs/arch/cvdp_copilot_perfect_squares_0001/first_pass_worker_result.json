@@ -1,0 +1,19 @@
+{
+  "problem": "cvdp_copilot_perfect_squares_0001",
+  "top": "perfect_squares_generator",
+  "lane": "arch",
+  "arch_file": "runs/arch/cvdp_copilot_perfect_squares_0001/perfect_squares_generator.arch",
+  "response_file": "runs/arch/cvdp_copilot_perfect_squares_0001/cvdp_copilot_perfect_squares_0001_response.txt",
+  "statuses": {
+    "write_and_check": "pass",
+    "arch_build_and_lint": "pass",
+    "evaluation": "pass"
+  },
+  "evaluation": {
+    "command": "./scripts/evaluate_candidate.py --lane arch --problem cvdp_copilot_perfect_squares_0001 --runtime osvb-docker",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "passed": 1,
+    "failed": 0
+  }
+}

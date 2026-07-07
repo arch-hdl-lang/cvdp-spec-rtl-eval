@@ -1,0 +1,15 @@
+{
+  "problem_id": "cvdp_copilot_axis_joiner_0001",
+  "top_module": "axis_joiner",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_axis_joiner_0001/axis_joiner.arch",
+    "raw_response": "runs/arch/cvdp_copilot_axis_joiner_0001/cvdp_copilot_axis_joiner_0001_response.txt",
+    "build_dir": "runs/arch/cvdp_copilot_axis_joiner_0001/build",
+    "systemverilog": "runs/arch/cvdp_copilot_axis_joiner_0001/axis_joiner.sv",
+    "result": "runs/arch/cvdp_copilot_axis_joiner_0001/first_pass_worker_result.json"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

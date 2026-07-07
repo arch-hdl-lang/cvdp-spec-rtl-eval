@@ -1,0 +1,74 @@
+//! ---
+//! tags: [bcd, counter, clock, sequential]
+//! ---
+//!
+//! Implements a 24-hour BCD clock counter. Six 4-bit digits track hours,
+//! minutes, and seconds from 00:00:00 through 23:59:59 and reset to zero.
+
+/// 24-hour BCD time counter with active-high reset.
+///
+/// The module increments seconds on each rising clock edge, cascades carries
+/// through minutes and hours, and wraps from 23:59:59 to 00:00:00.
+module bcd_counter
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Sync, High>;
+  port ms_hr: out UInt<4>;
+  port ls_hr: out UInt<4>;
+  port ms_min: out UInt<4>;
+  port ls_min: out UInt<4>;
+  port ms_sec: out UInt<4>;
+  port ls_sec: out UInt<4>;
+
+  reg default: reset rst => 0;
+  reg hr_tens: UInt<4>;
+  reg hr_ones: UInt<4>;
+  reg min_tens: UInt<4>;
+  reg min_ones: UInt<4>;
+  reg sec_tens: UInt<4>;
+  reg sec_ones: UInt<4>;
+
+  let ms_hr = hr_tens;
+  let ls_hr = hr_ones;
+  let ms_min = min_tens;
+  let ls_min = min_ones;
+  let ms_sec = sec_tens;
+  let ls_sec = sec_ones;
+
+  default seq on clk rising;
+
+  seq
+    if sec_ones == 9
+      sec_ones <= 0;
+
+      if sec_tens == 5
+        sec_tens <= 0;
+
+        if min_ones == 9
+          min_ones <= 0;
+
+          if min_tens == 5
+            min_tens <= 0;
+
+            if hr_tens == 2 and hr_ones == 3
+              hr_tens <= 0;
+              hr_ones <= 0;
+            elsif hr_ones == 9
+              hr_ones <= 0;
+              hr_tens <= hr_tens +% 1;
+            else
+              hr_ones <= hr_ones +% 1;
+            end if
+          else
+            min_tens <= min_tens +% 1;
+          end if
+        else
+          min_ones <= min_ones +% 1;
+        end if
+      else
+        sec_tens <= sec_tens +% 1;
+      end if
+    else
+      sec_ones <= sec_ones +% 1;
+    end if
+  end seq
+end module bcd_counter

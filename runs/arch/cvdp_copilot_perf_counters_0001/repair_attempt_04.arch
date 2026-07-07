@@ -1,0 +1,34 @@
+//! ---
+//! tags: [performance-counter, software-read, async-reset]
+//! ---
+//!
+//! Eight-bit performance counter for CPU-triggered events with a software request that restarts the visible count at one. The counter wraps naturally and continuously exposes the current count.
+
+/// Counts trigger events and exposes the live wrapping count.
+///
+/// The problem default counter width is 8 bits; CNT_W is kept as a parameter for harness compatibility, while the implementation avoids parameterized casts that Icarus can mis-handle.
+module cvdp_copilot_perf_counters
+  param CNT_W: const = 8;
+
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, High>;
+  port sw_req_i: in Bool;
+  port cpu_trig_i: in Bool;
+  port p_count_o: out UInt<8>;
+
+  reg default: reset reset => 0;
+  reg count_q: UInt<8>;
+
+  let next_count: UInt<8> = count_q +% 8'd1;
+  let p_count_o = sw_req_i ? 8'd1 : count_q;
+
+  default seq on clk rising;
+
+  seq
+    if sw_req_i
+      count_q <= 8'd1;
+    elsif cpu_trig_i
+      count_q <= next_count;
+    end if
+  end seq
+end module cvdp_copilot_perf_counters

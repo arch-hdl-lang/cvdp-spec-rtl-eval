@@ -1,0 +1,55 @@
+//! ---
+//! tags: [lifo, stack, synchronous, memory]
+//! ---
+//!
+//! Synchronous configurable-depth LIFO stack. Writes push data when not full,
+//! reads pop the most recently written value when not empty, and reset clears
+//! the stack state, memory contents, and output register.
+
+/// Top-level synchronous LIFO memory for CVDP problem cvdp_copilot_sync_lifo_0001.
+///
+/// `data_out` is registered by the read operation and holds its prior value on
+/// underflow; `empty` and `full` report the current occupancy combinationally.
+module sync_lifo
+  param DATA_WIDTH: const = 8;
+  param ADDR_WIDTH: const = 3;
+  local param DEPTH: const = (1 << ADDR_WIDTH);
+
+  port clock: in Clock<SysDomain>;
+  port reset: in Reset<Sync, High>;
+  port write_en: in Bool;
+  port read_en: in Bool;
+  port data_in: in UInt<DATA_WIDTH>;
+  port empty: out Bool;
+  port full: out Bool;
+  port data_out: out pipe_reg<UInt<DATA_WIDTH>, 1> reset reset => 0;
+
+  reg default: reset reset => 0;
+  reg entries: Vec<UInt<DATA_WIDTH>, DEPTH>;
+  reg used_count: UInt<ADDR_WIDTH + 1>;
+
+  let empty = (used_count == 0);
+  let full = (used_count[ADDR_WIDTH] == 1);
+
+  let write_index: UInt<ADDR_WIDTH> = used_count[ADDR_WIDTH - 1:0];
+  let read_count: UInt<ADDR_WIDTH + 1> = used_count -% 1;
+  let read_index: UInt<ADDR_WIDTH> = read_count[ADDR_WIDTH - 1:0];
+  let do_write: Bool = write_en && !full;
+  let do_read: Bool = read_en && !empty;
+
+  default seq on clock rising;
+
+  seq
+    if do_write && !do_read
+      entries[write_index] <= data_in;
+      used_count <= used_count +% 1;
+    elsif do_read && !do_write
+      data_out <= entries[read_index];
+      entries[read_index] <= 0;
+      used_count <= read_count;
+    elsif do_write && do_read
+      data_out <= entries[read_index];
+      entries[read_index] <= data_in;
+    end if
+  end seq
+end module sync_lifo

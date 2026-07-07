@@ -1,0 +1,6 @@
+module fibonacci_series
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async>;
+  port fib_out: out UInt<32> comb_dep_on();
+  port overflow_flag: out Bool comb_dep_on();
+end module fibonacci_series

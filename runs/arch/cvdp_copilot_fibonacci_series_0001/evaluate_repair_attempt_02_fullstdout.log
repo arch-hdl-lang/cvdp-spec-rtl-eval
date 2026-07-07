@@ -1,0 +1,157 @@
+============================= test session starts ==============================
+platform linux -- Python 3.9.2, pytest-8.3.2, pluggy-1.5.0 -- /usr/bin/python3
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 1 item
+
+../../src/test_runner.py::test_runner 
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s fibonacci_series -g2012 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/fibonacci_series.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783353738
+     0.00ns INFO     cocotb.regression                  running test_fibonacci_series.test_reset_scenario (1/2)
+                                                            Test case to cover the scenario where the sequence is interrupted by reset. 
+    10.00ns INFO     cocotb.fibonacci_series            Reset applied to DUT.
+    10.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 0, Expected = 0
+    20.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 1, Expected = 1
+    30.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 1, Expected = 1
+    40.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 2, Expected = 2
+    50.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 3, Expected = 3
+    60.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 5, Expected = 5
+    70.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 8, Expected = 8
+    80.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 13, Expected = 13
+    90.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 21, Expected = 21
+   100.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 34, Expected = 34
+   110.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 55, Expected = 55
+   120.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 89, Expected = 89
+   130.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 144, Expected = 144
+   140.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 233, Expected = 233
+   150.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 377, Expected = 377
+   160.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 610, Expected = 610
+   170.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 987, Expected = 987
+   180.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 1597, Expected = 1597
+   190.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 2584, Expected = 2584
+   200.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 4181, Expected = 4181
+   210.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 6765, Expected = 6765
+   220.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 10946, Expected = 10946
+   230.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 17711, Expected = 17711
+   240.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 28657, Expected = 28657
+   250.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 46368, Expected = 46368
+   260.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 75025, Expected = 75025
+   270.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 121393, Expected = 121393
+   280.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 196418, Expected = 196418
+   290.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 317811, Expected = 317811
+   300.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 514229, Expected = 514229
+   310.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 832040, Expected = 832040
+   320.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 1346269, Expected = 1346269
+   330.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 2178309, Expected = 2178309
+   340.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 3524578, Expected = 3524578
+   350.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 5702887, Expected = 5702887
+   360.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 9227465, Expected = 9227465
+   370.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 14930352, Expected = 14930352
+   380.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 24157817, Expected = 24157817
+   390.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 39088169, Expected = 39088169
+   400.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 63245986, Expected = 63245986
+   410.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 102334155, Expected = 102334155
+   420.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 165580141, Expected = 165580141
+   430.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 267914296, Expected = 267914296
+   440.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 433494437, Expected = 433494437
+   450.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 701408733, Expected = 701408733
+   460.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 1134903170, Expected = 1134903170
+   470.00ns INFO     cocotb.fibonacci_series            DUT Fibonacci Output = 1836311903, Expected = 1836311903
+   480.00ns INFO     cocotb.fibonacci_series            Overflow detected. Fibonacci sequence will reset.
+   480.00ns INFO     cocotb.fibonacci_series            Sequence running; applying reset to interrupt it.
+   490.00ns INFO     cocotb.fibonacci_series            Reset applied to DUT.
+   490.00ns INFO     cocotb.regression                  test_fibonacci_series.test_reset_scenario failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_fibonacci_series.py", line 56, in test_reset_scenario
+                                                            await calculate_fibonacci(dut)
+                                                          File "/src/test_fibonacci_series.py", line 22, in calculate_fibonacci
+                                                            assert dut_output == a, f"Expected {a}, but got {dut_output} from DUT."
+                                                        AssertionError: Expected 0, but got 1 from DUT.
+                                                        assert 1 == 0
+   490.00ns INFO     cocotb.regression                  running test_fibonacci_series.test_overflow_and_reset (2/2)
+                                                            Test case to cover overflow scenario and reset after overflow. 
+   501.00ns INFO     cocotb.fibonacci_series            Reset applied to DUT.
+   501.00ns INFO     cocotb.regression                  test_fibonacci_series.test_overflow_and_reset failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_fibonacci_series.py", line 68, in test_overflow_and_reset
+                                                            await calculate_fibonacci(dut)
+                                                          File "/src/test_fibonacci_series.py", line 22, in calculate_fibonacci
+                                                            assert dut_output == a, f"Expected {a}, but got {dut_output} from DUT."
+                                                        AssertionError: Expected 0, but got 1 from DUT.
+                                                        assert 1 == 0
+   501.00ns INFO     cocotb.regression                  *******************************************************************************************************
+                                                        ** TEST                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *******************************************************************************************************
+                                                        ** test_fibonacci_series.test_reset_scenario       FAIL         490.00           0.03      18464.16  **
+                                                        ** test_fibonacci_series.test_overflow_and_reset   FAIL          11.00           0.00      15762.67  **
+                                                        *******************************************************************************************************
+                                                        ** TESTS=2 PASS=0 FAIL=2 SKIP=0                                 501.00           0.04      13200.16  **
+                                                        *******************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/fibonacci_series.fst opened for output.
+FAILED
+
+=================================== FAILURES ===================================
+_________________________________ test_runner __________________________________
+
+    def test_runner():
+    
+        runner = get_runner(sim)
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            # Arguments
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="build.log")
+    
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 2 of 2 tests.
+
+/src/test_runner.py:32: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s fibonacci_series -g2012 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/fibonacci_series.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_runner - SystemExit: ERROR: Failed 2 of...
+============================== 1 failed in 0.59s ===============================
+
+

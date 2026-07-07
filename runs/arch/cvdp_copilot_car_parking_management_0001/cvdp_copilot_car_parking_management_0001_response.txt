@@ -1,0 +1,143 @@
+//! ---
+//! tags: [parking, fsm, counters, seven_segment]
+//! refs: []
+//! ---
+//!
+//! Car parking management system for the CVDP prompt. The design tracks
+//! available spaces and parked-car count, rejects entries when full, and
+//! displays both counts as two decimal digits on active-high seven-segment
+//! outputs with segment A in the MSB and segment G in the LSB.
+
+/// Top-level car parking controller.
+///
+/// Timing/type notes: `vehicle_entry_sensor` and `vehicle_exit_sensor` are
+/// sampled on the rising edge of `clk`; `reset` is asynchronous active high.
+/// The count outputs are the current registered count values, while LED and
+/// seven-segment outputs are combinationally derived from those counts.
+/// Transition table: Idle with valid entry and space available updates to the
+/// entry-processing count values; Idle with valid exit and at least one car
+/// updates to the exit-processing count values; Full denies entry while no exit
+/// is present; otherwise state and counts hold. Simultaneous entry and exit
+/// preserve the current count because one car leaves as one arrives.
+fsm car_parking_system
+  param TOTAL_SPACES: const = 12;
+  local param COUNT_W: const = $clog2(TOTAL_SPACES);
+
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, High>;
+  port vehicle_entry_sensor: in Bool;
+  port vehicle_exit_sensor: in Bool;
+  port available_spaces: out UInt<COUNT_W>;
+  port count_car: out UInt<COUNT_W>;
+  port led_status: out Bool;
+  port seven_seg_display_available_tens: out UInt<7>;
+  port seven_seg_display_available_units: out UInt<7>;
+  port seven_seg_display_count_tens: out UInt<7>;
+  port seven_seg_display_count_units: out UInt<7>;
+
+  reg available_r: UInt<COUNT_W> reset reset => TOTAL_SPACES.resize<COUNT_W>();
+  reg count_r: UInt<COUNT_W> reset reset => 0;
+
+  let is_full: Bool = (available_r == 0);
+  let has_cars: Bool = (count_r != 0);
+  let can_enter: Bool = vehicle_entry_sensor and not vehicle_exit_sensor and not is_full;
+  let can_exit: Bool = vehicle_exit_sensor and not vehicle_entry_sensor and has_cars;
+
+  let available_tens_wide: UInt<COUNT_W> = available_r / 10;
+  let available_units_wide: UInt<COUNT_W> = available_r % 10;
+  let count_tens_wide: UInt<COUNT_W> = count_r / 10;
+  let count_units_wide: UInt<COUNT_W> = count_r % 10;
+  let available_tens_digit: UInt<4> = available_tens_wide.resize<4>();
+  let available_units_digit: UInt<4> = available_units_wide.resize<4>();
+  let count_tens_digit: UInt<4> = count_tens_wide.resize<4>();
+  let count_units_digit: UInt<4> = count_units_wide.resize<4>();
+
+  let available_tens_segments: UInt<7> = available_tens_digit == 0 ? 7'b1111110 :
+                                         available_tens_digit == 1 ? 7'b0110000 :
+                                         available_tens_digit == 2 ? 7'b1101101 :
+                                         available_tens_digit == 3 ? 7'b1111001 :
+                                         available_tens_digit == 4 ? 7'b0110011 :
+                                         available_tens_digit == 5 ? 7'b1011011 :
+                                         available_tens_digit == 6 ? 7'b1011111 :
+                                         available_tens_digit == 7 ? 7'b1110000 :
+                                         available_tens_digit == 8 ? 7'b1111111 :
+                                                                    7'b1111011;
+  let available_units_segments: UInt<7> = available_units_digit == 0 ? 7'b1111110 :
+                                          available_units_digit == 1 ? 7'b0110000 :
+                                          available_units_digit == 2 ? 7'b1101101 :
+                                          available_units_digit == 3 ? 7'b1111001 :
+                                          available_units_digit == 4 ? 7'b0110011 :
+                                          available_units_digit == 5 ? 7'b1011011 :
+                                          available_units_digit == 6 ? 7'b1011111 :
+                                          available_units_digit == 7 ? 7'b1110000 :
+                                          available_units_digit == 8 ? 7'b1111111 :
+                                                                     7'b1111011;
+  let count_tens_segments: UInt<7> = count_tens_digit == 0 ? 7'b1111110 :
+                                     count_tens_digit == 1 ? 7'b0110000 :
+                                     count_tens_digit == 2 ? 7'b1101101 :
+                                     count_tens_digit == 3 ? 7'b1111001 :
+                                     count_tens_digit == 4 ? 7'b0110011 :
+                                     count_tens_digit == 5 ? 7'b1011011 :
+                                     count_tens_digit == 6 ? 7'b1011111 :
+                                     count_tens_digit == 7 ? 7'b1110000 :
+                                     count_tens_digit == 8 ? 7'b1111111 :
+                                                              7'b1111011;
+  let count_units_segments: UInt<7> = count_units_digit == 0 ? 7'b1111110 :
+                                      count_units_digit == 1 ? 7'b0110000 :
+                                      count_units_digit == 2 ? 7'b1101101 :
+                                      count_units_digit == 3 ? 7'b1111001 :
+                                      count_units_digit == 4 ? 7'b0110011 :
+                                      count_units_digit == 5 ? 7'b1011011 :
+                                      count_units_digit == 6 ? 7'b1011111 :
+                                      count_units_digit == 7 ? 7'b1110000 :
+                                      count_units_digit == 8 ? 7'b1111111 :
+                                                               7'b1111011;
+
+  let available_spaces = available_r;
+  let count_car = count_r;
+  let led_status = not is_full;
+  let seven_seg_display_available_tens = available_tens_segments;
+  let seven_seg_display_available_units = available_units_segments;
+  let seven_seg_display_count_tens = count_tens_segments;
+  let seven_seg_display_count_units = count_units_segments;
+
+  state [Idle, EntryProcessing, ExitProcessing, Full]
+  default state Idle;
+
+  default
+  end default
+
+  state Idle
+    seq on clk rising
+      if can_enter
+        available_r <= available_r -% 1;
+        count_r <= count_r +% 1;
+      elsif can_exit
+        available_r <= available_r +% 1;
+        count_r <= count_r -% 1;
+      end if
+    end seq
+    -> EntryProcessing when can_enter;
+    -> ExitProcessing when can_exit;
+    -> Full when is_full;
+  end state Idle
+
+  state EntryProcessing
+    -> Full when is_full;
+    -> Idle when not is_full;
+  end state EntryProcessing
+
+  state ExitProcessing
+    -> Idle;
+  end state ExitProcessing
+
+  state Full
+    seq on clk rising
+      if can_exit
+        available_r <= available_r +% 1;
+        count_r <= count_r -% 1;
+      end if
+    end seq
+    -> ExitProcessing when can_exit;
+  end state Full
+end fsm car_parking_system

@@ -1,0 +1,8 @@
+fsm cvdp_copilot_bus_arbiter
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async>;
+  port req1: in Bool;
+  port req2: in Bool;
+  port grant1: out Bool comb_dep_on();
+  port grant2: out Bool comb_dep_on();
+end fsm cvdp_copilot_bus_arbiter

@@ -1,0 +1,15 @@
+{
+  "problem": "cvdp_copilot_moving_average_0001",
+  "top": "moving_average",
+  "lane": "arch",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "status": "pass",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  }
+}

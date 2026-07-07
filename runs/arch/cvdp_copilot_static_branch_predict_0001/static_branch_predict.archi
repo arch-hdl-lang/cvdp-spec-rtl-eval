@@ -1,0 +1,8 @@
+module static_branch_predict
+  port fetch_rdata_i: in UInt<32>;
+  port fetch_pc_i: in UInt<32>;
+  port register_addr_i: in UInt<32>;
+  port fetch_valid_i: in Bool;
+  port predict_branch_taken_o: out Bool comb_dep_on(fetch_rdata_i, fetch_valid_i);
+  port predict_branch_pc_o: out UInt<32> comb_dep_on(fetch_pc_i, fetch_rdata_i, fetch_valid_i);
+end module static_branch_predict

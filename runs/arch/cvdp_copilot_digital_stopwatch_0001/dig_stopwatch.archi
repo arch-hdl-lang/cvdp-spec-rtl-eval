@@ -1,0 +1,10 @@
+module dig_stopwatch
+  param CLK_FREQ: const = 50000000;
+  local param DIV_WIDTH: const = clog2((CLK_FREQ + 1));
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async>;
+  port start_stop: in Bool;
+  port seconds: out UInt<6> comb_dep_on();
+  port minutes: out UInt<6> comb_dep_on();
+  port hour: out Bool comb_dep_on();
+end module dig_stopwatch

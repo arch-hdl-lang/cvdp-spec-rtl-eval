@@ -1,0 +1,50 @@
+//! ---
+//! tags: [data-width, aggregation, valid-pulse]
+//! ---
+//!
+//! 32-to-128 bit data width converter that collects four valid 32-bit samples
+//! and emits one registered 128-bit word with a one-cycle valid pulse.
+
+/// Aggregates consecutive valid 32-bit input samples into a 128-bit output word.
+///
+/// Reset clears the partial buffer and suppresses output valid until four new
+/// valid samples have been accepted on rising clock edges.
+module data_width_converter
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, High>;
+  port data_in: in UInt<32>;
+  port data_valid: in Bool;
+  port o_data_out: out pipe_reg<UInt<128>, 1> reset reset => 0;
+  port o_data_out_valid: out pipe_reg<Bool, 1> reset reset => 0;
+
+  reg word0: UInt<32> reset reset => 0;
+  reg word1: UInt<32> reset reset => 0;
+  reg word2: UInt<32> reset reset => 0;
+  reg sample_count: UInt<2> reset reset => 0;
+
+  default seq on clk rising;
+
+  seq
+    o_data_out_valid@1 <= 0;
+
+    if data_valid
+      if sample_count == 0
+        word0 <= data_in;
+        sample_count <= 1;
+      elsif sample_count == 1
+        word1 <= data_in;
+        sample_count <= 2;
+      elsif sample_count == 2
+        word2 <= data_in;
+        sample_count <= 3;
+      else
+        o_data_out@1 <= {word0, word1, word2, data_in};
+        o_data_out_valid@1 <= 1;
+        sample_count <= 0;
+        word0 <= 0;
+        word1 <= 0;
+        word2 <= 0;
+      end if
+    end if
+  end seq
+end module data_width_converter

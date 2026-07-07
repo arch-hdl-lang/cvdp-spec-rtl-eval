@@ -1,0 +1,13 @@
+module sync_lifo
+  param DATA_WIDTH: const = 8;
+  param ADDR_WIDTH: const = 3;
+  local param DEPTH: const = (1 << ADDR_WIDTH);
+  port clock: in Clock<SysDomain>;
+  port reset: in Reset<Sync>;
+  port write_en: in Bool;
+  port read_en: in Bool;
+  port data_in: in UInt<DATA_WIDTH>;
+  port empty: out Bool comb_dep_on();
+  port full: out Bool comb_dep_on();
+  port data_out: out pipe_reg<UInt<DATA_WIDTH>, 1> reset reset => 0;
+end module sync_lifo

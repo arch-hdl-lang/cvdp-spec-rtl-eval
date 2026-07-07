@@ -1,0 +1,957 @@
+{
+  "generated_at": "2026-07-07T05:33:07.721606+00:00",
+  "lane": "direct-verilog",
+  "source_first_pass": "runs/direct-verilog/first_pass_accounting.csv",
+  "rules": {
+    "started_from_saved_first_pass": true,
+    "repaired_only_first_pass_failures": true,
+    "max_repair_attempts_per_problem": 4,
+    "no_resampling_from_scratch": true,
+    "black_box_cocotb_evaluation_only": true
+  },
+  "totals": {
+    "first_pass_total": 50,
+    "first_pass_passed": 30,
+    "first_pass_failed": 20,
+    "repair_candidates": 20,
+    "repaired_passed": 16,
+    "unrepaired_after_budget": 4,
+    "final_passed_total": 46,
+    "final_failed_total": 4
+  },
+  "problems": [
+    {
+      "id": "cvdp_copilot_16qam_mapper_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_16qam_mapper_0001_osvb_pw4ekbck",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_16qam_mapper_0006",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0006/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0006/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0006/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_16qam_mapper_0006/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_16qam_mapper_0006_osvb_hawisv8y",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_8x3_priority_encoder_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_8x3_priority_encoder_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_8x3_priority_encoder_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_8x3_priority_encoder_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_8x3_priority_encoder_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_8x3_priority_encoder_0001_osvb_hhynam5q",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_Carry_Lookahead_Adder_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_Carry_Lookahead_Adder_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_Carry_Lookahead_Adder_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_Carry_Lookahead_Adder_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_Carry_Lookahead_Adder_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_Carry_Lookahead_Adder_0001_osvb_vf12v889",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_binary_to_one_hot_decoder_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_binary_to_one_hot_decoder_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_binary_to_one_hot_decoder_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_binary_to_one_hot_decoder_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_binary_to_one_hot_decoder_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_binary_to_one_hot_decoder_0001_osvb_97cn0ky2",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_clock_jitter_detection_module_0003",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/first_pass_eval.log",
+      "repair_attempt_count": 4,
+      "max_attempt_number": 4,
+      "successful_attempt": null,
+      "final_repair_status": "fail",
+      "final_overall_status": "fail",
+      "last_repair_status": "fail",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_04_eval.log",
+      "attempt_statuses": "1:fail;2:fail;3:fail;4:fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_01.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_clock_jitter_detection_module_0003_osvb_6422fcb7",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_02.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_clock_jitter_detection_module_0003_osvb_saj_kqnk",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 3,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_03_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_03.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_clock_jitter_detection_module_0003_osvb_g2l49pxg",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 4,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_04_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_04.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_clock_jitter_detection_module_0003_osvb_nm4lr_9i",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        }
+      ],
+      "active_rtl": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.sv",
+      "active_attempt": "runs/direct-verilog/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_04.sv"
+    },
+    {
+      "id": "cvdp_copilot_decode_firstbit_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_decode_firstbit_0001/first_pass_eval.log",
+      "repair_attempt_count": 2,
+      "max_attempt_number": 2,
+      "successful_attempt": 2,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_decode_firstbit_0001/repair_attempt_02_eval.log",
+      "attempt_statuses": "1:fail;2:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_decode_firstbit_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_decode_firstbit_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_decode_firstbit_0001_osvb_9u1xygw2",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_decode_firstbit_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_decode_firstbit_0001/repair_attempt_02.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_decode_firstbit_0001_osvb_5390cexd",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_digital_dice_roller_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/first_pass_eval.log",
+      "repair_attempt_count": 3,
+      "max_attempt_number": 3,
+      "successful_attempt": 3,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_03_eval.log",
+      "attempt_statuses": "1:fail;2:fail;3:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_digital_dice_roller_0001_osvb_m6wfwwzc",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_02.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_digital_dice_roller_0001_osvb_jx1eqj86",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 3,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_03_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_dice_roller_0001/repair_attempt_03.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_digital_dice_roller_0001_osvb_3rr9ps9j",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_digital_stopwatch_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/first_pass_eval.log",
+      "repair_attempt_count": 4,
+      "max_attempt_number": 4,
+      "successful_attempt": null,
+      "final_repair_status": "fail",
+      "final_overall_status": "fail",
+      "last_repair_status": "fail",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_04_eval.log",
+      "attempt_statuses": "1:fail;2:fail;3:fail;4:fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_01.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_digital_stopwatch_0001_osvb_lqg9445b",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_02.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_digital_stopwatch_0001_osvb_lh0o6zcz",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 3,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_03_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_03.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_digital_stopwatch_0001_osvb_b5qupqjt",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 4,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_04_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_04.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_digital_stopwatch_0001_osvb_rn093cgr",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        }
+      ],
+      "active_rtl": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.sv",
+      "active_attempt": "runs/direct-verilog/cvdp_copilot_digital_stopwatch_0001/repair_attempt_04.sv"
+    },
+    {
+      "id": "cvdp_copilot_moving_average_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_moving_average_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_moving_average_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_moving_average_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_moving_average_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_moving_average_0001_osvb_cpxud6ro",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_packet_controller_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/first_pass_eval.log",
+      "repair_attempt_count": 4,
+      "max_attempt_number": 4,
+      "successful_attempt": null,
+      "final_repair_status": "fail",
+      "final_overall_status": "fail",
+      "last_repair_status": "fail",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_04_eval.log",
+      "attempt_statuses": "1:fail;2:fail;3:fail;4:fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_01.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_packet_controller_0001_osvb_oltjidqn",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_02.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_packet_controller_0001_osvb_lh4ukv_h",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 3,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_03_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_03.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_packet_controller_0001_osvb_478a4n02",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 4,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_04_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_04.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_packet_controller_0001_osvb_ub6zfczv",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        }
+      ],
+      "active_rtl": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/packet_controller.sv",
+      "active_attempt": "runs/direct-verilog/cvdp_copilot_packet_controller_0001/repair_attempt_04.sv"
+    },
+    {
+      "id": "cvdp_copilot_prbs_gen_0003",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_prbs_gen_0003/first_pass_eval.log",
+      "repair_attempt_count": 2,
+      "max_attempt_number": 2,
+      "successful_attempt": 2,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_prbs_gen_0003/repair_attempt_02_eval.log",
+      "attempt_statuses": "1:fail;2:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_prbs_gen_0003/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_prbs_gen_0003/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_prbs_gen_0003_osvb_n2qm8w4k",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_prbs_gen_0003/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_prbs_gen_0003/repair_attempt_02.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_prbs_gen_0003_osvb_gjyq9xh1",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_restoring_division_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_restoring_division_0001/first_pass_eval.log",
+      "repair_attempt_count": 2,
+      "max_attempt_number": 2,
+      "successful_attempt": 2,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_restoring_division_0001/repair_attempt_02_eval.log",
+      "attempt_statuses": "1:fail;2:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_restoring_division_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_restoring_division_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_restoring_division_0001_osvb_fdd2oiyw",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_restoring_division_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_restoring_division_0001/repair_attempt_02.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_restoring_division_0001_osvb_2jzbjzzs",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_reverse_bits_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_reverse_bits_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_reverse_bits_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_reverse_bits_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_reverse_bits_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_reverse_bits_0001_osvb_du2ndxxu",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001_osvb_9vjgq617",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_static_branch_predict_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_static_branch_predict_0001/first_pass_eval.log",
+      "repair_attempt_count": 2,
+      "max_attempt_number": 2,
+      "successful_attempt": 2,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_static_branch_predict_0001/repair_attempt_02_eval.log",
+      "attempt_statuses": "1:fail;2:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_static_branch_predict_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_static_branch_predict_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_static_branch_predict_0001_osvb_prj8a1z3",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_static_branch_predict_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_static_branch_predict_0001/repair_attempt_02.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_static_branch_predict_0001_osvb_r6su2ajm",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_thermostat_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_thermostat_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_thermostat_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_thermostat_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_thermostat_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_thermostat_0001_osvb_vgdq5ack",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_ttc_lite_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_ttc_lite_0001/first_pass_eval.log",
+      "repair_attempt_count": 2,
+      "max_attempt_number": 2,
+      "successful_attempt": 2,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_ttc_lite_0001/repair_attempt_02_eval.log",
+      "attempt_statuses": "1:fail;2:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_ttc_lite_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_ttc_lite_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_ttc_lite_0001_osvb_fpxkg2o0",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_ttc_lite_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_ttc_lite_0001/repair_attempt_02.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_ttc_lite_0001_osvb_v7dq5wgm",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_unpacker_one_hot_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_unpacker_one_hot_0001/first_pass_eval.log",
+      "repair_attempt_count": 1,
+      "max_attempt_number": 1,
+      "successful_attempt": 1,
+      "final_repair_status": "repaired_pass",
+      "final_overall_status": "pass",
+      "last_repair_status": "pass",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_unpacker_one_hot_0001/repair_attempt_01_eval.log",
+      "attempt_statuses": "1:pass",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "pass",
+          "returncode": 0,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_unpacker_one_hot_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_unpacker_one_hot_0001/repair_attempt_01.sv",
+          "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_unpacker_one_hot_0001_osvb_txnxwawj",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 1,
+            "failed": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "cvdp_copilot_vending_machine_0001",
+      "lane": "direct-verilog",
+      "runtime": "osvb-docker",
+      "first_pass_status": "fail",
+      "first_pass_log": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/first_pass_eval.log",
+      "repair_attempt_count": 4,
+      "max_attempt_number": 4,
+      "successful_attempt": null,
+      "final_repair_status": "fail",
+      "final_overall_status": "fail",
+      "last_repair_status": "fail",
+      "last_repair_log": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_04_eval.log",
+      "attempt_statuses": "1:fail;2:fail;3:fail;4:fail",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_01_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_01.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_vending_machine_0001_osvb_xhi0v7ix",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 2,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_02_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_02.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_vending_machine_0001_osvb__18t2git",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 3,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_03_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_03.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_vending_machine_0001_osvb_vy34um3z",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        },
+        {
+          "attempt": 4,
+          "status": "fail",
+          "returncode": 1,
+          "runtime": "osvb-docker",
+          "log": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_04_eval.log",
+          "rtl": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_04.sv",
+          "workdir": "/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_vending_machine_0001_osvb_tyi4qg2x",
+          "summary": {
+            "lane": "direct-verilog",
+            "total": 1,
+            "passed": 0,
+            "failed": 1
+          }
+        }
+      ],
+      "active_rtl": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/vending_machine.sv",
+      "active_attempt": "runs/direct-verilog/cvdp_copilot_vending_machine_0001/repair_attempt_04.sv"
+    }
+  ]
+}

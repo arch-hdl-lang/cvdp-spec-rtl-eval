@@ -1,0 +1,109 @@
+//! ---
+//! tags: [timer, counter, axi_lite, interrupt]
+//! ---
+//!
+//! Lightweight AXI-Lite controlled timer/counter. The design keeps 16-bit
+//! count, match, and reload state while exposing the specified 32-bit register
+//! interface with zero-extended readback.
+/// AXI-Lite register-backed timer/counter with interval reload and interrupt status.
+///
+/// Address 0 reads count, 1 reads/writes match, 2 reads/writes reload, 3
+/// reads/writes control bits {interrupt_enable, interval_mode, enable}, and 4
+/// reads interrupt status and clears it on any write.
+module ttc_counter_lite (
+  input logic clk,
+  input logic reset,
+  input logic [3:0] axi_addr,
+  input logic [31:0] axi_wdata,
+  input logic axi_write_en,
+  input logic axi_read_en,
+  output logic [31:0] axi_rdata,
+  output logic interrupt
+);
+
+  logic status_write;
+  logic match_event;
+  logic [15:0] next_count;
+  logic [31:0] count_read;
+  logic [31:0] match_read;
+  logic [31:0] reload_read;
+  logic [31:0] control_read;
+  logic [31:0] status_read;
+  logic [15:0] count_value;
+  logic [15:0] match_value;
+  logic [15:0] reload_value;
+  logic timer_enable;
+  logic interval_mode;
+  logic interrupt_enable;
+  logic interrupt_status;
+  assign status_write = axi_write_en && axi_addr == 4'd4;
+  assign match_event = timer_enable && count_value == match_value;
+  assign next_count = 16'(count_value + 16'd1);
+  assign count_read = 32'($unsigned(count_value));
+  assign match_read = 32'($unsigned(match_value));
+  assign reload_read = 32'($unsigned(reload_value));
+  assign control_read = {29'd0, interrupt_enable, interval_mode, timer_enable};
+  assign status_read = 32'($unsigned(interrupt_status));
+  assign interrupt = interrupt_status;
+  always_comb begin
+    axi_rdata = 32'd0;
+    if (axi_read_en) begin
+      if (axi_addr == 4'd0) begin
+        axi_rdata = count_read;
+      end else if (axi_addr == 4'd1) begin
+        axi_rdata = match_read;
+      end else if (axi_addr == 4'd2) begin
+        axi_rdata = reload_read;
+      end else if (axi_addr == 4'd3) begin
+        axi_rdata = control_read;
+      end else if (axi_addr == 4'd4) begin
+        axi_rdata = status_read;
+      end else begin
+        axi_rdata = 32'd0;
+      end
+    end else begin
+      axi_rdata = 32'd0;
+    end
+  end
+  always_ff @(posedge clk) begin
+    if (reset) begin
+      count_value <= 0;
+      interrupt_enable <= 0;
+      interrupt_status <= 0;
+      interval_mode <= 0;
+      match_value <= 0;
+      reload_value <= 0;
+      timer_enable <= 0;
+    end else begin
+      if (axi_write_en) begin
+        if (axi_addr == 4'd1) begin
+          match_value <= axi_wdata[15:0];
+        end else if (axi_addr == 4'd2) begin
+          reload_value <= axi_wdata[15:0];
+        end else if (axi_addr == 4'd3) begin
+          timer_enable <= axi_wdata[0];
+          interval_mode <= axi_wdata[1];
+          interrupt_enable <= axi_wdata[2];
+        end
+      end
+      if (timer_enable) begin
+        if (match_event) begin
+          if (interval_mode) begin
+            count_value <= reload_value;
+          end else begin
+            count_value <= match_value;
+          end
+        end else begin
+          count_value <= next_count;
+        end
+      end
+      if (status_write) begin
+        interrupt_status <= 1'b0;
+      end else if (match_event && interrupt_enable) begin
+        interrupt_status <= 1'b1;
+      end
+    end
+  end
+
+endmodule
+

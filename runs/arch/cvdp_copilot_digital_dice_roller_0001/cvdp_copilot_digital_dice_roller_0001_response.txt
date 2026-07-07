@@ -1,0 +1,59 @@
+//! ---
+//! tags: [dice, fsm, counter, button, reset]
+//! refs: []
+//! ---
+//!
+//! Digital dice roller generated from the CVDP natural-language specification.
+//! The design rolls a 1-to-6 value while the button is pressed, then displays the last rolled value after release.
+
+/// Two-state digital dice roller FSM.
+///
+/// Timing: `button` is sampled on the rising edge of `clk`; `reset_n` is asynchronous active-low.
+/// `dice_value` is a registered, externally visible display value that is reset to `000`, held in IDLE,
+/// and updated on the release edge from the last rolling value.
+///
+/// Transition table:
+/// current state | input condition | next state | externally visible output/action
+/// IDLE          | button == 0     | IDLE       | dice_value holds its displayed register
+/// IDLE          | button == 1     | ROLLING    | rolling register advances into the 1..6 range; dice_value holds
+/// ROLLING       | button == 1     | ROLLING    | rolling register advances modulo 1..6; dice_value holds
+/// ROLLING       | button == 0     | IDLE       | dice_value captures the last rolling register value on this edge
+fsm digital_dice_roller
+  port clk: in Clock<SysDomain>;
+  port reset_n: in Reset<Async, Low>;
+  port button: in Bool;
+  port dice_value: out UInt<3>;
+
+  state [IDLE, ROLLING]
+  default state IDLE;
+
+  reg roll_value: UInt<3> reset reset_n => 0;
+  reg shown_value: UInt<3> reset reset_n => 0;
+
+  let roll_wrap: Bool = (roll_value == 3'd0) or (roll_value == 3'd6);
+  let roll_next: UInt<3> = roll_wrap ? 3'd1 : (roll_value +% 3'd1);
+  let dice_value = shown_value;
+
+  default
+  end default
+
+  state IDLE
+    seq on clk rising
+      if button
+        roll_value <= roll_next;
+      end if
+    end seq
+    -> ROLLING when button;
+  end state IDLE
+
+  state ROLLING
+    seq on clk rising
+      if button
+        roll_value <= roll_next;
+      else
+        shown_value <= roll_value;
+      end if
+    end seq
+    -> IDLE when not button;
+  end state ROLLING
+end fsm digital_dice_roller

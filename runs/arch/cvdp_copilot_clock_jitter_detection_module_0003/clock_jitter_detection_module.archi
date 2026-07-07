@@ -1,0 +1,7 @@
+module clock_jitter_detection_module
+  param JITTER_THRESHOLD: const = 5;
+  port clk: in Clock<SysDomain>;
+  port system_clk: in Bool;
+  port rst: in Reset<Sync>;
+  port jitter_detected: out pipe_reg<Bool, 1> reset rst => false;
+end module clock_jitter_detection_module

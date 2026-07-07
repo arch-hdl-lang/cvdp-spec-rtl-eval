@@ -1,0 +1,24 @@
+//! ---
+//! tags: [decoder, onehot, sequential]
+//! ---
+//!
+//! Parameterized sequential binary-to-one-hot decoder. The binary input is sampled on the rising edge of i_clk, and the registered one-hot output asynchronously clears to zero when i_rstb is low.
+
+/// Top-level sequential binary-to-one-hot decoder for the CVDP task.
+///
+/// The output register updates on each rising clock edge with the one-hot bit selected by i_binary_in and resets asynchronously to zero through active-low i_rstb.
+module binary_to_one_hot_decoder_sequential
+  param BINARY_WIDTH: const = 5;
+  param OUTPUT_WIDTH: const = 32;
+
+  port i_clk: in Clock<SysDomain>;
+  port i_rstb: in Reset<Async, Low>;
+  port i_binary_in: in UInt<BINARY_WIDTH>;
+  port o_one_hot_out: out pipe_reg<UInt<OUTPUT_WIDTH>, 1> reset i_rstb => 0;
+
+  default seq on i_clk rising;
+
+  seq
+    o_one_hot_out@1 <= onehot(i_binary_in);
+  end seq
+end module binary_to_one_hot_decoder_sequential

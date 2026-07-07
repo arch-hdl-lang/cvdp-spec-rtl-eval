@@ -1,0 +1,48 @@
+//! ---
+//! tags: [bit-swizzle, bit-reversal, combinational]
+//! ---
+//!
+//! Parameterized combinational selective bit-reversal for a DATA_WIDTH-bit input. The 2-bit selection chooses whole-vector reversal or independent reversal within 2, 4, or 8 equal sections.
+
+/// Combinational selective bit-reversal block.
+///
+/// `sel` controls whether the full input, each half, each quarter, or each eighth of `data_in` is reversed into `data_out` without adding storage or latency.
+module nbit_swizzling
+  param DATA_WIDTH: const = 64;
+
+  port data_in:  in  UInt<DATA_WIDTH>;
+  port sel:      in  UInt<2>;
+  port data_out: out UInt<DATA_WIDTH>;
+
+  local param HALF_WIDTH: const = DATA_WIDTH / 2;
+  local param QUARTER_WIDTH: const = DATA_WIDTH / 4;
+  local param EIGHTH_WIDTH: const = DATA_WIDTH / 8;
+
+  comb
+    data_out = data_in;
+
+    if sel == 2'd0
+      for bit_idx in 0..DATA_WIDTH-1
+        data_out[bit_idx] = data_in[DATA_WIDTH - 1 - bit_idx];
+      end for
+    elsif sel == 2'd1
+      for group_idx in 0..1
+        for bit_idx in 0..HALF_WIDTH-1
+          data_out[group_idx * HALF_WIDTH + bit_idx] = data_in[group_idx * HALF_WIDTH + HALF_WIDTH - 1 - bit_idx];
+        end for
+      end for
+    elsif sel == 2'd2
+      for group_idx in 0..3
+        for bit_idx in 0..QUARTER_WIDTH-1
+          data_out[group_idx * QUARTER_WIDTH + bit_idx] = data_in[group_idx * QUARTER_WIDTH + QUARTER_WIDTH - 1 - bit_idx];
+        end for
+      end for
+    elsif sel == 2'd3
+      for group_idx in 0..7
+        for bit_idx in 0..EIGHTH_WIDTH-1
+          data_out[group_idx * EIGHTH_WIDTH + bit_idx] = data_in[group_idx * EIGHTH_WIDTH + EIGHTH_WIDTH - 1 - bit_idx];
+        end for
+      end for
+    end if
+  end comb
+end module nbit_swizzling

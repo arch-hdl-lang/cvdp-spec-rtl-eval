@@ -1,0 +1,16 @@
+{
+  "id": "cvdp_copilot_clock_divider_0003",
+  "lane": "arch",
+  "top": "clock_divider",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "runtime": "osvb-docker",
+    "status": "pass",
+    "returncode": 0,
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "failure_summary": null
+}

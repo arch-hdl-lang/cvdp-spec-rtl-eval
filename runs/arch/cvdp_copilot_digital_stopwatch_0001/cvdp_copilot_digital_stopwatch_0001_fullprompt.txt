@@ -1,0 +1,72 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `dig_stopwatch` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_digital_stopwatch_0001
+
+Natural-language specification:
+# Digital Stopwatch Design
+
+Design a digital stopwatch module using SystemVerilog that is capable of counting hours, minutes, and seconds, and allow users to start, stop, and reset the stopwatch as needed. 
+
+## Interface:
+
+### Module Name:
+- The module must be named `dig_stopwatch`.
+
+### Parameters:
+- **CLK_FREQ**: Defines the input clock frequency in Hz with a default value of 50,000,000 Hz. This frequency should be an integer frequency in Hz greater than the minimum value of 1 Hz.
+
+### Inputs:
+- `clk`: Clock signal of the digital stopwatch for 1Hz pulse generation
+- `reset`: Asynchronous active-high reset signal.
+- `start_stop`: Start/stop control that controls if the stopwatch is running or paused. 
+
+### Outputs:
+- `[5:0] seconds`: 6-bit counter for seconds (0-59).
+- `[5:0] minutes`: 6-bit counter for minutes (0-59).
+- `hour`: Represents a one-bit signal that updates to 1 when one hour has passed.
+## Requirements:
+
+### Internal Clock Divider and Timing Behavior:
+- The design uses an internal clock divider to count cycles of the input clock (clk) based on the specified frequency (CLK_FREQ). - This divider produces a single pulse each time one full second has elapsed that will update the seconds, minutes, and hour counters, with updates occurring on the rising edge of this pulse.
+- Note: This module does not generate a continuous 1 Hz clock signal. Instead, it produces a single pulse, lasting one period of the input clock, once every second to indicate that one second has passed.
+
+### Stopwatch Operation:
+
+#### Control Signals:
+- The module must include an asynchronous active-high `reset` input to reset the stopwatch, bringing all counters to zero, thereby resetting the stopwatch to 0 seconds, 0 minutes, and 0 hours when asserted high.
+-  The start_stop input should control the stopwatch's run/pause state, where a high signal starts it, and a low signal pauses it without affecting the counters.
+    - When start_stop is high, the stopwatch runs, starting from the paused time if it was previously stopped.
+    - When start_stop is low, the stopwatch pauses, holding the current values of seconds, minutes, and hours.   
+
+#### Behavioral Definitions:
+- The stopwatch will count seconds, minutes, and hour sequentially at the posedge of the generated one-second pulse.
+  - Seconds increment from 0 to 59, then reset to 0 and increment minutes.
+  - Minutes increment from 0 to 59, then reset to 0 and increment hour.
+  - The hour signal is a single bit that sets to 1 after reaching one hour.
+- **Note**: The stopwatch will not count beyond one hour but can reset and restart from zero if reset occurs.
+
+### Edge Cases and Special Handling:
+- When the hour signal is set to 1, the stopwatch will hold its value at 1 hour, 0 minutes, and 0 seconds until the design is reset.
+- If the stopwatch is paused mid-second, mid-minute, or mid-hour, it holds the current values of seconds, minutes, and hour, along with any partial progress within the ongoing count of input clock cycles. When start_stop is asserted high again, the stopwatch resumes counting from the exact point where it was paused.
+
+### Assumptions and Limitations:
+- Assume that the input frequency (CLK_FREQ) is set correctly within given constraints, for the design to generate a valid one-second pulse; invalid scenarios due to incorrect CLK_FREQ settings need not be handled.
+

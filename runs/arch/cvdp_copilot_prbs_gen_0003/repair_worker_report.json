@@ -1,0 +1,35 @@
+{
+  "problem_id": "cvdp_copilot_prbs_gen_0003",
+  "top_module": "cvdp_prbs_gen",
+  "final_status": "repaired",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The first-pass subprocess failures were caused by the parameterized Vec access step_state[WIDTH], which generated an always-failing auto-bound assertion. Replace the Vec of intermediate LFSR states with a procedural working_state while preserving the original right-shift PRBS algorithm and 1-cycle registered output timing.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_prbs_gen_0003/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_prbs_gen_0003/cvdp_prbs_gen.arch",
+        "runs/arch/cvdp_copilot_prbs_gen_0003/attempt_01_build"
+      ],
+      "check_status": "pass_with_warnings",
+      "build_status": "pass_with_warnings_lint_pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator improved from 54 failures to 18 passes and 36 failures. The remaining failures were all non-POLY_TAP=1 parameterizations, indicating the subprocess assertion issue was fixed but the LFSR tap/shift orientation was still wrong."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "Since POLY_TAP=1 passed while all non-1 taps failed, keep the feedback-bit output convention and change only the LFSR shift direction so the feedback bit shifts into the LSB side after each serial step.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_prbs_gen_0003/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_prbs_gen_0003/cvdp_prbs_gen.arch",
+        "runs/arch/cvdp_copilot_prbs_gen_0003/attempt_02_build"
+      ],
+      "check_status": "pass_with_warnings",
+      "build_status": "pass_with_warnings_lint_pass",
+      "eval_status": "pass",
+      "pass": true,
+      "failure_summary": "No remaining evaluator failures; all 54 PRBS parameterizations passed."
+    }
+  ]
+}

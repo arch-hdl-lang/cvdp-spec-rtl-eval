@@ -1,0 +1,8 @@
+module data_width_converter
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async>;
+  port data_in: in UInt<32>;
+  port data_valid: in Bool;
+  port o_data_out: out pipe_reg<UInt<128>, 1> reset reset => 0;
+  port o_data_out_valid: out pipe_reg<Bool, 1> reset reset => 0;
+end module data_width_converter

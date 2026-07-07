@@ -1,0 +1,124 @@
+//! ---
+//! tags: [axi_stream, upsizer, ready_valid, sign_extension]
+//! ---
+//!
+//! AXI Stream 24-bit to 32-bit upsizer with a single registered output stage.
+//! The output data register captures accepted input samples and exposes them through a one-entry ready/valid pipeline.
+/// AXI Stream 24-to-32-bit upsizer with a single pipeline register.
+///
+/// Port timing: clk samples inputs on rising edges; resetn is active-low synchronous. s_axis_ready, m_axis_valid, and m_axis_data are state-derived/combinational views of the internal one-entry pipeline register.
+///
+/// Data formatting: when dfmt_enable is low, the upper byte is zero and the 24-bit source payload is preserved. When enabled, dfmt_type selects either the source MSB or its inverse for output bit 23, and dfmt_se selects whether the upper byte is zero or sign-filled from that selected bit.
+///
+/// Transition table:
+/// | Current | Input condition | Next | Externally visible outputs in current state |
+/// | Empty | s_axis_valid == 1 | Full | s_axis_ready=1, m_axis_valid=0, m_axis_data=data_reg (reset/idle value until next cycle) |
+/// | Empty | s_axis_valid == 0 | Empty | s_axis_ready=1, m_axis_valid=0, m_axis_data=data_reg |
+/// | Full | m_axis_ready == 1 && s_axis_valid == 0 | Empty | s_axis_ready=1, m_axis_valid=1, m_axis_data=data_reg |
+/// | Full | m_axis_ready == 1 && s_axis_valid == 1 | Full | s_axis_ready=1, m_axis_valid=1, m_axis_data=data_reg; next sample replaces data_reg for the following cycle |
+/// | Full | m_axis_ready == 0 | Full | s_axis_ready=0, m_axis_valid=1, m_axis_data=data_reg held |
+module axis_upscale (
+  input logic clk,
+  input logic resetn,
+  input logic dfmt_enable,
+  input logic dfmt_type,
+  input logic dfmt_se,
+  input logic s_axis_valid,
+  input logic [23:0] s_axis_data,
+  input logic m_axis_ready,
+  output logic s_axis_ready,
+  output logic m_axis_valid,
+  output logic [31:0] m_axis_data
+);
+
+  typedef enum logic [0:0] {
+    EMPTY = 1'd0,
+    FULL = 1'd1
+  } axis_upscale_state_t;
+  
+  axis_upscale_state_t state_r, state_next;
+  
+  logic [31:0] data_reg;
+  
+  logic src_msb;
+  assign src_msb = s_axis_data[23];
+  logic selected_msb;
+  assign selected_msb = dfmt_type ? !src_msb : src_msb;
+  logic payload_msb;
+  assign payload_msb = dfmt_enable ? selected_msb : src_msb;
+  logic extend_bit;
+  assign extend_bit = dfmt_enable && dfmt_se && payload_msb;
+  logic [7:0] extend_byte;
+  assign extend_byte = extend_bit ? 8'd255 : 8'd0;
+  logic [23:0] formatted_payload;
+  assign formatted_payload = {payload_msb, s_axis_data[22:0]};
+  logic [31:0] formatted_data;
+  assign formatted_data = {extend_byte, formatted_payload};
+  
+  always_ff @(posedge clk) begin
+    if ((!resetn)) begin
+      state_r <= EMPTY;
+      data_reg <= 0;
+    end else begin
+      state_r <= state_next;
+      unique case (state_r)
+        EMPTY: begin
+          if (s_axis_valid) begin
+            data_reg <= formatted_data;
+          end else begin
+            data_reg <= 0;
+          end
+        end
+        FULL: begin
+          if (m_axis_ready && s_axis_valid) begin
+            data_reg <= formatted_data;
+          end else if (m_axis_ready) begin
+            data_reg <= 0;
+          end
+        end
+        default: ;
+      endcase
+    end
+  end
+  
+  always_comb begin
+    state_next = state_r; // hold by default
+    unique case (state_r)
+      EMPTY: begin
+        if (s_axis_valid) state_next = FULL;
+      end
+      FULL: begin
+        if (m_axis_ready && !s_axis_valid) state_next = EMPTY;
+      end
+      default: state_next = state_r;
+    endcase
+  end
+  
+  always_comb begin
+    s_axis_ready = 1'b0;
+    m_axis_valid = 1'b0;
+    m_axis_data = data_reg;
+    unique case (state_r)
+      EMPTY: begin
+        s_axis_ready = 1'b1;
+        m_axis_valid = 1'b0;
+        m_axis_data = data_reg;
+      end
+      FULL: begin
+        s_axis_ready = m_axis_ready;
+        m_axis_valid = 1'b1;
+        m_axis_data = data_reg;
+      end
+      default: ;
+    endcase
+  end
+  
+  // synopsys translate_off
+  _auto_reach_Empty: cover property (@(posedge clk) state_r == EMPTY);
+  _auto_reach_Full: cover property (@(posedge clk) state_r == FULL);
+  _auto_tr_EMPTY_to_FULL: cover property (@(posedge clk) state_r == EMPTY && state_next == FULL);
+  _auto_tr_FULL_to_EMPTY: cover property (@(posedge clk) state_r == FULL && state_next == EMPTY);
+  // synopsys translate_on
+
+endmodule
+

@@ -1,0 +1,38 @@
+//! ---
+//! tags: [clock_jitter, level_detection, interval_counter, synchronous_reset]
+//! refs: []
+//! ---
+//!
+//! Clock jitter detection by counting primary clock cycles while system_clk is low.
+//! A sampled high level on system_clk terminates the interval and reports whether the low interval exceeded JITTER_THRESHOLD.
+
+/// Counts clk cycles between high samples of system_clk and flags late intervals.
+///
+/// Timing: system_clk is sampled on the rising edge of clk. jitter_detected is a registered value that is high on a sampled system_clk high level when the preceding low interval count exceeds JITTER_THRESHOLD.
+module clock_jitter_detection_module
+  param JITTER_THRESHOLD: const = 5;
+
+  port clk: in Clock<SysDomain>;
+  port system_clk: in Bool;
+  port rst: in Reset<Sync, High>;
+  port jitter_detected: out pipe_reg<Bool, 1> reset rst => false;
+
+  reg default: reset rst => 0;
+  reg edge_count: UInt<32>;
+  reg edge_count_r: UInt<32>;
+
+  let late_jitter: Bool = edge_count > JITTER_THRESHOLD;
+
+  default seq on clk rising;
+
+  seq
+    if system_clk
+      edge_count_r <= edge_count;
+      jitter_detected <= late_jitter;
+      edge_count <= 0;
+    else
+      jitter_detected <= false;
+      edge_count <= edge_count +% 32'd1;
+    end if
+  end seq
+end module clock_jitter_detection_module

@@ -1,0 +1,5 @@
+module gf_multiplier
+  port A: in UInt<4>;
+  port B: in UInt<4>;
+  port result: out UInt<4> comb_dep_on(A, B);
+end module gf_multiplier

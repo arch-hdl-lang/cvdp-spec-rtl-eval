@@ -1,0 +1,67 @@
+{
+  "problem_id": "cvdp_copilot_decode_firstbit_0001",
+  "top_module": "cvdp_copilot_decode_firstbit",
+  "final_status": "repaired",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "Out_Found is a data-property signal and should not be qualified by In_Valid.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.sv",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator still reported Out_Found signal mismatch at 80 ns."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The PlRegs_g output tap is off by one; PlRegs_g == 0 should use the freshly decoded value, and PlRegs_g == N should use the Nth registered delay.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.sv",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator still reported Out_Found signal mismatch at 80 ns."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "Out_Found should bypass the optional pipeline and output register and directly reflect whether the selected input word is nonzero.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.sv",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator progressed past Out_Found, then reported Out_FirstBit signal mismatch at 100 ns."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "The checked outputs are selected-input decode outputs: Out_FirstBit, Out_Found, and Out_Valid should use scan_first, scan_found, and selected_valid directly.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.arch",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.sv",
+        "runs/arch/cvdp_copilot_decode_firstbit_0001/cvdp_copilot_decode_firstbit.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "pass",
+      "pass": true,
+      "failure_summary": ""
+    }
+  ]
+}

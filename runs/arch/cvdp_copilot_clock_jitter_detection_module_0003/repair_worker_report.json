@@ -1,0 +1,67 @@
+{
+  "problem_id": "cvdp_copilot_clock_jitter_detection_module_0003",
+  "top_module": "clock_jitter_detection_module",
+  "final_status": "not_repaired",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The first observed system_clk rising edge after reset should be treated as a completed measured interval; the original candidate ignored it and did not start counting until after that edge.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.sv",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.archi"
+      ],
+      "check_status": "passed",
+      "build_status": "passed",
+      "eval_status": "failed",
+      "pass": false,
+      "failure_summary": "Black-box evaluator returned status fail. All six cocotb parameterizations failed: test_clock_jitter_detection[0-5], [0-7], [0-10], [1-5], [1-7], and [1-10]."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "jitter_detected may be expected to remain asserted after any bad interval instead of pulsing for one clk cycle.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.sv",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.archi"
+      ],
+      "check_status": "passed",
+      "build_status": "passed",
+      "eval_status": "failed",
+      "pass": false,
+      "failure_summary": "Black-box evaluator returned status fail. All six cocotb parameterizations failed: test_clock_jitter_detection[0-5], [0-7], [0-10], [1-5], [1-7], and [1-10]."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "Late jitter should be detected as soon as the monitored clock is overdue, not only when a later system_clk rising edge arrives; the threshold should be the exact boundary rather than threshold +/- 1.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.sv",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.archi"
+      ],
+      "check_status": "passed",
+      "build_status": "passed",
+      "eval_status": "failed",
+      "pass": false,
+      "failure_summary": "Black-box evaluator returned status fail. All six cocotb parameterizations failed: test_clock_jitter_detection[0-5], [0-7], [0-10], [1-5], [1-7], and [1-10]."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "system_clk may be intended as a sampled period-marker pulse level, with jitter_detected reflecting whether the just-ended low interval exceeded JITTER_THRESHOLD.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.arch",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.sv",
+        "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.archi"
+      ],
+      "check_status": "passed",
+      "build_status": "passed",
+      "eval_status": "failed",
+      "pass": false,
+      "failure_summary": "Black-box evaluator returned status fail. All six cocotb parameterizations failed: test_clock_jitter_detection[0-5], [0-7], [0-10], [1-5], [1-7], and [1-10]."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+module priority_encoder_8x3
+  port in: in UInt<8>;
+  port out: out UInt<3> comb_dep_on(in);
+end module priority_encoder_8x3

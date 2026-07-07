@@ -1,0 +1,6 @@
+module moving_average
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Sync>;
+  port data_in: in UInt<12>;
+  port data_out: out pipe_reg<UInt<12>, 1> reset reset => 0;
+end module moving_average

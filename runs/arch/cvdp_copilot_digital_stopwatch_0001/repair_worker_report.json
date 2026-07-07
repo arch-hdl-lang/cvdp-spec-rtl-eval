@@ -1,0 +1,63 @@
+{
+  "problem_id": "cvdp_copilot_digital_stopwatch_0001",
+  "top_module": "dig_stopwatch",
+  "final_status": "not_repaired",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "start_stop is a sampled start/stop event, not a raw run-enable level; add running state and rising-edge detection while preserving divider/count rollover timing.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.sv",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.archi"
+      ],
+      "check_build_status": "check pass; build/lint pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator failed all cocotb parameterizations: CLK_FREQ=3, 50, and 63. stdout_tail only reported SystemExit failed tests without the underlying assertion text."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "start_stop is a level run-enable, but stopping should clear partial divider progress rather than preserve sub-second progress.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.sv",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.archi"
+      ],
+      "check_build_status": "check pass; build/lint pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator failed all cocotb parameterizations: CLK_FREQ=3, 50, and 63. stdout_tail only reported SystemExit failed tests without the underlying assertion text."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "divider boundary is one count late relative to the candidate; count through div_count == CLK_FREQ using the existing CLK_FREQ + 1 divider width.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.sv",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.archi"
+      ],
+      "check_build_status": "check pass; build/lint pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator failed all cocotb parameterizations: CLK_FREQ=3, 50, and 63. stdout_tail only reported SystemExit failed tests without the underlying assertion text."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "the one-hour state should not be terminal; after hour asserts, seconds and minutes should continue rolling while hour remains asserted.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.arch",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.sv",
+        "runs/arch/cvdp_copilot_digital_stopwatch_0001/dig_stopwatch.archi"
+      ],
+      "check_build_status": "check pass; build/lint pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Evaluator failed all cocotb parameterizations: CLK_FREQ=3, 50, and 63. stdout_tail only reported SystemExit failed tests without the underlying assertion text."
+    }
+  ]
+}

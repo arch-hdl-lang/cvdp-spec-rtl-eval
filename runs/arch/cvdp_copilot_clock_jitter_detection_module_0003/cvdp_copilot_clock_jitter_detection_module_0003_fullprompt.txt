@@ -1,0 +1,61 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `clock_jitter_detection_module` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_clock_jitter_detection_module_0003
+
+Natural-language specification:
+The clock_jitter_detection_module is a SystemVerilog RTL module designed to detect clock jitter by measuring the number of cycles between consecutive rising edges of the input system clock (system_clk) based on the primary input clock (clk). The module includes a configurable parameter, JITTER_THRESHOLD which user gives, it specifies the acceptable number of clock cycles of primary clock between rising edges of system clock before jitter is flagged. 
+Upon detecting a rising edge, the module resets an internal counter (edge_count) and begins counting the number of clk cycles until the next rising edge is observed. The previous edge count is stored in edge_count_r for comparison. If the measured time between edges (edge_count_r) deviates from the JITTER_THRESHOLD by more than one clock cycle, the module asserts the active-high output signal jitter_detected, indicating the presence of jitter. 
+The module supports an active-high reset (rst), which clears all internal states, including counters and flags, ensuring proper initialization. The jitter_detected signal remains asserted for one clock cycle when jitter is detected and resets on the next clock cycle unless additional jitter is identified. The design ensures synchronous operation on the positive edge of clk, with precise timing and edge detection logic to maintain accuracy. The implementation includes provisions for starting and stopping the counter based on edge detection, resetting the counter on new edges, and comparing the recorded edge timings to detect any variations that exceed the defined threshold, effectively identifying jitter in the input system clock. 
+
+
+```verilog
+module clock_jitter_detection_module #(
+    parameter JITTER_THRESHOLD = 5    // Threshold (in clock cycles) for detecting jitter
+)(
+    input logic clk,               // Input clock
+    input logic system_clk,        // Input system clock
+    input logic rst,               // Active high reset
+    output logic jitter_detected   // Output flag indicating jitter detection
+);
+
+    // Internal signals
+    logic [31:0] edge_count, edge_count_r;   // Counters to measure time between rising edges
+    logic prev_system_clk;                   // To store the previous clock state (rising edge detection)
+    logic edge_detected;                     // Flag for detecting rising edges
+    logic start_counter;
+
+    // Rising edge detection logic (detects when clock transitions from 0 to 1)
+    always @(posedge clk) begin
+        if (rst) begin
+            // Insert code to initialize counters, edge detection, and jitter detection on reset
+        end else begin
+            prev_system_clk <= system_clk;
+
+            // Insert code to detect rising edge transitions of system_clk
+            // Insert code to reset and increment edge_count as necessary
+
+            // Insert code to compare edge_count_r with JITTER_THRESHOLD and detect jitter
+        end
+    end
+
+endmodule
+```
+

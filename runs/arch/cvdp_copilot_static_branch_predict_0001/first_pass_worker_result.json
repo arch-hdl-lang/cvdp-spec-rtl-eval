@@ -1,0 +1,15 @@
+{
+  "problem_id": "cvdp_copilot_static_branch_predict_0001",
+  "top_module": "static_branch_predict",
+  "arch_version": "arch 0.70.6",
+  "status": "pass",
+  "check_status": "pass",
+  "build_lint_status": "pass",
+  "evaluated": false,
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.arch",
+    "response": "runs/arch/cvdp_copilot_static_branch_predict_0001/cvdp_copilot_static_branch_predict_0001_response.txt",
+    "generated_sv_dir": "runs/arch/cvdp_copilot_static_branch_predict_0001/generated_sv",
+    "arch_interface": "runs/arch/cvdp_copilot_static_branch_predict_0001/static_branch_predict.archi"
+  }
+}

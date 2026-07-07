@@ -1,0 +1,18 @@
+//! ---
+//! tags: [bit_reverse, combinational, datapath]
+//! ---
+//!
+//! Combinational 32-bit bit-reversal datapath for the CVDP reverse_bits task.
+//! The output bus presents every input bit in reverse order without clocked state.
+/// Reverses the bit order of a 32-bit unsigned input bus.
+///
+/// The least-significant input bit drives the most-significant output bit, continuing one-for-one across the full 32-bit word.
+module reverse_bits (
+  input logic [31:0] num_in,
+  output logic [31:0] num_out
+);
+
+  assign num_out = {num_in[0], num_in[1], num_in[2], num_in[3], num_in[4], num_in[5], num_in[6], num_in[7], num_in[8], num_in[9], num_in[10], num_in[11], num_in[12], num_in[13], num_in[14], num_in[15], num_in[16], num_in[17], num_in[18], num_in[19], num_in[20], num_in[21], num_in[22], num_in[23], num_in[24], num_in[25], num_in[26], num_in[27], num_in[28], num_in[29], num_in[30], num_in[31]};
+
+endmodule
+

@@ -1,0 +1,16 @@
+{
+  "problem": "cvdp_copilot_reverse_bits_0001",
+  "top": "reverse_bits",
+  "lane": "arch",
+  "arch_check": "pass",
+  "arch_build": "pass",
+  "verilator_lint": "pass",
+  "evaluation": {
+    "status": "pass",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  }
+}

@@ -1,0 +1,207 @@
+//! ---
+//! spec_md: runs/arch/cvdp_copilot_vending_machine_0001/cvdp_copilot_vending_machine_0001_fullprompt.txt
+//! tags: [vending, fsm, coins, refund]
+//! ---
+//!
+//! Vending machine controller generated from the CVDP natural-language spec.
+//! The design tracks item selection, coin accumulation, dispensing, change return,
+//! cancellation, and invalid-operation refund handling in one FSM.
+
+/// Top-level vending machine FSM.
+///
+/// Inputs are sampled on `clk` rising edges; `rst` is asynchronous active high.
+/// `item_button` and `cancel` are converted to one-cycle rising-edge events.
+/// Outputs are combinational/state-derived and are high for the active FSM state.
+/// The problem statement names four valid IDs but does not specify prices; this
+/// implementation uses the conventional 5, 10, 15, and 20 unit mapping.
+///
+/// Transition table:
+/// Current state        | Input condition                                      | Next state          | Externally visible outputs in current state
+/// Idle                 | coin_input != 0 and no item_button rising edge       | ReturnMoney         | all outputs low, item_price 0
+/// Idle                 | item_button rising edge                              | ItemSelection       | all outputs low, item_price 0
+/// Idle                 | otherwise                                            | Idle                | all outputs low, item_price 0
+/// ItemSelection        | cancel rising edge                                   | ReturnMoney         | item_price shows selected valid input price, otherwise 0
+/// ItemSelection        | item_selected != 0 and invalid item ID               | ReturnMoney         | item_price 0
+/// ItemSelection        | valid item_selected                                  | PaymentValidation   | item_price shows selected input price
+/// ItemSelection        | otherwise                                            | ItemSelection       | item_price 0
+/// PaymentValidation    | cancel rising edge                                   | ReturnMoney         | item_price held at selected price
+/// PaymentValidation    | coin_input != 0 and invalid coin value               | ReturnMoney         | item_price held at selected price
+/// PaymentValidation    | valid coin makes accumulated total >= item_price     | DispensingItem      | item_price held at selected price
+/// PaymentValidation    | otherwise                                            | PaymentValidation   | item_price held at selected price
+/// DispensingItem       | computed change_amount > 0                           | ReturnChange        | dispense_item 1, dispense_item_id selected ID
+/// DispensingItem       | computed change_amount == 0                          | Idle                | dispense_item 1, dispense_item_id selected ID
+/// ReturnChange         | unconditional                                        | Idle                | return_change 1, change_amount computed excess
+/// ReturnMoney          | unconditional                                        | Idle                | error 1, return_money 1 iff accumulated money is nonzero
+fsm vending_machine
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, High>;
+  port item_button: in Bool;
+  port item_selected: in UInt<3>;
+  port coin_input: in UInt<4>;
+  port cancel: in Bool;
+
+  port dispense_item: out Bool;
+  port return_change: out Bool;
+  port item_price: out UInt<5>;
+  port change_amount: out UInt<5>;
+  port dispense_item_id: out UInt<3>;
+  port error: out Bool;
+  port return_money: out Bool;
+
+  reg item_button_prev: Bool reset rst => false;
+  reg cancel_prev: Bool reset rst => false;
+  reg selected_item_r: UInt<3> reset rst => 3'd0;
+  reg selected_price_r: UInt<5> reset rst => 5'd0;
+  reg coins_accumulated_r: UInt<5> reset rst => 5'd0;
+  reg change_amount_r: UInt<5> reset rst => 5'd0;
+
+  let item_button_edge: Bool = item_button and not item_button_prev;
+  let cancel_edge: Bool = cancel and not cancel_prev;
+  let coin_present: Bool = coin_input != 4'd0;
+  let coin_valid: Bool = (coin_input == 4'd1) or (coin_input == 4'd2) or (coin_input == 4'd5) or (coin_input == 4'd10);
+  let item_valid: Bool = (item_selected == 3'b001) or (item_selected == 3'b010) or (item_selected == 3'b011) or (item_selected == 3'b100);
+  let item_nonzero: Bool = item_selected != 3'd0;
+  let item_invalid: Bool = item_nonzero and not item_valid;
+  let coin_invalid: Bool = coin_present and not coin_valid;
+  let selected_input_price: UInt<5> = (item_selected == 3'b001) ? 5'd5 :
+                                      (item_selected == 3'b010) ? 5'd10 :
+                                      (item_selected == 3'b011) ? 5'd15 :
+                                      (item_selected == 3'b100) ? 5'd20 : 5'd0;
+  let coin_value_5: UInt<5> = coin_input.zext<5>();
+  let accumulated_next: UInt<5> = coins_accumulated_r +% coin_value_5;
+  let change_next: UInt<5> = accumulated_next -% selected_price_r;
+
+  state [Idle, ItemSelection, PaymentValidation, DispensingItem, ReturnChange, ReturnMoney]
+  default state Idle;
+
+  default
+    comb
+      dispense_item = false;
+      return_change = false;
+      item_price = selected_price_r;
+      change_amount = 5'd0;
+      dispense_item_id = 3'd0;
+      error = false;
+      return_money = false;
+    end comb
+  end default
+
+  state Idle
+    comb
+      item_price = 5'd0;
+    end comb
+
+    seq on clk rising
+      item_button_prev <= item_button;
+      cancel_prev <= cancel;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      change_amount_r <= 5'd0;
+      if coin_present and not item_button_edge
+        coins_accumulated_r <= coin_value_5;
+      else
+        coins_accumulated_r <= 5'd0;
+      end if
+    end seq
+
+    -> ReturnMoney when coin_present and not item_button_edge;
+    -> ItemSelection when item_button_edge;
+  end state Idle
+
+  state ItemSelection
+    comb
+      if item_valid
+        item_price = selected_input_price;
+      else
+        item_price = 5'd0;
+      end if
+    end comb
+
+    seq on clk rising
+      item_button_prev <= item_button;
+      cancel_prev <= cancel;
+      if item_valid
+        selected_item_r <= item_selected;
+        selected_price_r <= selected_input_price;
+        coins_accumulated_r <= 5'd0;
+        change_amount_r <= 5'd0;
+      end if
+    end seq
+
+    -> ReturnMoney when cancel_edge;
+    -> ReturnMoney when item_invalid;
+    -> PaymentValidation when item_valid;
+  end state ItemSelection
+
+  state PaymentValidation
+    seq on clk rising
+      item_button_prev <= item_button;
+      cancel_prev <= cancel;
+      if coin_present and coin_valid
+        coins_accumulated_r <= accumulated_next;
+        if accumulated_next >= selected_price_r
+          change_amount_r <= change_next;
+        else
+          change_amount_r <= 5'd0;
+        end if
+      end if
+    end seq
+
+    -> ReturnMoney when cancel_edge;
+    -> ReturnMoney when coin_invalid;
+    -> DispensingItem when coin_present and coin_valid and accumulated_next >= selected_price_r;
+  end state PaymentValidation
+
+  state DispensingItem
+    comb
+      dispense_item = true;
+      dispense_item_id = selected_item_r;
+      change_amount = change_amount_r;
+    end comb
+
+    seq on clk rising
+      item_button_prev <= item_button;
+      cancel_prev <= cancel;
+    end seq
+
+    -> ReturnChange when change_amount_r > 5'd0;
+    -> Idle when change_amount_r == 5'd0;
+  end state DispensingItem
+
+  state ReturnChange
+    comb
+      return_change = true;
+      change_amount = change_amount_r;
+    end comb
+
+    seq on clk rising
+      item_button_prev <= item_button;
+      cancel_prev <= cancel;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      change_amount_r <= 5'd0;
+    end seq
+
+    -> Idle;
+  end state ReturnChange
+
+  state ReturnMoney
+    comb
+      item_price = 5'd0;
+      error = true;
+      return_money = coins_accumulated_r > 5'd0;
+    end comb
+
+    seq on clk rising
+      item_button_prev <= item_button;
+      cancel_prev <= cancel;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      change_amount_r <= 5'd0;
+    end seq
+
+    -> Idle;
+  end state ReturnMoney
+end fsm vending_machine

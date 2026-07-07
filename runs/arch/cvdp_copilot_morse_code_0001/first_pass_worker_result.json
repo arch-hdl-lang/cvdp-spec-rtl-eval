@@ -1,0 +1,13 @@
+{
+  "problem": "cvdp_copilot_morse_code_0001",
+  "top": "morse_encoder",
+  "lane": "arch",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "runtime": "osvb-docker",
+    "status": "pass",
+    "passed": 1,
+    "failed": 0
+  }
+}

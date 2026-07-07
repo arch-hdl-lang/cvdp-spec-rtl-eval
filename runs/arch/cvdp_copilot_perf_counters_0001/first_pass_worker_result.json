@@ -1,0 +1,16 @@
+{
+  "problem_id": "cvdp_copilot_perf_counters_0001",
+  "top_module": "cvdp_copilot_perf_counters",
+  "arch_version": "arch 0.70.6",
+  "status": {
+    "write_and_check": "pass",
+    "build": "pass",
+    "verilator_lint": "pass"
+  },
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_perf_counters_0001/cvdp_copilot_perf_counters.arch",
+    "generated_sv_dir": "runs/arch/cvdp_copilot_perf_counters_0001/generated_sv",
+    "response": "runs/arch/cvdp_copilot_perf_counters_0001/cvdp_copilot_perf_counters_0001_response.txt"
+  },
+  "notes": "Generated from the allowed prompt sources only. No compile-error fix cycle was needed."
+}

@@ -1,0 +1,19 @@
+{
+  "problem_id": "cvdp_copilot_prbs_gen_0003",
+  "top_module": "cvdp_prbs_gen",
+  "arch_version": "arch 0.70.6",
+  "status": "pass_with_arch_warnings",
+  "check_status": "pass_with_warnings",
+  "build_status": "pass_with_warnings",
+  "lint_status": "pass",
+  "evaluated": false,
+  "warnings": [
+    "ARCH check reported a conservative whole-design combinational feedback cycle warning involving prbs_word -> step_state -> prbs_word; Verilator lint passed."
+  ],
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_prbs_gen_0003/cvdp_prbs_gen.arch",
+    "response": "runs/arch/cvdp_copilot_prbs_gen_0003/cvdp_copilot_prbs_gen_0003_response.txt",
+    "generated_sv_dir": "runs/arch/cvdp_copilot_prbs_gen_0003/generated_sv",
+    "arch_interface": "runs/arch/cvdp_copilot_prbs_gen_0003/cvdp_prbs_gen.archi"
+  }
+}

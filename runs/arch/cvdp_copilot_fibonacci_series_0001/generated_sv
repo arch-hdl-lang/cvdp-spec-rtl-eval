@@ -1,0 +1,117 @@
+//! ---
+//! tags: [fibonacci, sequence, overflow]
+//! ---
+//!
+//! 32-bit Fibonacci sequence generator with synchronous reset and one-cycle
+//! overflow reporting before the sequence automatically restarts.
+/// Top-level Fibonacci generator.
+///
+/// Input timing: `rst` is an active-high synchronous reset and Fibonacci state
+/// advances on each rising edge of `clk` while reset is low.
+/// Output timing: `fib_out` and `overflow_flag` are plain outputs driven by
+/// internal registers, so updates become externally visible after the clock edge
+/// that writes those registers.
+///
+/// Transition table:
+/// | Current state | Input condition | Next state | Registered outputs written on edge |
+/// | Running | `next_fib` fits in 32 bits | Running | `fib_out = next_fib[31:0]`, `overflow_flag = 0` |
+/// | Running | `next_fib` exceeds 32 bits | Restart | `fib_out = RegB` final valid value, `overflow_flag = 0` |
+/// | Restart | `rst = 0` | Running | `fib_out = 0`, `overflow_flag = 1`, RegA/RegB restart at F(0)/F(1) |
+/// | Any | `rst = 1` | Running | `fib_out = 0`, `overflow_flag = 0`, RegA/RegB reset to F(0)/F(1) |
+module fibonacci_series (
+  input logic clk,
+  input logic rst,
+  output logic [31:0] fib_out,
+  output logic overflow_flag
+);
+
+  typedef enum logic [0:0] {
+    RUNNING = 1'd0,
+    RESTART = 1'd1
+  } fibonacci_series_state_t;
+  
+  fibonacci_series_state_t state_r, state_next;
+  
+  logic [31:0] reg_a;
+  logic [31:0] reg_b;
+  logic [31:0] fib_out_r;
+  logic overflow_flag_r;
+  
+  logic [32:0] reg_a_wide;
+  assign reg_a_wide = 33'($unsigned(reg_a));
+  logic [32:0] reg_b_wide;
+  assign reg_b_wide = 33'($unsigned(reg_b));
+  logic [32:0] next_fib_wide;
+  assign next_fib_wide = ($bits(reg_a_wide) > $bits(reg_b_wide) ? $bits(reg_a_wide) : $bits(reg_b_wide))'(reg_a_wide + reg_b_wide);
+  logic overflow_now;
+  assign overflow_now = next_fib_wide[32];
+  logic [31:0] next_fib_low;
+  assign next_fib_low = next_fib_wide[31:0];
+  assign fib_out = fib_out_r;
+  assign overflow_flag = overflow_flag_r;
+  
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      state_r <= RUNNING;
+      reg_a <= 0;
+      reg_b <= 1;
+      fib_out_r <= 0;
+      overflow_flag_r <= 1'b0;
+    end else begin
+      state_r <= state_next;
+      unique case (state_r)
+        RUNNING: begin
+          //! RegA stores F(n-2), RegB stores F(n-1), and the Restart state supplies
+          //! the delayed overflow pulse while reinitializing the sequence.
+          overflow_flag_r <= 1'b0;
+          if (overflow_now) begin
+            fib_out_r <= reg_b;
+          end else begin
+            reg_a <= reg_b;
+            reg_b <= next_fib_low;
+            fib_out_r <= next_fib_low;
+          end
+        end
+        RESTART: begin
+          reg_a <= 0;
+          reg_b <= 1;
+          fib_out_r <= 0;
+          overflow_flag_r <= 1'b1;
+        end
+        default: ;
+      endcase
+    end
+  end
+  
+  always_comb begin
+    state_next = state_r; // hold by default
+    unique case (state_r)
+      RUNNING: begin
+        if (overflow_now) state_next = RESTART;
+      end
+      RESTART: begin
+        state_next = RUNNING;
+      end
+      default: state_next = state_r;
+    endcase
+  end
+  
+  always_comb begin
+    unique case (state_r)
+      RUNNING: begin
+      end
+      RESTART: begin
+      end
+      default: ;
+    endcase
+  end
+  
+  // synopsys translate_off
+  _auto_reach_Running: cover property (@(posedge clk) state_r == RUNNING);
+  _auto_reach_Restart: cover property (@(posedge clk) state_r == RESTART);
+  _auto_tr_RUNNING_to_RESTART: cover property (@(posedge clk) state_r == RUNNING && state_next == RESTART);
+  _auto_tr_RESTART_to_RUNNING: cover property (@(posedge clk) state_r == RESTART && state_next == RUNNING);
+  // synopsys translate_on
+
+endmodule
+

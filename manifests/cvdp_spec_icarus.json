@@ -1,0 +1,527 @@
+{
+  "name": "cvdp-v1.0.4-pure-spec-to-rtl-icarus",
+  "source_dataset": "/Users/shuqingzhao/github/cvdp_benchmark/full_dataset/cvdp_v1.0.4_nonagentic_code_generation_no_commercial.jsonl",
+  "selection_rules": [
+    "SIM is icarus according to harness src/.env",
+    "input.context is empty",
+    "prompt does not request completion, repair, modification, bug fixing, or partial-code filling",
+    "prompt is an imperative pure spec-to-RTL request, plus explicit pure-spec allowlist entries",
+    "manifest excludes output.response and output.context solution data"
+  ],
+  "total_source_records": 302,
+  "selected_count": 50,
+  "selected_by_category": {
+    "cid002": 2,
+    "cid003": 48
+  },
+  "excluded_reason_counts": {
+    "completion_or_fix_wording": 205,
+    "has_input_context": 133,
+    "no_spec_verb": 67
+  },
+  "pure_spec_allowlist": [
+    "cvdp_copilot_morse_code_0001"
+  ],
+  "problems": [
+    {
+      "id": "cvdp_copilot_16qam_mapper_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "qam16_mapper_interpolated",
+      "module": "test_qam16_mapper_interpolated",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/16qam_mapper.sv"
+    },
+    {
+      "id": "cvdp_copilot_16qam_mapper_0006",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "qam16_demapper_interpolated",
+      "module": "test_qam16_demapper_interpolated",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/16qam_demapper.sv"
+    },
+    {
+      "id": "cvdp_copilot_64b66b_encoder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "encoder_64b66b",
+      "module": "test_encoder_64b66b",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/encoder_64b66b.sv"
+    },
+    {
+      "id": "cvdp_copilot_8x3_priority_encoder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "priority_encoder_8x3",
+      "module": "test_penc",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/priority_encoder.v"
+    },
+    {
+      "id": "cvdp_copilot_Carry_Lookahead_Adder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "GP",
+      "module": "test_gp_test",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/GP.v"
+    },
+    {
+      "id": "cvdp_copilot_GFCM_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "glitch_free_mux",
+      "module": "test_glitch_free_mux",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/glitch_free_mux.sv"
+    },
+    {
+      "id": "cvdp_copilot_axi_stream_upscale_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "axis_upscale",
+      "module": "test_axis_upscale",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/axis_upscale.sv"
+    },
+    {
+      "id": "cvdp_copilot_axis_joiner_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "axis_joiner",
+      "module": "test_axis_joiner",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/axis_joiner.sv"
+    },
+    {
+      "id": "cvdp_copilot_bcd_counter_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "bcd_counter",
+      "module": "test_bcd_counter",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/bcd_counter.sv"
+    },
+    {
+      "id": "cvdp_copilot_binary_to_one_hot_decoder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "binary_to_one_hot_decoder",
+      "module": "test_binary_to_one_hot_decoder",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/binary_to_one_hot_decoder.v"
+    },
+    {
+      "id": "cvdp_copilot_bus_arbiter_0001",
+      "category": "cid002",
+      "difficulty": "medium",
+      "toplevel": "cvdp_copilot_bus_arbiter",
+      "module": "test_cvdp_copilot_bus_arbiter",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/cvdp_copilot_bus_arbiter.sv"
+    },
+    {
+      "id": "cvdp_copilot_caesar_cipher_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "caesar_cipher",
+      "module": "test_caesar_cipher",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/caesar_cipher.sv"
+    },
+    {
+      "id": "cvdp_copilot_car_parking_management_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "car_parking_system",
+      "module": "car_parking_control",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/car_parking_system.sv"
+    },
+    {
+      "id": "cvdp_copilot_cascaded_adder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "cascaded_adder",
+      "module": "test_cascaded_adder",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/cascaded_adder.sv"
+    },
+    {
+      "id": "cvdp_copilot_clock_divider_0003",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "clock_divider",
+      "module": "test_clk_div",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/clock_divider.sv"
+    },
+    {
+      "id": "cvdp_copilot_clock_jitter_detection_module_0003",
+      "category": "cid002",
+      "difficulty": "easy",
+      "toplevel": "clock_jitter_detection_module",
+      "module": "test_clock_jitter_detection",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/clock_jitter_detection_module.sv"
+    },
+    {
+      "id": "cvdp_copilot_comparator_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "signed_unsigned_comparator",
+      "module": "test_signed_comparator",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/signed_comparator.sv"
+    },
+    {
+      "id": "cvdp_copilot_complex_multiplier_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "complex_multiplier",
+      "module": "test_complex_multiplier",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/complex_multiplier.sv"
+    },
+    {
+      "id": "cvdp_copilot_convolutional_encoder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "convolutional_encoder",
+      "module": "test_convolutional_encoder",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/convolutional_encoder.sv"
+    },
+    {
+      "id": "cvdp_copilot_data_bus_controller_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "data_bus_controller",
+      "module": "test_data_bus_controller",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/data_bus_controller.sv"
+    },
+    {
+      "id": "cvdp_copilot_data_width_converter_0003",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "data_width_converter",
+      "module": "DW_convertor",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/data_width_converter.sv"
+    },
+    {
+      "id": "cvdp_copilot_dbi_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "dbi_enc",
+      "module": "test_dbi_encoder",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/dbi_enc.sv"
+    },
+    {
+      "id": "cvdp_copilot_decode_firstbit_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "cvdp_copilot_decode_firstbit",
+      "module": "test_decode_firstbit",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/cvdp_copilot_decode_firstbit.sv"
+    },
+    {
+      "id": "cvdp_copilot_digital_dice_roller_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "digital_dice_roller",
+      "module": "test_dice_roller",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/digital_dice_roller.sv"
+    },
+    {
+      "id": "cvdp_copilot_digital_stopwatch_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "dig_stopwatch",
+      "module": "test_dig_stopwatch",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/dig_stopwatch.sv"
+    },
+    {
+      "id": "cvdp_copilot_edge_detector_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "sync_pos_neg_edge_detector",
+      "module": "test_sync_pos_neg_edge_detector",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/sync_pos_neg_edge_detector.sv"
+    },
+    {
+      "id": "cvdp_copilot_factorial_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "factorial",
+      "module": "test_factorial",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/factorial.sv"
+    },
+    {
+      "id": "cvdp_copilot_fibonacci_series_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "fibonacci_series",
+      "module": "test_fibonacci_series",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/fibonacci_series.sv"
+    },
+    {
+      "id": "cvdp_copilot_gf_multiplier_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "gf_multiplier",
+      "module": "test_gf_mult",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/gf_multiplier.sv"
+    },
+    {
+      "id": "cvdp_copilot_hebbian_rule_0017",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "hebb_gates",
+      "module": "test_hebb_gates",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/hebb_gates.sv"
+    },
+    {
+      "id": "cvdp_copilot_load_store_unit_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "load_store_unit",
+      "module": "test_load_store_unit",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/load_store_unit.sv"
+    },
+    {
+      "id": "cvdp_copilot_matrix_multiplier_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "matrix_multiplier",
+      "module": "test_matrix_multiplier",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/matrix_multiplier.sv"
+    },
+    {
+      "id": "cvdp_copilot_morse_code_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "morse_encoder",
+      "module": "test_morse_encoder",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/morse_encoder.sv"
+    },
+    {
+      "id": "cvdp_copilot_moving_average_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "moving_average",
+      "module": "test_moving_average",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/moving_average.v"
+    },
+    {
+      "id": "cvdp_copilot_nbit_swizzling_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "nbit_swizzling",
+      "module": "test_nbit_swizzling",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/nbit_swizzling.sv"
+    },
+    {
+      "id": "cvdp_copilot_packet_controller_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "packet_controller",
+      "module": "test_packet_controller",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/packet_controller.sv"
+    },
+    {
+      "id": "cvdp_copilot_palindrome_3b_0002",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "palindrome_detect",
+      "module": "test_palindrome_detect",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/palindrome_detect.sv"
+    },
+    {
+      "id": "cvdp_copilot_perceptron_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "perceptron_gates",
+      "module": "test_perceptron_gates",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/perceptron_gates.sv"
+    },
+    {
+      "id": "cvdp_copilot_perf_counters_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "cvdp_copilot_perf_counters",
+      "module": "test_perf_counters",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/cvdp_copilot_perf_counters.sv"
+    },
+    {
+      "id": "cvdp_copilot_perfect_squares_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "perfect_squares_generator",
+      "module": "test_perfect_squares_generator",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/perfect_squares_generator.sv"
+    },
+    {
+      "id": "cvdp_copilot_prbs_gen_0003",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "cvdp_prbs_gen",
+      "module": "test_prbs_gen",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/cvdp_prbs_gen.sv"
+    },
+    {
+      "id": "cvdp_copilot_restoring_division_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "restoring_division",
+      "module": "test_restoring_division",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/restore_division.sv"
+    },
+    {
+      "id": "cvdp_copilot_reverse_bits_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "reverse_bits",
+      "module": "test_reverse_bits",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/reverse_bits.v"
+    },
+    {
+      "id": "cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "binary_to_one_hot_decoder_sequential",
+      "module": "test_binary_to_one_hot_decoder_sequential",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/binary_to_one_hot_decoder_sequential.v"
+    },
+    {
+      "id": "cvdp_copilot_static_branch_predict_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "static_branch_predict",
+      "module": "test_static_branch_predict",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/static_branch_predict.sv"
+    },
+    {
+      "id": "cvdp_copilot_sync_lifo_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "sync_lifo",
+      "module": "test_sync_lifo",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/sync_lifo.sv"
+    },
+    {
+      "id": "cvdp_copilot_thermostat_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "thermostat",
+      "module": "test_thermostat",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/thermostat.v"
+    },
+    {
+      "id": "cvdp_copilot_ttc_lite_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "ttc_counter_lite",
+      "module": "test_ttc_counter_lite",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/ttc_counter_lite.sv"
+    },
+    {
+      "id": "cvdp_copilot_unpacker_one_hot_0001",
+      "category": "cid003",
+      "difficulty": "easy",
+      "toplevel": "unpack_one_hot",
+      "module": "tb",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/unpack_one_hot.v"
+    },
+    {
+      "id": "cvdp_copilot_vending_machine_0001",
+      "category": "cid003",
+      "difficulty": "medium",
+      "toplevel": "vending_machine",
+      "module": "test_vending_machine",
+      "sim": "icarus",
+      "toplevel_lang": "verilog",
+      "verilog_sources": "/code/rtl/vending_machine.sv"
+    }
+  ]
+}

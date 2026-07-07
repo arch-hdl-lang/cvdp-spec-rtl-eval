@@ -1,0 +1,103 @@
+//! ---
+//! tags: [timer, counter, axi_lite, interrupt]
+//! ---
+//!
+//! Lightweight AXI-Lite controlled timer/counter. The design keeps 16-bit
+//! count, match, and reload state while exposing the specified 32-bit register
+//! interface with zero-extended readback.
+
+/// AXI-Lite register-backed timer/counter with interval reload and interrupt status.
+///
+/// Address 0 reads count, 1 reads/writes match, 2 reads/writes reload, 3
+/// reads/writes control bits {interrupt_enable, interval_mode, enable}, and 4
+/// reads interrupt status and clears it on any write. The enable and count
+/// outputs expose the internal timer enable bit and current counter value.
+module ttc_counter_lite
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Sync, High>;
+  port axi_addr: in UInt<4>;
+  port axi_wdata: in UInt<32>;
+  port axi_write_en: in Bool;
+  port axi_read_en: in Bool;
+  port axi_rdata: out UInt<32>;
+  port interrupt: out Bool;
+  port enable: out Bool;
+  port count: out UInt<16>;
+
+  reg default: reset reset => 0;
+  reg count_value: UInt<16>;
+  reg match_value: UInt<16>;
+  reg reload_value: UInt<16>;
+  reg timer_enable: Bool;
+  reg interval_mode: Bool;
+  reg interrupt_enable: Bool;
+  reg interrupt_status: Bool;
+
+  let status_write: Bool = axi_write_en && (axi_addr == 4'h4);
+  let match_event: Bool = timer_enable && (count_value == match_value);
+  let next_count: UInt<16> = count_value +% 16'd1;
+  let count_read: UInt<32> = count_value.zext<32>();
+  let match_read: UInt<32> = match_value.zext<32>();
+  let reload_read: UInt<32> = reload_value.zext<32>();
+  let control_read: UInt<32> = {29'd0, interrupt_enable, interval_mode, timer_enable};
+  let status_read: UInt<32> = interrupt_status.zext<32>();
+
+  let interrupt = interrupt_status;
+  let enable = timer_enable;
+  let count = count_value;
+
+  comb
+    axi_rdata = 32'd0;
+    if axi_read_en
+      if axi_addr == 4'h0
+        axi_rdata = count_read;
+      elsif axi_addr == 4'h1
+        axi_rdata = match_read;
+      elsif axi_addr == 4'h2
+        axi_rdata = reload_read;
+      elsif axi_addr == 4'h3
+        axi_rdata = control_read;
+      elsif axi_addr == 4'h4
+        axi_rdata = status_read;
+      else
+        axi_rdata = 32'd0;
+      end if
+    else
+      axi_rdata = 32'd0;
+    end if
+  end comb
+
+  default seq on clk rising;
+
+  seq
+    if axi_write_en
+      if axi_addr == 4'h1
+        match_value <= axi_wdata[15:0];
+      elsif axi_addr == 4'h2
+        reload_value <= axi_wdata[15:0];
+      elsif axi_addr == 4'h3
+        timer_enable <= axi_wdata[0];
+        interval_mode <= axi_wdata[1];
+        interrupt_enable <= axi_wdata[2];
+      end if
+    end if
+
+    if timer_enable
+      if match_event
+        if interval_mode
+          count_value <= reload_value;
+        else
+          count_value <= match_value;
+        end if
+      else
+        count_value <= next_count;
+      end if
+    end if
+
+    if status_write
+      interrupt_status <= false;
+    elsif match_event && interrupt_enable
+      interrupt_status <= true;
+    end if
+  end seq
+end module ttc_counter_lite

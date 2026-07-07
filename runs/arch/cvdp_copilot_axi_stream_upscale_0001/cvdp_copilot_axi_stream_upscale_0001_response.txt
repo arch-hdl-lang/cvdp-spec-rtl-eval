@@ -1,0 +1,93 @@
+//! ---
+//! tags: [axi_stream, upsizer, ready_valid, sign_extension]
+//! ---
+//!
+//! AXI Stream 24-bit to 32-bit upsizer with a single registered output stage.
+//! The output data register captures accepted input samples and exposes them through a one-entry ready/valid pipeline.
+
+/// AXI Stream 24-to-32-bit upsizer with a single pipeline register.
+///
+/// Port timing: clk samples inputs on rising edges; resetn is active-low synchronous. s_axis_ready, m_axis_valid, and m_axis_data are state-derived/combinational views of the internal one-entry pipeline register.
+///
+/// Data formatting: when dfmt_enable is low, the upper byte is zero and the 24-bit source payload is preserved. When enabled, dfmt_type selects either the source MSB or its inverse for output bit 23, and dfmt_se selects whether the upper byte is zero or sign-filled from that selected bit.
+///
+/// Transition table:
+/// | Current | Input condition | Next | Externally visible outputs in current state |
+/// | Empty | s_axis_valid == 1 | Full | s_axis_ready=1, m_axis_valid=0, m_axis_data=data_reg (reset/idle value until next cycle) |
+/// | Empty | s_axis_valid == 0 | Empty | s_axis_ready=1, m_axis_valid=0, m_axis_data=data_reg |
+/// | Full | m_axis_ready == 1 && s_axis_valid == 0 | Empty | s_axis_ready=1, m_axis_valid=1, m_axis_data=data_reg |
+/// | Full | m_axis_ready == 1 && s_axis_valid == 1 | Full | s_axis_ready=1, m_axis_valid=1, m_axis_data=data_reg; next sample replaces data_reg for the following cycle |
+/// | Full | m_axis_ready == 0 | Full | s_axis_ready=0, m_axis_valid=1, m_axis_data=data_reg held |
+fsm axis_upscale
+  port clk: in Clock<SysDomain>;
+  port resetn: in Reset<Sync, Low>;
+
+  port dfmt_enable: in Bool;
+  port dfmt_type: in Bool;
+  port dfmt_se: in Bool;
+
+  port s_axis_valid: in Bool;
+  port s_axis_data: in UInt<24>;
+  port m_axis_ready: in Bool;
+
+  port s_axis_ready: out Bool;
+  port m_axis_valid: out Bool;
+  port m_axis_data: out UInt<32>;
+
+  reg data_reg: UInt<32> reset resetn => 0;
+
+  let src_msb: Bool = s_axis_data[23];
+  let selected_msb: Bool = dfmt_type ? not src_msb : src_msb;
+  let payload_msb: Bool = dfmt_enable ? selected_msb : src_msb;
+  let extend_bit: Bool = dfmt_enable and dfmt_se and payload_msb;
+  let extend_byte: UInt<8> = extend_bit ? 8'hFF : 8'h00;
+  let formatted_payload: UInt<24> = {payload_msb, s_axis_data[22:0]};
+  let formatted_data: UInt<32> = {extend_byte, formatted_payload};
+
+  state [Empty, Full]
+  default state Empty;
+
+  default
+    comb
+      s_axis_ready = false;
+      m_axis_valid = false;
+      m_axis_data = data_reg;
+    end comb
+  end default
+
+  state Empty
+    comb
+      s_axis_ready = true;
+      m_axis_valid = false;
+      m_axis_data = data_reg;
+    end comb
+
+    seq on clk rising
+      if s_axis_valid
+        data_reg <= formatted_data;
+      else
+        data_reg <= 0;
+      end if
+    end seq
+
+    -> Full when s_axis_valid;
+  end state Empty
+
+  state Full
+    comb
+      s_axis_ready = m_axis_ready;
+      m_axis_valid = true;
+      m_axis_data = data_reg;
+    end comb
+
+    seq on clk rising
+      if m_axis_ready and s_axis_valid
+        data_reg <= formatted_data;
+      elsif m_axis_ready
+        data_reg <= 0;
+      end if
+    end seq
+
+    -> Empty when m_axis_ready and not s_axis_valid;
+  end state Full
+end fsm axis_upscale

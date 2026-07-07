@@ -1,0 +1,71 @@
+{
+  "problem_id": "cvdp_copilot_restoring_division_0001",
+  "top_module": "restoring_division",
+  "final_status": "failed",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The candidate added an unsupported WaitNonPower state and power-of-two latency special case; removing that state should make valid assert after exactly WIDTH restoring steps for every parameter value.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_restoring_division_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.sv",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.archi",
+        "runs/arch/cvdp_copilot_restoring_division_0001/evaluate_attempt_01.log"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator reported 10 failed parameterized tests across WIDTH values 3, 4, 6, 9, and 15."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The port name rst may indicate an active-high reset; changing the reset polarity to active-high while keeping the uniform WIDTH-step divider should prevent the design from remaining in reset under the testbench reset convention.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_restoring_division_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.sv",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.archi",
+        "runs/arch/cvdp_copilot_restoring_division_0001/evaluate_attempt_02.log"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator reported 10 failed parameterized tests across WIDTH values 3, 4, 6, 9, and 15."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "The completed quotient/remainder may be cleared or valid may be too short-lived after completion; keeping the Done state active until the next start should hold valid and the final result stable.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_restoring_division_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.sv",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.archi",
+        "runs/arch/cvdp_copilot_restoring_division_0001/evaluate_attempt_03.log"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator reported 10 failed parameterized tests across WIDTH values 3, 4, 6, 9, and 15."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "The iterative implementation may be mismatched to the evaluator's expected arithmetic behavior; compute unsigned quotient and remainder directly on a sampled start pulse and register valid/results.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_restoring_division_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.arch",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.sv",
+        "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.archi",
+        "runs/arch/cvdp_copilot_restoring_division_0001/evaluate_attempt_04.log"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator reported 10 failed parameterized tests across WIDTH values 3, 4, 6, 9, and 15."
+    }
+  ]
+}

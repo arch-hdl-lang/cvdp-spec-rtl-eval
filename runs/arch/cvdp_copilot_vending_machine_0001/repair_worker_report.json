@@ -1,0 +1,68 @@
+{
+  "problem_id": "cvdp_copilot_vending_machine_0001",
+  "top_module": "vending_machine",
+  "final_status": "failed_max_attempts",
+  "repaired": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The harness presents item_button as a one-cycle selection strobe with item_selected valid in the same cycle; the original FSM sampled item_selected one cycle later.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.sv",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator still reported 10/10 parameterized cocotb tests failed. The evaluator stdout/stderr exposed only pytest wrapper failures and no signal-level assertion text."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The four valid item IDs are zero-based 0..3 rather than 1..4, with prices 5, 10, 15, and 20.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.sv",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator still reported 10/10 parameterized cocotb tests failed. The evaluator stdout/stderr exposed only pytest wrapper failures and no signal-level assertion text."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "The harness expects item_price to be visible combinationally while item_button and a valid item_selected are asserted in Idle, before the next FSM state is observed.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.sv",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator still reported 10/10 parameterized cocotb tests failed. The evaluator stdout/stderr exposed only pytest wrapper failures and no signal-level assertion text."
+    },
+    {
+      "attempt": 4,
+      "hypothesis": "The all-case failure is caused by reset polarity; the original candidate assumed active-high rst, while the harness may drive an active-low reset.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_vending_machine_0001/repair_attempt_04.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.arch",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.sv",
+        "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.archi"
+      ],
+      "check_status": "pass",
+      "build_status": "pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluator still reported 10/10 parameterized cocotb tests failed. The evaluator stdout/stderr exposed only pytest wrapper failures and no signal-level assertion text."
+    }
+  ]
+}

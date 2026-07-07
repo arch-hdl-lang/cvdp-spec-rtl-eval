@@ -1,0 +1,47 @@
+//! ---
+//! tags: [prbs, lfsr, generator, checker]
+//! ---
+//!
+//! Configurable PRBS generator/checker. The design keeps a POLY_LENGTH-bit LFSR seeded to all ones and emits one WIDTH-bit registered result per clock.
+
+/// PRBS generator and checker with a parameterized polynomial length, tap, mode, and data width.
+///
+/// On each rising clock edge the module advances WIDTH serial LFSR steps from the current state. In generator mode the registered output is the generated PRBS word; in checker mode it is data_in XOR the expected PRBS word.
+module cvdp_prbs_gen
+  param CHECK_MODE: const = 0;
+  param POLY_LENGTH: const = 31;
+  param POLY_TAP: const = 3;
+  param WIDTH: const = 16;
+
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Sync, High>;
+  port data_in: in UInt<WIDTH>;
+  port data_out: out pipe_reg<UInt<WIDTH>, 1> reset rst => ~0;
+
+  reg lfsr_state: UInt<POLY_LENGTH> reset rst => ~0;
+
+  wire working_state: UInt<POLY_LENGTH>;
+  wire prbs_word: UInt<WIDTH>;
+  wire next_word: UInt<WIDTH>;
+
+  comb
+    working_state = lfsr_state;
+    for i in 0..WIDTH-1
+      prbs_word[i] = working_state[POLY_LENGTH - 1] ^ working_state[POLY_TAP - 1];
+      working_state = {working_state[POLY_LENGTH - 2:0], prbs_word[i]};
+    end for
+
+    if CHECK_MODE == 1
+      next_word = data_in ^ prbs_word;
+    else
+      next_word = prbs_word;
+    end if
+  end comb
+
+  default seq on clk rising;
+
+  seq
+    lfsr_state <= working_state;
+    data_out@1 <= next_word;
+  end seq
+end module cvdp_prbs_gen

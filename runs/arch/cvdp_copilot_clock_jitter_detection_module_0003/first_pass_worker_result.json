@@ -1,0 +1,9 @@
+{
+  "problem_id": "cvdp_copilot_clock_jitter_detection_module_0003",
+  "top_module": "clock_jitter_detection_module",
+  "arch_path": "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/clock_jitter_detection_module.arch",
+  "response_path": "runs/arch/cvdp_copilot_clock_jitter_detection_module_0003/cvdp_copilot_clock_jitter_detection_module_0003_response.txt",
+  "check_status": "passed",
+  "build_status": "passed",
+  "failure_summary": ""
+}

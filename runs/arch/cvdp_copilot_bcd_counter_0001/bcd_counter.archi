@@ -1,0 +1,10 @@
+module bcd_counter
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Sync>;
+  port ms_hr: out UInt<4> comb_dep_on();
+  port ls_hr: out UInt<4> comb_dep_on();
+  port ms_min: out UInt<4> comb_dep_on();
+  port ls_min: out UInt<4> comb_dep_on();
+  port ms_sec: out UInt<4> comb_dep_on();
+  port ls_sec: out UInt<4> comb_dep_on();
+end module bcd_counter

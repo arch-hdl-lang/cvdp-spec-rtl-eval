@@ -1,0 +1,22 @@
+fsm axis_joiner
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async>;
+  port s_axis_tdata_1: in UInt<8>;
+  port s_axis_tvalid_1: in Bool;
+  port s_axis_tready_1: out Bool comb_dep_on();
+  port s_axis_tlast_1: in Bool;
+  port s_axis_tdata_2: in UInt<8>;
+  port s_axis_tvalid_2: in Bool;
+  port s_axis_tready_2: out Bool comb_dep_on();
+  port s_axis_tlast_2: in Bool;
+  port s_axis_tdata_3: in UInt<8>;
+  port s_axis_tvalid_3: in Bool;
+  port s_axis_tready_3: out Bool comb_dep_on();
+  port s_axis_tlast_3: in Bool;
+  port m_axis_tdata: out UInt<8> comb_dep_on(s_axis_tdata_1, s_axis_tdata_2, s_axis_tdata_3);
+  port m_axis_tvalid: out Bool comb_dep_on(s_axis_tvalid_1, s_axis_tvalid_2, s_axis_tvalid_3);
+  port m_axis_tready: in Bool;
+  port m_axis_tlast: out Bool comb_dep_on(s_axis_tlast_1, s_axis_tlast_2, s_axis_tlast_3);
+  port m_axis_tuser: out UInt<2> comb_dep_on();
+  port busy: out Bool comb_dep_on();
+end fsm axis_joiner

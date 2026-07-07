@@ -1,0 +1,58 @@
+//! ---
+//! tags: [ready_valid, bus_controller, arbitration, latency]
+//! ---
+//!
+//! Data bus controller for two independent ready-valid masters sharing one ready-valid slave.
+//! The controller forwards the selected accepted transaction to the slave after one clock cycle.
+
+/// One-cycle two-master data bus controller.
+///
+/// Input sampling: m0_valid, m1_valid, m0_data, m1_data, and s_read are sampled on the rising edge of clk.
+/// Reset behavior: rst_n is asynchronous active low and clears the registered slave outputs.
+/// Output timing: m0_read and m1_read are combinational pass-throughs of s_read; s_valid and s_data are registered with one-cycle latency.
+/// Selection table:
+/// current condition | selected input | externally visible registered output after one cycle
+/// !m0_valid && !m1_valid | none | s_valid=0, s_data=0
+/// m0_valid && !m1_valid && s_read | m0 | s_valid=1, s_data=m0_data
+/// !m0_valid && m1_valid && s_read | m1 | s_valid=1, s_data=m1_data
+/// m0_valid && m1_valid && s_read && AFINITY==0 | m0 | s_valid=1, s_data=m0_data; m1 is ignored
+/// m0_valid && m1_valid && s_read && AFINITY==1 | m1 | s_valid=1, s_data=m1_data; m0 is ignored
+/// any valid condition with !s_read | none accepted | s_valid=0, s_data=0
+module data_bus_controller
+  param AFINITY: const = 0;
+
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+
+  port m0_read: out Bool;
+  port m0_valid: in Bool;
+  port m0_data: in UInt<32>;
+
+  port m1_read: out Bool;
+  port m1_valid: in Bool;
+  port m1_data: in UInt<32>;
+
+  port s_read: in Bool;
+  port s_valid: out pipe_reg<Bool, 1> reset rst_n => false;
+  port s_data: out pipe_reg<UInt<32>, 1> reset rst_n => 0;
+
+  let m0_read = s_read;
+  let m1_read = s_read;
+
+  let affinity_m1: Bool = AFINITY == 1;
+  let choose_m1: Bool = (m1_valid and not m0_valid) or (m0_valid and m1_valid and affinity_m1);
+  let any_valid: Bool = m0_valid or m1_valid;
+  let accepted: Bool = any_valid and s_read;
+  let selected_data: UInt<32> = choose_m1 ? m1_data : m0_data;
+
+  default seq on clk rising;
+
+  seq
+    s_valid <= accepted;
+    if accepted
+      s_data <= selected_data;
+    else
+      s_data <= 0;
+    end if
+  end seq
+end module data_bus_controller

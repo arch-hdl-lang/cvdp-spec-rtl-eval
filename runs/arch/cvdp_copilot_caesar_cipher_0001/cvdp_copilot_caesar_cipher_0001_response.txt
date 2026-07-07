@@ -1,0 +1,41 @@
+//! ---
+//! tags: [caesar, cipher, combinational]
+//! ---
+//!
+//! Combinational Caesar cipher for 8-bit ASCII input characters. Alphabetic
+//! uppercase and lowercase characters are shifted by a 4-bit key with wraparound;
+//! non-alphabetic characters pass through unchanged.
+
+/// Implements the top-level Caesar cipher datapath.
+///
+/// The module has purely combinational timing: output_char reflects input_char
+/// and key in the same cycle with no clocked storage.
+module caesar_cipher
+  port input_char: in UInt<8>;
+  port key: in UInt<4>;
+  port output_char: out UInt<8>;
+
+  let is_upper: Bool = (input_char >= 8'd65) and (input_char <= 8'd90);
+  let is_lower: Bool = (input_char >= 8'd97) and (input_char <= 8'd122);
+  let key8: UInt<8> = key.zext<8>();
+
+  let upper_pos: UInt<8> = input_char -% 8'd65;
+  let upper_sum: UInt<8> = upper_pos +% key8;
+  let upper_mod: UInt<8> = (upper_sum >= 8'd26) ? (upper_sum -% 8'd26) : upper_sum;
+  let upper_shifted: UInt<8> = upper_mod +% 8'd65;
+
+  let lower_pos: UInt<8> = input_char -% 8'd97;
+  let lower_sum: UInt<8> = lower_pos +% key8;
+  let lower_mod: UInt<8> = (lower_sum >= 8'd26) ? (lower_sum -% 8'd26) : lower_sum;
+  let lower_shifted: UInt<8> = lower_mod +% 8'd97;
+
+  comb
+    if is_upper
+      output_char = upper_shifted;
+    elsif is_lower
+      output_char = lower_shifted;
+    else
+      output_char = input_char;
+    end if
+  end comb
+end module caesar_cipher

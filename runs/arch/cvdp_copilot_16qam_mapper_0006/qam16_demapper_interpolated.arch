@@ -1,0 +1,65 @@
+//! ---
+//! tags: [qam16, demapper, interpolation, combinational]
+//! refs: []
+//! ---
+//!
+//! Combinational QAM16 demapper for packed I/Q sample streams. The design decodes mapped samples into four-bit symbols and raises a global flag when an interpolated sample differs from the average of its adjacent mapped samples by more than the threshold.
+
+/// Convert one signed 3-bit QAM16 amplitude lane into its two-bit symbol code.
+///
+/// The four constellation levels use their two's-complement 3-bit encodings: -3=101, -1=111, 1=001, and 3=011.
+function qam16_level_bits(v: UInt<3>) -> UInt<2>
+  return (v == 3'b101) ? 2'b00 :
+         (v == 3'b111) ? 2'b01 :
+         (v == 3'b001) ? 2'b10 :
+         (v == 3'b011) ? 2'b11 :
+         2'b00;
+end function qam16_level_bits
+
+/// Return the absolute signed deviation between an interpolated 3-bit lane and the average of its two mapped neighbors.
+///
+/// All arithmetic is widened before signed addition, division, subtraction, and absolute-value calculation.
+function interp_lane_abs_diff(a_raw: UInt<3>, mid_raw: UInt<3>, b_raw: UInt<3>) -> SInt<6>
+  let a_s3: SInt<3> = signed(a_raw);
+  let mid_s3: SInt<3> = signed(mid_raw);
+  let b_s3: SInt<3> = signed(b_raw);
+  let a_s4: SInt<4> = a_s3.sext<4>();
+  let mid_s4: SInt<4> = mid_s3.sext<4>();
+  let b_s4: SInt<4> = b_s3.sext<4>();
+  let sum_s5: SInt<5> = a_s4 + b_s4;
+  let avg_s5: SInt<5> = sum_s5 / 2;
+  let mid_s5: SInt<5> = mid_s4.sext<5>();
+  let diff_s6: SInt<6> = mid_s5 - avg_s5;
+  let neg_diff_s6: SInt<6> = 0 - diff_s6;
+  let abs_diff_s6: SInt<6> = (diff_s6 < 0) ? neg_diff_s6 : diff_s6;
+  return abs_diff_s6;
+end function interp_lane_abs_diff
+
+/// Top-level combinational QAM16 demapper with interpolated-value error detection.
+///
+/// Inputs are packed as repeated pairs of mapped samples with one interpolated sample between them. Outputs are same-cycle combinational: `bits` contains one 4-bit demapped symbol for each mapped sample, and `error_flag` is the OR of all I and Q interpolation checks.
+module qam16_demapper_interpolated
+  param N: const = 4;
+  param OUT_WIDTH: const = 4;
+  param IN_WIDTH: const = 3;
+  param ERROR_THRESHOLD: const = 1;
+
+  port I: in UInt<(N + (N / 2)) * IN_WIDTH>;
+  port Q: in UInt<(N + (N / 2)) * IN_WIDTH>;
+  port bits: out UInt<N * OUT_WIDTH>;
+  port error_flag: out Bool;
+
+  comb
+    bits = 0;
+    error_flag = false;
+
+    for pair_idx in 0..(N / 2)
+      bits[((pair_idx * 2) * OUT_WIDTH) + 3 : (pair_idx * 2) * OUT_WIDTH] = {qam16_level_bits(I[((pair_idx * 3) * IN_WIDTH) + 2 : (pair_idx * 3) * IN_WIDTH]), qam16_level_bits(Q[((pair_idx * 3) * IN_WIDTH) + 2 : (pair_idx * 3) * IN_WIDTH])};
+      bits[(((pair_idx * 2) + 1) * OUT_WIDTH) + 3 : ((pair_idx * 2) + 1) * OUT_WIDTH] = {qam16_level_bits(I[(((pair_idx * 3) + 2) * IN_WIDTH) + 2 : ((pair_idx * 3) + 2) * IN_WIDTH]), qam16_level_bits(Q[(((pair_idx * 3) + 2) * IN_WIDTH) + 2 : ((pair_idx * 3) + 2) * IN_WIDTH])};
+
+      if (interp_lane_abs_diff(I[((pair_idx * 3) * IN_WIDTH) + 2 : (pair_idx * 3) * IN_WIDTH], I[(((pair_idx * 3) + 1) * IN_WIDTH) + 2 : ((pair_idx * 3) + 1) * IN_WIDTH], I[(((pair_idx * 3) + 2) * IN_WIDTH) + 2 : ((pair_idx * 3) + 2) * IN_WIDTH]) > ERROR_THRESHOLD) or (interp_lane_abs_diff(Q[((pair_idx * 3) * IN_WIDTH) + 2 : (pair_idx * 3) * IN_WIDTH], Q[(((pair_idx * 3) + 1) * IN_WIDTH) + 2 : ((pair_idx * 3) + 1) * IN_WIDTH], Q[(((pair_idx * 3) + 2) * IN_WIDTH) + 2 : ((pair_idx * 3) + 2) * IN_WIDTH]) > ERROR_THRESHOLD)
+        error_flag = true;
+      end if
+    end for
+  end comb
+end module qam16_demapper_interpolated

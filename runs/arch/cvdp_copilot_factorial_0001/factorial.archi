@@ -1,0 +1,9 @@
+fsm factorial
+  port clk: in Clock<SysDomain>;
+  port arst_n: in Reset<Async, Low>;
+  port num_in: in UInt<5>;
+  port start: in Bool;
+  port busy: out Bool comb_dep_on();
+  port fact: out UInt<64> comb_dep_on();
+  port done: out Bool comb_dep_on();
+end fsm factorial

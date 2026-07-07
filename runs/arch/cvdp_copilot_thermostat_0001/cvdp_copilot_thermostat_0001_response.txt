@@ -1,0 +1,165 @@
+//! ---
+//! tags: [thermostat, fsm, heating, cooling, fault]
+//! ---
+//!
+//! Sequential thermostat controller that selects heating, cooling, or ambient
+//! operation from prioritized temperature feedback. Fault, clear, enable, and
+//! asynchronous active-low reset behavior are captured directly in the state and
+//! registered output update logic.
+
+/// Thermostat controller top-level module.
+///
+/// Samples temperature feedback on `i_clk`, tracks a retained fault condition,
+/// and drives registered heat, cool, fan, and state outputs with asynchronous
+/// active-low reset to the ambient/off condition.
+module thermostat
+  port i_clk: in Clock<SysDomain>;
+  port i_rst: in Reset<Async, Low>;
+  port i_temp_feedback: in UInt<6>;
+  port i_fan_on: in Bool;
+  port i_enable: in Bool;
+  port i_fault: in Bool;
+  port i_clr: in Bool;
+
+  port o_heater_full: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_heater_medium: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_heater_low: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_aircon_full: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_aircon_medium: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_aircon_low: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_fan: out pipe_reg<Bool, 1> reset i_rst => false;
+  port o_state: out pipe_reg<UInt<3>, 1> reset i_rst => 3'b011;
+
+  let HEAT_LOW: UInt<3> = 3'b000;
+  let HEAT_MED: UInt<3> = 3'b001;
+  let HEAT_FULL: UInt<3> = 3'b010;
+  let AMBIENT: UInt<3> = 3'b011;
+  let COOL_LOW: UInt<3> = 3'b100;
+  let COOL_MED: UInt<3> = 3'b101;
+  let COOL_FULL: UInt<3> = 3'b110;
+
+  let full_cold: Bool = i_temp_feedback[5];
+  let medium_cold: Bool = i_temp_feedback[4];
+  let low_cold: Bool = i_temp_feedback[3];
+  let low_hot: Bool = i_temp_feedback[2];
+  let medium_hot: Bool = i_temp_feedback[1];
+  let full_hot: Bool = i_temp_feedback[0];
+
+  reg fault_active: Bool reset i_rst => false;
+
+  default seq on i_clk rising;
+
+  seq
+    if i_fault
+      fault_active <= true;
+      o_state <= AMBIENT;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= false;
+    elsif i_clr
+      fault_active <= false;
+      o_state <= AMBIENT;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= false;
+    elsif fault_active
+      fault_active <= true;
+      o_state <= AMBIENT;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= false;
+    elsif not i_enable
+      fault_active <= false;
+      o_state <= AMBIENT;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= false;
+    elsif full_cold
+      fault_active <= false;
+      o_state <= HEAT_FULL;
+      o_heater_full <= true;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= true;
+    elsif medium_cold
+      fault_active <= false;
+      o_state <= HEAT_MED;
+      o_heater_full <= false;
+      o_heater_medium <= true;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= true;
+    elsif low_cold
+      fault_active <= false;
+      o_state <= HEAT_LOW;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= true;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= true;
+    elsif full_hot
+      fault_active <= false;
+      o_state <= COOL_FULL;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= true;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= true;
+    elsif medium_hot
+      fault_active <= false;
+      o_state <= COOL_MED;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= true;
+      o_aircon_low <= false;
+      o_fan <= true;
+    elsif low_hot
+      fault_active <= false;
+      o_state <= COOL_LOW;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= true;
+      o_fan <= true;
+    else
+      fault_active <= false;
+      o_state <= AMBIENT;
+      o_heater_full <= false;
+      o_heater_medium <= false;
+      o_heater_low <= false;
+      o_aircon_full <= false;
+      o_aircon_medium <= false;
+      o_aircon_low <= false;
+      o_fan <= i_fan_on;
+    end if
+  end seq
+end module thermostat

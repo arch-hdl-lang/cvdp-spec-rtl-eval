@@ -1,0 +1,7 @@
+module palindrome_detect
+  param N: const = 3;
+  port clk: in Clock<SysDomain>;
+  port reset: in Bool;
+  port bit_stream: in Bool;
+  port palindrome_detected: out Bool comb_dep_on();
+end module palindrome_detect

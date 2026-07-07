@@ -1,0 +1,14 @@
+{
+  "problem_id": "cvdp_copilot_GFCM_0001",
+  "top_module": "glitch_free_mux",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_GFCM_0001/glitch_free_mux.arch",
+    "response": "runs/arch/cvdp_copilot_GFCM_0001/cvdp_copilot_GFCM_0001_response.txt",
+    "build": "runs/arch/cvdp_copilot_GFCM_0001/build",
+    "sv": "runs/arch/cvdp_copilot_GFCM_0001/glitch_free_mux.sv"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

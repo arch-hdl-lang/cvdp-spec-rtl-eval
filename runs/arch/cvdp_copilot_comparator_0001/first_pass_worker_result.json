@@ -1,0 +1,10 @@
+{
+  "id": "cvdp_copilot_comparator_0001",
+  "top": "signed_unsigned_comparator",
+  "lane": "arch",
+  "arch_check_status": "pass",
+  "arch_build_lint_status": "pass",
+  "evaluation_status": "pass",
+  "evaluation_returncode": 0,
+  "runtime": "osvb-docker"
+}

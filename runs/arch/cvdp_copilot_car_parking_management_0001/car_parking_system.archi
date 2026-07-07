@@ -1,0 +1,15 @@
+fsm car_parking_system
+  param TOTAL_SPACES: const = 12;
+  local param COUNT_W: const = clog2(TOTAL_SPACES);
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async>;
+  port vehicle_entry_sensor: in Bool;
+  port vehicle_exit_sensor: in Bool;
+  port available_spaces: out UInt<COUNT_W> comb_dep_on();
+  port count_car: out UInt<COUNT_W> comb_dep_on();
+  port led_status: out Bool comb_dep_on();
+  port seven_seg_display_available_tens: out UInt<7> comb_dep_on();
+  port seven_seg_display_available_units: out UInt<7> comb_dep_on();
+  port seven_seg_display_count_tens: out UInt<7> comb_dep_on();
+  port seven_seg_display_count_units: out UInt<7> comb_dep_on();
+end fsm car_parking_system

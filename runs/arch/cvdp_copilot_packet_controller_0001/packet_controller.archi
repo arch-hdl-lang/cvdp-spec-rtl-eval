@@ -1,0 +1,9 @@
+fsm packet_controller
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async>;
+  port rx_valid_i: in Bool;
+  port rx_data_8_i: in UInt<8>;
+  port tx_done_tick_i: in Bool;
+  port tx_start_o: out UInt<1> comb_dep_on();
+  port tx_data_8_o: out UInt<8> comb_dep_on();
+end fsm packet_controller

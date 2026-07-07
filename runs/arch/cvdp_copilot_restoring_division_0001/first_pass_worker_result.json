@@ -1,0 +1,11 @@
+{
+  "problem_id": "cvdp_copilot_restoring_division_0001",
+  "top_module": "restoring_division",
+  "arch_version": "arch 0.70.6",
+  "arch_file": "runs/arch/cvdp_copilot_restoring_division_0001/restoring_division.arch",
+  "response_file": "runs/arch/cvdp_copilot_restoring_division_0001/cvdp_copilot_restoring_division_0001_response.txt",
+  "generated_sv_dir": "runs/arch/cvdp_copilot_restoring_division_0001/generated_sv",
+  "check_status": "pass",
+  "build_status": "pass",
+  "verilator_lint_status": "pass"
+}

@@ -1,0 +1,91 @@
+//! ---
+//! tags: [moving_average, rolling_sum, datapath]
+//! ---
+//!
+//! Computes a rolling integer average over the most recent eight unsigned
+//! 12-bit input samples. Reset clears the stored samples, running sum,
+//! fill count, write pointer, and registered output.
+
+/// Synchronous moving average over an eight-sample window.
+///
+/// Each rising clock edge accepts one input sample when reset is low and
+/// updates data_out to the eight-divided rolling sum including that sample.
+module moving_average
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Sync, High>;
+  port data_in: in UInt<12>;
+  port data_out: out pipe_reg<UInt<12>, 1> reset reset => 0;
+
+  reg default: reset reset => 0;
+  reg sample0: UInt<12>;
+  reg sample1: UInt<12>;
+  reg sample2: UInt<12>;
+  reg sample3: UInt<12>;
+  reg sample4: UInt<12>;
+  reg sample5: UInt<12>;
+  reg sample6: UInt<12>;
+  reg sample7: UInt<12>;
+  reg rolling_sum: UInt<15>;
+  reg fill_count: UInt<4>;
+  reg write_ptr: UInt<3>;
+
+  let incoming_wide: UInt<15> = data_in.zext<15>();
+  let oldest_sample: UInt<12> = (write_ptr == 3'd0) ? sample0 :
+                                (write_ptr == 3'd1) ? sample1 :
+                                (write_ptr == 3'd2) ? sample2 :
+                                (write_ptr == 3'd3) ? sample3 :
+                                (write_ptr == 3'd4) ? sample4 :
+                                (write_ptr == 3'd5) ? sample5 :
+                                (write_ptr == 3'd6) ? sample6 : sample7;
+  let oldest_wide: UInt<15> = oldest_sample.zext<15>();
+  let sum_with_incoming: UInt<15> = rolling_sum +% incoming_wide;
+  let full_window_sum: UInt<15> = sum_with_incoming -% oldest_wide;
+  let next_sum: UInt<15> = (fill_count < 4'd8) ? sum_with_incoming : full_window_sum;
+  let next_average: UInt<12> = next_sum[14:3];
+
+  default seq on clk rising;
+
+  seq
+    if reset
+      sample0 <= 0;
+      sample1 <= 0;
+      sample2 <= 0;
+      sample3 <= 0;
+      sample4 <= 0;
+      sample5 <= 0;
+      sample6 <= 0;
+      sample7 <= 0;
+      rolling_sum <= 0;
+      fill_count <= 0;
+      write_ptr <= 0;
+      data_out@1 <= 0;
+    else
+      if write_ptr == 3'd0
+        sample0 <= data_in;
+      elsif write_ptr == 3'd1
+        sample1 <= data_in;
+      elsif write_ptr == 3'd2
+        sample2 <= data_in;
+      elsif write_ptr == 3'd3
+        sample3 <= data_in;
+      elsif write_ptr == 3'd4
+        sample4 <= data_in;
+      elsif write_ptr == 3'd5
+        sample5 <= data_in;
+      elsif write_ptr == 3'd6
+        sample6 <= data_in;
+      else
+        sample7 <= data_in;
+      end if
+
+      rolling_sum <= next_sum;
+      data_out@1 <= next_average;
+
+      if fill_count < 4'd8
+        fill_count <= fill_count +% 4'd1;
+      end if
+
+      write_ptr <= write_ptr +% 3'd1;
+    end if
+  end seq
+end module moving_average

@@ -1,0 +1,43 @@
+//! ---
+//! tags: [unpack, one_hot, sign_extension, packed_data]
+//! ---
+//!
+//! Combinational unpacker for expanding packed source lanes into a 512-bit destination.
+//! The selector chooses 1-, 2-, 4-, or 8-bit source lanes, with signed or unsigned extension.
+
+/// Unpacks a 256-bit packed source register into a 512-bit destination register.
+///
+/// The output is combinational and zero-initialized before the selected unpacking mode writes its lanes.
+module unpack_one_hot
+  port sign: in UInt<1>;
+  port size: in UInt<1>;
+  port one_hot_selector: in UInt<3>;
+  port source_reg: in UInt<256>;
+  port destination_reg: out UInt<512>;
+
+  comb
+    destination_reg = 0;
+
+    if one_hot_selector == 3'b001
+      for i in 0..63
+        destination_reg[(i * 8) + 7 : i * 8] = (sign == 1'b1 and source_reg[i] == 1'b1) ? 8'hFF : {7'b0000000, source_reg[i]};
+      end for
+    elsif one_hot_selector == 3'b010
+      for i in 0..63
+        destination_reg[(i * 8) + 7 : i * 8] = (sign == 1'b1 and source_reg[(i * 2) + 1] == 1'b1) ? {6'b111111, source_reg[(i * 2) + 1 : i * 2]} : {6'b000000, source_reg[(i * 2) + 1 : i * 2]};
+      end for
+    elsif one_hot_selector == 3'b100
+      if size == 1'b1
+        for i in 0..31
+          destination_reg[(i * 16) + 15 : i * 16] = (sign == 1'b1 and source_reg[(i * 8) + 7] == 1'b1) ? {8'hFF, source_reg[(i * 8) + 7 : i * 8]} : {8'h00, source_reg[(i * 8) + 7 : i * 8]};
+        end for
+      else
+        for i in 0..63
+          destination_reg[(i * 8) + 7 : i * 8] = (sign == 1'b1 and source_reg[(i * 4) + 3] == 1'b1) ? {4'b1111, source_reg[(i * 4) + 3 : i * 4]} : {4'b0000, source_reg[(i * 4) + 3 : i * 4]};
+        end for
+      end if
+    else
+      destination_reg[255:0] = source_reg;
+    end if
+  end comb
+end module unpack_one_hot

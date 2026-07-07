@@ -1,0 +1,13 @@
+fsm hebb_gates
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, Low>;
+  port start: in Bool;
+  port a: in SInt<4>;
+  port b: in SInt<4>;
+  port gate_select: in UInt<2>;
+  port w1: out SInt<4> comb_dep_on();
+  port w2: out SInt<4> comb_dep_on();
+  port bias: out SInt<4> comb_dep_on();
+  port present_state: out UInt<4> comb_dep_on();
+  port next_state: out UInt<4> comb_dep_on(gate_select, start);
+end fsm hebb_gates

@@ -1,0 +1,10 @@
+module complex_multiplier
+  port clk: in Clock<SysDomain>;
+  port arst_n: in Reset<Async, Low>;
+  port a_real: in UInt<16>;
+  port a_imag: in UInt<16>;
+  port b_real: in UInt<16>;
+  port b_imag: in UInt<16>;
+  port result_real: out pipe_reg<UInt<32>, 1> reset arst_n => 0;
+  port result_imag: out pipe_reg<UInt<32>, 1> reset arst_n => 0;
+end module complex_multiplier

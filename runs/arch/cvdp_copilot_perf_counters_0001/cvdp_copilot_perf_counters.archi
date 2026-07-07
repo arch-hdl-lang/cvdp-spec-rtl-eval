@@ -1,0 +1,8 @@
+module cvdp_copilot_perf_counters
+  param CNT_W: const = 8;
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async>;
+  port sw_req_i: in Bool;
+  port cpu_trig_i: in Bool;
+  port p_count_o: out UInt<8> comb_dep_on(sw_req_i);
+end module cvdp_copilot_perf_counters

@@ -1,0 +1,293 @@
+//! ---
+//! tags: [firstbit, decoder, pipeline, valid]
+//! ---
+//!
+//! Parameterized first-set-bit decoder for CVDP. The design samples optional
+//! input registers, scans for the lowest asserted input bit, delays the result
+//! through a parameterized pipeline, and optionally registers the outputs.
+/// First-set-bit decoder with optional input/output registers.
+///
+/// Timing table:
+/// - Input selection: InReg_g == 1 uses data and valid sampled on Clk; otherwise current inputs feed the decoder.
+/// - Decode pipeline: PlRegs_g selects the registered decode tap, with PlRegs_g == 0 using stage 0.
+/// - Output selection: OutReg_g == 1 returns one additional registered stage; otherwise the decode pipeline output is visible directly.
+module cvdp_copilot_decode_firstbit #(
+  parameter int InWidth_g = 32,
+  parameter int InReg_g = 1,
+  parameter int OutReg_g = 1,
+  parameter int PlRegs_g = 1,
+  localparam int BinBits_c = $clog2(InWidth_g)
+) (
+  input logic Clk,
+  input logic Rst,
+  input logic [InWidth_g-1:0] In_Data,
+  input logic In_Valid,
+  output logic [BinBits_c-1:0] Out_FirstBit,
+  output logic Out_Found,
+  output logic Out_Valid
+);
+
+  logic [InWidth_g-1:0] selected_data;
+  logic selected_valid;
+  logic [InWidth_g-1:0] selected_neg;
+  logic [InWidth_g-1:0] lowest_mask;
+  logic scan_found;
+  logic decode_valid_in;
+  logic decode_found_in;
+  logic [BinBits_c-1:0] decode_first_in;
+  logic [InWidth_g-1:0] in_data_q;
+  logic in_valid_q;
+  logic [BinBits_c-1:0] first_s0;
+  logic [BinBits_c-1:0] first_s1;
+  logic [BinBits_c-1:0] first_s2;
+  logic [BinBits_c-1:0] first_s3;
+  logic [BinBits_c-1:0] first_s4;
+  logic [BinBits_c-1:0] first_s5;
+  logic [BinBits_c-1:0] first_s6;
+  logic [BinBits_c-1:0] first_s7;
+  logic [BinBits_c-1:0] first_s8;
+  logic [BinBits_c-1:0] first_s9;
+  logic [BinBits_c-1:0] first_s10;
+  logic [BinBits_c-1:0] first_s11;
+  logic [BinBits_c-1:0] first_s12;
+  logic [BinBits_c-1:0] first_s13;
+  logic [BinBits_c-1:0] first_s14;
+  logic [BinBits_c-1:0] first_s15;
+  logic found_s0;
+  logic found_s1;
+  logic found_s2;
+  logic found_s3;
+  logic found_s4;
+  logic found_s5;
+  logic found_s6;
+  logic found_s7;
+  logic found_s8;
+  logic found_s9;
+  logic found_s10;
+  logic found_s11;
+  logic found_s12;
+  logic found_s13;
+  logic found_s14;
+  logic found_s15;
+  logic valid_s0;
+  logic valid_s1;
+  logic valid_s2;
+  logic valid_s3;
+  logic valid_s4;
+  logic valid_s5;
+  logic valid_s6;
+  logic valid_s7;
+  logic valid_s8;
+  logic valid_s9;
+  logic valid_s10;
+  logic valid_s11;
+  logic valid_s12;
+  logic valid_s13;
+  logic valid_s14;
+  logic valid_s15;
+  logic [BinBits_c-1:0] out_first_q;
+  logic out_found_q;
+  logic out_valid_q;
+  assign selected_data = InReg_g == 1 ? in_data_q : In_Data;
+  assign selected_valid = InReg_g == 1 ? in_valid_q : In_Valid;
+  assign selected_neg = (1 > InWidth_g ? 1 : InWidth_g)'(0 - selected_data);
+  assign lowest_mask = selected_data & selected_neg;
+  assign scan_found = selected_data != 0;
+  logic [BinBits_c-1:0] scan_first;
+  logic [BinBits_c-1:0] pipe_first_out;
+  logic pipe_found_out;
+  logic pipe_valid_out;
+  assign decode_valid_in = selected_valid;
+  assign decode_found_in = selected_valid && scan_found;
+  assign decode_first_in = selected_valid && scan_found ? scan_first : 0;
+  assign Out_FirstBit = OutReg_g == 1 ? out_first_q : pipe_first_out;
+  assign Out_Found = OutReg_g == 1 ? out_found_q : pipe_found_out;
+  assign Out_Valid = OutReg_g == 1 ? out_valid_q : pipe_valid_out;
+  always_comb begin
+    scan_first = 0;
+    for (int bit_pos = 0; bit_pos <= InWidth_g - 1; bit_pos++) begin
+      if (lowest_mask[bit_pos] == 1) begin
+        scan_first = bit_pos;
+      end
+    end
+  end
+  always_comb begin
+    pipe_first_out = first_s15;
+    pipe_found_out = found_s15;
+    pipe_valid_out = valid_s15;
+    if (PlRegs_g == 0) begin
+      pipe_first_out = first_s0;
+      pipe_found_out = found_s0;
+      pipe_valid_out = valid_s0;
+    end else if (PlRegs_g == 1) begin
+      pipe_first_out = first_s1;
+      pipe_found_out = found_s1;
+      pipe_valid_out = valid_s1;
+    end else if (PlRegs_g == 2) begin
+      pipe_first_out = first_s2;
+      pipe_found_out = found_s2;
+      pipe_valid_out = valid_s2;
+    end else if (PlRegs_g == 3) begin
+      pipe_first_out = first_s3;
+      pipe_found_out = found_s3;
+      pipe_valid_out = valid_s3;
+    end else if (PlRegs_g == 4) begin
+      pipe_first_out = first_s4;
+      pipe_found_out = found_s4;
+      pipe_valid_out = valid_s4;
+    end else if (PlRegs_g == 5) begin
+      pipe_first_out = first_s5;
+      pipe_found_out = found_s5;
+      pipe_valid_out = valid_s5;
+    end else if (PlRegs_g == 6) begin
+      pipe_first_out = first_s6;
+      pipe_found_out = found_s6;
+      pipe_valid_out = valid_s6;
+    end else if (PlRegs_g == 7) begin
+      pipe_first_out = first_s7;
+      pipe_found_out = found_s7;
+      pipe_valid_out = valid_s7;
+    end else if (PlRegs_g == 8) begin
+      pipe_first_out = first_s8;
+      pipe_found_out = found_s8;
+      pipe_valid_out = valid_s8;
+    end else if (PlRegs_g == 9) begin
+      pipe_first_out = first_s9;
+      pipe_found_out = found_s9;
+      pipe_valid_out = valid_s9;
+    end else if (PlRegs_g == 10) begin
+      pipe_first_out = first_s10;
+      pipe_found_out = found_s10;
+      pipe_valid_out = valid_s10;
+    end else if (PlRegs_g == 11) begin
+      pipe_first_out = first_s11;
+      pipe_found_out = found_s11;
+      pipe_valid_out = valid_s11;
+    end else if (PlRegs_g == 12) begin
+      pipe_first_out = first_s12;
+      pipe_found_out = found_s12;
+      pipe_valid_out = valid_s12;
+    end else if (PlRegs_g == 13) begin
+      pipe_first_out = first_s13;
+      pipe_found_out = found_s13;
+      pipe_valid_out = valid_s13;
+    end else if (PlRegs_g == 14) begin
+      pipe_first_out = first_s14;
+      pipe_found_out = found_s14;
+      pipe_valid_out = valid_s14;
+    end
+  end
+  always_ff @(posedge Clk or posedge Rst) begin
+    if (Rst) begin
+      first_s0 <= 0;
+      first_s1 <= 0;
+      first_s10 <= 0;
+      first_s11 <= 0;
+      first_s12 <= 0;
+      first_s13 <= 0;
+      first_s14 <= 0;
+      first_s15 <= 0;
+      first_s2 <= 0;
+      first_s3 <= 0;
+      first_s4 <= 0;
+      first_s5 <= 0;
+      first_s6 <= 0;
+      first_s7 <= 0;
+      first_s8 <= 0;
+      first_s9 <= 0;
+      found_s0 <= 0;
+      found_s1 <= 0;
+      found_s10 <= 0;
+      found_s11 <= 0;
+      found_s12 <= 0;
+      found_s13 <= 0;
+      found_s14 <= 0;
+      found_s15 <= 0;
+      found_s2 <= 0;
+      found_s3 <= 0;
+      found_s4 <= 0;
+      found_s5 <= 0;
+      found_s6 <= 0;
+      found_s7 <= 0;
+      found_s8 <= 0;
+      found_s9 <= 0;
+      in_data_q <= 0;
+      in_valid_q <= 0;
+      out_first_q <= 0;
+      out_found_q <= 0;
+      out_valid_q <= 0;
+      valid_s0 <= 0;
+      valid_s1 <= 0;
+      valid_s10 <= 0;
+      valid_s11 <= 0;
+      valid_s12 <= 0;
+      valid_s13 <= 0;
+      valid_s14 <= 0;
+      valid_s15 <= 0;
+      valid_s2 <= 0;
+      valid_s3 <= 0;
+      valid_s4 <= 0;
+      valid_s5 <= 0;
+      valid_s6 <= 0;
+      valid_s7 <= 0;
+      valid_s8 <= 0;
+      valid_s9 <= 0;
+    end else begin
+      in_data_q <= In_Data;
+      in_valid_q <= In_Valid;
+      first_s0 <= decode_first_in;
+      found_s0 <= decode_found_in;
+      valid_s0 <= decode_valid_in;
+      first_s1 <= first_s0;
+      found_s1 <= found_s0;
+      valid_s1 <= valid_s0;
+      first_s2 <= first_s1;
+      found_s2 <= found_s1;
+      valid_s2 <= valid_s1;
+      first_s3 <= first_s2;
+      found_s3 <= found_s2;
+      valid_s3 <= valid_s2;
+      first_s4 <= first_s3;
+      found_s4 <= found_s3;
+      valid_s4 <= valid_s3;
+      first_s5 <= first_s4;
+      found_s5 <= found_s4;
+      valid_s5 <= valid_s4;
+      first_s6 <= first_s5;
+      found_s6 <= found_s5;
+      valid_s6 <= valid_s5;
+      first_s7 <= first_s6;
+      found_s7 <= found_s6;
+      valid_s7 <= valid_s6;
+      first_s8 <= first_s7;
+      found_s8 <= found_s7;
+      valid_s8 <= valid_s7;
+      first_s9 <= first_s8;
+      found_s9 <= found_s8;
+      valid_s9 <= valid_s8;
+      first_s10 <= first_s9;
+      found_s10 <= found_s9;
+      valid_s10 <= valid_s9;
+      first_s11 <= first_s10;
+      found_s11 <= found_s10;
+      valid_s11 <= valid_s10;
+      first_s12 <= first_s11;
+      found_s12 <= found_s11;
+      valid_s12 <= valid_s11;
+      first_s13 <= first_s12;
+      found_s13 <= found_s12;
+      valid_s13 <= valid_s12;
+      first_s14 <= first_s13;
+      found_s14 <= found_s13;
+      valid_s14 <= valid_s13;
+      first_s15 <= first_s14;
+      found_s15 <= found_s14;
+      valid_s15 <= valid_s14;
+      out_first_q <= pipe_first_out;
+      out_found_q <= pipe_found_out;
+      out_valid_q <= pipe_valid_out;
+    end
+  end
+
+endmodule
+

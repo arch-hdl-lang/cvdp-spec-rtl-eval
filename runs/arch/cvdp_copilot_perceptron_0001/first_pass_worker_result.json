@@ -1,0 +1,21 @@
+{
+  "problem": "cvdp_copilot_perceptron_0001",
+  "lane": "arch",
+  "top": "perceptron_gates",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "runtime": "osvb-docker",
+    "status": "pass",
+    "returncode": 0,
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "failure_summary": null,
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_perceptron_0001/perceptron_gates.arch",
+    "response": "runs/arch/cvdp_copilot_perceptron_0001/cvdp_copilot_perceptron_0001_response.txt",
+    "result": "runs/arch/cvdp_copilot_perceptron_0001/first_pass_worker_result.json"
+  }
+}

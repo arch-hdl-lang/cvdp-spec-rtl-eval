@@ -1,0 +1,50 @@
+//! ---
+//! tags: [matrix, multiplier, combinational, parameterized]
+//! ---
+//!
+//! Parameterized combinational unsigned matrix multiplier for compatible
+//! row-major flattened matrices. Matrix A is ROW_A by COL_A, matrix B is
+//! ROW_B by COL_B, and matrix C is ROW_A by COL_B.
+
+/// Combinational unsigned matrix multiplier with packed row-major matrix ports.
+///
+/// Each output element is the sum over COL_A products and is written into the
+/// corresponding row-major lane of matrix_c with no registered latency.
+module matrix_multiplier
+  param ROW_A: const = 4;
+  param COL_A: const = 4;
+  param ROW_B: const = 4;
+  param COL_B: const = 4;
+  param INPUT_DATA_WIDTH: const = 8;
+  param OUTPUT_DATA_WIDTH: const = (2 * INPUT_DATA_WIDTH) + $clog2(COL_A);
+
+  port matrix_a: in UInt<ROW_A * COL_A * INPUT_DATA_WIDTH>;
+  port matrix_b: in UInt<ROW_B * COL_B * INPUT_DATA_WIDTH>;
+  port matrix_c: out UInt<ROW_A * COL_B * OUTPUT_DATA_WIDTH>;
+
+  wire result: UInt<ROW_A * COL_B * OUTPUT_DATA_WIDTH>;
+  wire a_elem: UInt<INPUT_DATA_WIDTH>;
+  wire b_elem: UInt<INPUT_DATA_WIDTH>;
+  wire prod_full: UInt<2 * INPUT_DATA_WIDTH>;
+  wire prod_wide: UInt<OUTPUT_DATA_WIDTH>;
+  wire partial: Vec<UInt<OUTPUT_DATA_WIDTH>, ROW_A * COL_B * (COL_A + 1)>;
+
+  let matrix_c = result;
+
+  comb
+    result = 0;
+    for row_idx in 0..ROW_A-1
+      for col_idx in 0..COL_B-1
+        partial[(row_idx * COL_B + col_idx) * (COL_A + 1)] = 0;
+        for sum_idx in 0..COL_A-1
+          a_elem = matrix_a[((row_idx * COL_A + sum_idx) * INPUT_DATA_WIDTH) +: INPUT_DATA_WIDTH];
+          b_elem = matrix_b[((sum_idx * COL_B + col_idx) * INPUT_DATA_WIDTH) +: INPUT_DATA_WIDTH];
+          prod_full = a_elem * b_elem;
+          prod_wide = prod_full.resize<OUTPUT_DATA_WIDTH>();
+          partial[((row_idx * COL_B + col_idx) * (COL_A + 1)) + sum_idx + 1] = partial[((row_idx * COL_B + col_idx) * (COL_A + 1)) + sum_idx] +% prod_wide;
+        end for
+        result[((row_idx * COL_B + col_idx) * OUTPUT_DATA_WIDTH) +: OUTPUT_DATA_WIDTH] = partial[((row_idx * COL_B + col_idx) * (COL_A + 1)) + COL_A];
+      end for
+    end for
+  end comb
+end module matrix_multiplier

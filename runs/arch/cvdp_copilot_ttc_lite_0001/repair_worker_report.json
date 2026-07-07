@@ -1,0 +1,49 @@
+{
+  "problem_id": "cvdp_copilot_ttc_lite_0001",
+  "top_module": "ttc_counter_lite",
+  "final_status": "pass",
+  "attempts": [
+    {
+      "attempt": 1,
+      "hypothesis": "The first-pass failure was caused by the top module not exposing the control-register enable bit as a child port named enable; expose enable as a combinational alias of timer_enable without changing timer behavior.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_ttc_lite_0001/repair_attempt_01.arch",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.arch",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.sv",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.archi"
+      ],
+      "check_build_status": "write_and_check pass; arch_build_and_lint pass after rerunning with explicit SV output path",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluation progressed past enable but failed because dut.count was also expected and was not exposed."
+    },
+    {
+      "attempt": 2,
+      "hypothesis": "The evaluator also observes the live counter state through a child port named count; expose count as a combinational alias of count_value without changing count timing.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_ttc_lite_0001/repair_attempt_02.arch",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.arch",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.sv",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.archi"
+      ],
+      "check_build_status": "write_and_check pass; arch_build_and_lint pass",
+      "eval_status": "fail",
+      "pass": false,
+      "failure_summary": "Black-box evaluation found the AXI count read returned 0 while the exposed count port was 10, indicating the readback mux was gated unexpectedly."
+    },
+    {
+      "attempt": 3,
+      "hypothesis": "The simple register interface expects axi_rdata to reflect the selected address continuously; remove the axi_read_en gate from the combinational read mux while preserving state update timing.",
+      "files_written": [
+        "runs/arch/cvdp_copilot_ttc_lite_0001/repair_attempt_03.arch",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.arch",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.sv",
+        "runs/arch/cvdp_copilot_ttc_lite_0001/ttc_counter_lite.archi"
+      ],
+      "check_build_status": "write_and_check pass; arch_build_and_lint pass",
+      "eval_status": "pass",
+      "pass": true,
+      "failure_summary": ""
+    }
+  ]
+}

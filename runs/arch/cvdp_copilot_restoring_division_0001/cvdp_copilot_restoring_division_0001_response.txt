@@ -1,0 +1,131 @@
+//! ---
+//! tags: [division, restoring-division, unsigned-arithmetic, fsm]
+//! ---
+//!
+//! Restoring divider for unsigned operands. The FSM accepts a start pulse, runs one subtract/restore step per clock beginning on the start edge, and pulses valid when the registered quotient and remainder are complete.
+
+/// Top-level restoring division controller and datapath.
+///
+/// Input timing: clk rising edge samples start, dividend, and divisor; rst is active-low asynchronous.
+/// Output timing: quotient and remainder are registered datapath outputs; valid is state-derived and high for the Done state only.
+/// Transition table:
+/// current state | input condition | next state | externally visible outputs
+/// Idle | start && WIDTH == 1 | Done if WIDTH is power-of-two, otherwise WaitNonPower | valid=0, quotient/remainder hold previous reset or result values until the clock edge updates the datapath
+/// Idle | start && WIDTH != 1 | Running | valid=0, first restoring step is captured on the clock edge
+/// Idle | !start | Idle | valid=0, quotient=0 after reset or previous value otherwise, remainder=0 after reset or previous value otherwise
+/// Running | last iteration && WIDTH is power-of-two | Done | valid=0 during this cycle; final quotient/remainder become visible after the clock edge
+/// Running | last iteration && WIDTH is not power-of-two | WaitNonPower | valid=0 during this cycle; final quotient/remainder become visible after the clock edge
+/// Running | otherwise | Running | valid=0, quotient/remainder hold the most recent partial results
+/// WaitNonPower | always | Done | valid=0, quotient/remainder hold final values for the extra non-power-of-two cycle
+/// Done | start && WIDTH == 1 | Done if WIDTH is power-of-two, otherwise WaitNonPower | valid=1 for the completed operation; next operation starts on the clock edge
+/// Done | start && WIDTH != 1 | Running | valid=1 for the completed operation; next operation starts on the clock edge
+/// Done | !start | Idle | valid=1 for one cycle, quotient/remainder hold final values
+fsm restoring_division
+  param WIDTH: const = 6;
+  local param COUNT_W: const = $clog2(WIDTH + 1);
+  local param WIDTH_IS_POWER_TWO: const = ((WIDTH & (WIDTH - 1)) == 0);
+
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, Low>;
+  port start: in Bool;
+  port dividend: in UInt<WIDTH>;
+  port divisor: in UInt<WIDTH>;
+  port quotient: out UInt<WIDTH>;
+  port remainder: out UInt<WIDTH>;
+  port valid: out Bool;
+
+  reg quotient_r: UInt<WIDTH> reset rst => 0;
+  reg remainder_r: UInt<WIDTH + 1> reset rst => 0;
+  reg dividend_r: UInt<WIDTH> reset rst => 0;
+  reg divisor_r: UInt<WIDTH> reset rst => 0;
+  reg iter_idx: UInt<COUNT_W> reset rst => 0;
+
+  let start_divisor_ext: UInt<WIDTH + 1> = divisor.zext<WIDTH + 1>();
+  let start_remainder_low: UInt<WIDTH> = 0;
+  let start_shifted_remainder: UInt<WIDTH + 1> = {start_remainder_low, dividend[WIDTH - 1]};
+  let start_subtracted: UInt<WIDTH + 1> = start_shifted_remainder -% start_divisor_ext;
+  let start_can_subtract: Bool = start_shifted_remainder >= start_divisor_ext;
+  let start_remainder_next: UInt<WIDTH + 1> = start_can_subtract ? start_subtracted : start_shifted_remainder;
+  let start_quotient_next: UInt<WIDTH> = start_can_subtract ? 1 : 0;
+
+  let run_divisor_ext: UInt<WIDTH + 1> = divisor_r.zext<WIDTH + 1>();
+  let run_remainder_low: UInt<WIDTH> = remainder_r[WIDTH - 1:0];
+  let run_shifted_remainder: UInt<WIDTH + 1> = {run_remainder_low, dividend_r[WIDTH - 1]};
+  let run_subtracted: UInt<WIDTH + 1> = run_shifted_remainder -% run_divisor_ext;
+  let run_can_subtract: Bool = run_shifted_remainder >= run_divisor_ext;
+  let run_remainder_next: UInt<WIDTH + 1> = run_can_subtract ? run_subtracted : run_shifted_remainder;
+  let quotient_shifted: UInt<WIDTH> = quotient_r << 1;
+  let quotient_with_one: UInt<WIDTH> = quotient_shifted | 1;
+  let run_quotient_next: UInt<WIDTH> = run_can_subtract ? quotient_with_one : quotient_shifted;
+  let dividend_shifted: UInt<WIDTH> = dividend_r << 1;
+  let iter_next: UInt<COUNT_W> = iter_idx +% 1;
+  let start_finishes: Bool = WIDTH == 1;
+  let last_iteration: Bool = iter_idx == (WIDTH - 1);
+  let width_power_two: Bool = WIDTH_IS_POWER_TWO;
+
+  state [Idle, Running, WaitNonPower, Done]
+  default state Idle;
+
+  default
+    comb
+      quotient = quotient_r;
+      remainder = remainder_r[WIDTH - 1:0];
+      valid = false;
+    end comb
+  end default
+
+  state Idle
+    seq on clk rising
+      if start
+        quotient_r <= start_quotient_next;
+        remainder_r <= start_remainder_next;
+        dividend_r <= dividend << 1;
+        divisor_r <= divisor;
+        iter_idx <= 1;
+      else
+        quotient_r <= 0;
+        remainder_r <= 0;
+        dividend_r <= 0;
+        divisor_r <= 0;
+        iter_idx <= 0;
+      end if
+    end seq
+    -> Done when start and start_finishes and width_power_two;
+    -> WaitNonPower when start and start_finishes and not width_power_two;
+    -> Running when start and not start_finishes;
+  end state Idle
+
+  state Running
+    seq on clk rising
+      quotient_r <= run_quotient_next;
+      remainder_r <= run_remainder_next;
+      dividend_r <= dividend_shifted;
+      iter_idx <= iter_next;
+    end seq
+    -> Done when last_iteration and width_power_two;
+    -> WaitNonPower when last_iteration and not width_power_two;
+  end state Running
+
+  state WaitNonPower
+    -> Done;
+  end state WaitNonPower
+
+  state Done
+    comb
+      valid = true;
+    end comb
+    seq on clk rising
+      if start
+        quotient_r <= start_quotient_next;
+        remainder_r <= start_remainder_next;
+        dividend_r <= dividend << 1;
+        divisor_r <= divisor;
+        iter_idx <= 1;
+      end if
+    end seq
+    -> Done when start and start_finishes and width_power_two;
+    -> WaitNonPower when start and start_finishes and not width_power_two;
+    -> Running when start and not start_finishes;
+    -> Idle when not start;
+  end state Done
+end fsm restoring_division

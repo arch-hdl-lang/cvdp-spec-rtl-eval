@@ -1,0 +1,31 @@
+//! ---
+//! tags: [convolutional-encoder, serial, constraint-k3, generator-polynomial]
+//! ---
+//!
+//! Fixed K=3 convolutional encoder for a serial data stream. Each sampled input bit is encoded with generator polynomials 111 and 101 using the current bit and the previous two input bits.
+
+/// Top-level K=3 convolutional encoder.
+///
+/// On each rising clock edge, the module emits registered encoded bits for the current input and then advances the two-bit history. The active-high asynchronous reset clears both encoded outputs and the implementation-visible `shift_reg` history register.
+module convolutional_encoder
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, High>;
+  port data_in: in Bit;
+  port encoded_bit1: out pipe_reg<Bit, 1> reset rst => 0;
+  port encoded_bit2: out pipe_reg<Bit, 1> reset rst => 0;
+
+  reg default: reset rst => 0;
+  reg shift_reg: UInt<2>;
+
+  let next_encoded_bit1: Bit = data_in ^ shift_reg[1] ^ shift_reg[0];
+  let next_encoded_bit2: Bit = data_in ^ shift_reg[0];
+  let next_shift_reg: UInt<2> = {data_in, shift_reg[1]};
+
+  default seq on clk rising;
+
+  seq
+    encoded_bit1@1 <= next_encoded_bit1;
+    encoded_bit2@1 <= next_encoded_bit2;
+    shift_reg <= next_shift_reg;
+  end seq
+end module convolutional_encoder

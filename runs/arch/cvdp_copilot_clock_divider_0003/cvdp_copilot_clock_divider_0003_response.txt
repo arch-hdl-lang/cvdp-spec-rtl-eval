@@ -1,0 +1,36 @@
+//! ---
+//! tags: [clock-divider, async-reset, frequency-select]
+//! ---
+//!
+//! Clock divider with selectable divide-by-2, divide-by-4, or divide-by-8 output.
+//! Invalid selection holds the output low until a valid divider selection is applied.
+
+/// Top-level selectable clock divider.
+///
+/// A resettable 3-bit free-running divider counter supplies the divided clock phases;
+/// `sel` selects the counter bit for the requested divide ratio, while `2'b11` forces
+/// `clk_out` low and clears the divider state.
+module clock_divider
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port sel: in UInt<2>;
+  port clk_out: out Bool;
+
+  reg default: reset rst_n => 0;
+  reg div_count: UInt<3>;
+
+  let valid_sel: Bool = sel != 2'b11;
+  let next_count: UInt<3> = div_count +% 3'b001;
+
+  let clk_out = valid_sel ? ((sel == 2'b00) ? div_count[0] : ((sel == 2'b01) ? div_count[1] : div_count[2])) : false;
+
+  default seq on clk rising;
+
+  seq
+    if valid_sel
+      div_count <= next_count;
+    else
+      div_count <= 3'b000;
+    end if
+  end seq
+end module clock_divider

@@ -1,0 +1,11 @@
+module matrix_multiplier
+  param ROW_A: const = 4;
+  param COL_A: const = 4;
+  param ROW_B: const = 4;
+  param COL_B: const = 4;
+  param INPUT_DATA_WIDTH: const = 8;
+  param OUTPUT_DATA_WIDTH: const = ((2 * INPUT_DATA_WIDTH) + clog2(COL_A));
+  port matrix_a: in UInt<((ROW_A * COL_A) * INPUT_DATA_WIDTH)>;
+  port matrix_b: in UInt<((ROW_B * COL_B) * INPUT_DATA_WIDTH)>;
+  port matrix_c: out UInt<((ROW_A * COL_B) * OUTPUT_DATA_WIDTH)> comb_dep_on(matrix_a, matrix_b);
+end module matrix_multiplier

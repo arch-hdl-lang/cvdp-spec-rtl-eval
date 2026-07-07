@@ -1,0 +1,47 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `factorial` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_factorial_0001
+
+Natural-language specification:
+Write a System Verilog RTL for Factorial computation.  The design should take a number as input and computes factorial on it and return its factorial. Here are some design specifications and port list signals description. 
+
+1- `clk` (Input): This is a single bit input to the design. The design runs on this clock. 
+2- `arst_n`  (Input): Asynchronous Active low reset signal for the design.
+3- `num_in` (Input): 5 bit input number who's factorial to be calculated.  The input can range from 0 to 31.
+4- `start`  (input): This signal indicates that design should start calculating factorial on the provided input. This should be driven along with `num_in` for one clock cycle when busy is not asserted.
+5- `busy` (output) : This signal indicates that design is busy in calculating the factorial for the provided input. During this signal asserted, design should not accept any new input to process. Design should de-assert it when done is asserted. 
+6- `fact` (Outputs): A 64-bit output that holds the factorial of the input number. This result is updated in the next clock cycle after the input is provided.
+7- `done` (output) : This signal indicates that the factorial is calculated the on previous input and now design is ready to accept new input. This should be asserted for one cycle and along with `fact` output. 
+To achieve these feature, implement an FSM which will handle the entire factorial computation flow. The FSM should consist of three states i.e. IDLE, BUSY and DONE. Design will accept the input at IDLE state and then will move to BUSY state, asserting busy signal high. At BUSY state, the factorial computation will be done. Design should stay at BUSY state until the computation is completed. Once all the iterations for factorial calculations are done, then design should move to DONE state, de-asserting the busy signal and asserting the done signal for one cycle. 
+One of the major feature of the design is that it should take as many cycles to compute the factorial as the input value is. For example, if design get input to calculate factorial for 5, it will take 5 cycles to compute the factorial and finally drive it to output signal. 
+
+Factorial Overview:
+A factorial, denoted by n!, is the product of all positive integers from 1 to n. It’s a mathematical function that grows very quickly as n increases. The factorial of 0 is defined as 1, and for any positive integer n, the factorial is calculated as:
+
+    n!=nx(n−1)x(n−2)x⋯x1
+
+For example:
+
+    4!=4x3x2x1=24
+    5!=5x4x3x2x1=120
+
+Factorials are commonly used in permutations, combinations, and probability theory.
+

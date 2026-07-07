@@ -1,0 +1,14 @@
+{
+  "problem": "cvdp_copilot_sequencial_binary_to_one_hot_decoder_0001",
+  "lane": "arch",
+  "top": "binary_to_one_hot_decoder_sequential",
+  "arch_check": "pass",
+  "arch_build_and_lint": "pass",
+  "evaluation": {
+    "status": "pass",
+    "runtime": "osvb-docker",
+    "returncode": 0,
+    "passed": 1,
+    "failed": 0
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "problem_id": "cvdp_copilot_binary_to_one_hot_decoder_0001",
+  "top_module": "binary_to_one_hot_decoder",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_binary_to_one_hot_decoder_0001/binary_to_one_hot_decoder.arch",
+    "response": "runs/arch/cvdp_copilot_binary_to_one_hot_decoder_0001/cvdp_copilot_binary_to_one_hot_decoder_0001_response.txt",
+    "build": "runs/arch/cvdp_copilot_binary_to_one_hot_decoder_0001/build",
+    "systemverilog": "runs/arch/cvdp_copilot_binary_to_one_hot_decoder_0001/binary_to_one_hot_decoder.sv"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

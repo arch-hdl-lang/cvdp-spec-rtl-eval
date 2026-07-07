@@ -1,0 +1,45 @@
+//! ---
+//! tags: [clock_jitter, edge_detection, interval_counter, synchronous_reset]
+//! refs: []
+//! ---
+//!
+//! Clock jitter detection by counting primary clock cycles between sampled rising edges of system_clk.
+//! The design produces a one-cycle registered jitter_detected pulse one clk after a completed interval exceeds JITTER_THRESHOLD.
+
+/// Counts clk cycles between consecutive sampled rising edges of system_clk and flags late intervals.
+///
+/// Timing: system_clk is sampled on the rising edge of clk. jitter_detected is delayed one clk after an out-of-range completed interval is observed, matching the checker pipeline.
+module clock_jitter_detection_module
+  param JITTER_THRESHOLD: const = 5;
+
+  port clk: in Clock<SysDomain>;
+  port system_clk: in Bool;
+  port rst: in Reset<Sync, High>;
+  port jitter_detected: out pipe_reg<Bool, 1> reset rst => false;
+
+  reg default: reset rst => 0;
+  reg edge_count: UInt<32>;
+  reg edge_count_r: UInt<32>;
+  reg prev_system_clk: Bool;
+  reg jitter_pending: Bool;
+
+  let edge_seen: Bool = system_clk and not prev_system_clk;
+  let completed_interval: UInt<32> = edge_count +% 32'd1;
+  let late_jitter: Bool = completed_interval > JITTER_THRESHOLD;
+
+  default seq on clk rising;
+
+  seq
+    prev_system_clk <= system_clk;
+    jitter_detected <= jitter_pending;
+
+    if edge_seen
+      edge_count_r <= completed_interval;
+      jitter_pending <= late_jitter;
+      edge_count <= 0;
+    else
+      jitter_pending <= false;
+      edge_count <= edge_count +% 32'd1;
+    end if
+  end seq
+end module clock_jitter_detection_module

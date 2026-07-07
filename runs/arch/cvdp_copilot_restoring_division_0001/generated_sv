@@ -1,0 +1,202 @@
+//! ---
+//! tags: [division, restoring-division, unsigned-arithmetic, fsm]
+//! ---
+//!
+//! Restoring divider for unsigned operands. The FSM accepts a start pulse, runs one subtract/restore step per clock beginning on the start edge, and pulses valid when the registered quotient and remainder are complete.
+/// Top-level restoring division controller and datapath.
+///
+/// Input timing: clk rising edge samples start, dividend, and divisor; rst is active-low asynchronous.
+/// Output timing: quotient and remainder are registered datapath outputs; valid is state-derived and high for the Done state only.
+/// Transition table:
+/// current state | input condition | next state | externally visible outputs
+/// Idle | start && WIDTH == 1 | Done if WIDTH is power-of-two, otherwise WaitNonPower | valid=0, quotient/remainder hold previous reset or result values until the clock edge updates the datapath
+/// Idle | start && WIDTH != 1 | Running | valid=0, first restoring step is captured on the clock edge
+/// Idle | !start | Idle | valid=0, quotient=0 after reset or previous value otherwise, remainder=0 after reset or previous value otherwise
+/// Running | last iteration && WIDTH is power-of-two | Done | valid=0 during this cycle; final quotient/remainder become visible after the clock edge
+/// Running | last iteration && WIDTH is not power-of-two | WaitNonPower | valid=0 during this cycle; final quotient/remainder become visible after the clock edge
+/// Running | otherwise | Running | valid=0, quotient/remainder hold the most recent partial results
+/// WaitNonPower | always | Done | valid=0, quotient/remainder hold final values for the extra non-power-of-two cycle
+/// Done | start && WIDTH == 1 | Done if WIDTH is power-of-two, otherwise WaitNonPower | valid=1 for the completed operation; next operation starts on the clock edge
+/// Done | start && WIDTH != 1 | Running | valid=1 for the completed operation; next operation starts on the clock edge
+/// Done | !start | Idle | valid=1 for one cycle, quotient/remainder hold final values
+module restoring_division #(
+  parameter int WIDTH = 6,
+  localparam int COUNT_W = $clog2(WIDTH + 1),
+  localparam int WIDTH_IS_POWER_TWO = (WIDTH & WIDTH - 1) == 0
+) (
+  input logic clk,
+  input logic rst,
+  input logic start,
+  input logic [WIDTH-1:0] dividend,
+  input logic [WIDTH-1:0] divisor,
+  output logic [WIDTH-1:0] quotient,
+  output logic [WIDTH-1:0] remainder,
+  output logic valid
+);
+
+  typedef enum logic [1:0] {
+    IDLE = 2'd0,
+    RUNNING = 2'd1,
+    WAITNONPOWER = 2'd2,
+    DONE = 2'd3
+  } restoring_division_state_t;
+  
+  restoring_division_state_t state_r, state_next;
+  
+  logic [WIDTH-1:0] quotient_r;
+  logic [WIDTH + 1-1:0] remainder_r;
+  logic [WIDTH-1:0] dividend_r;
+  logic [WIDTH-1:0] divisor_r;
+  logic [COUNT_W-1:0] iter_idx;
+  
+  logic [WIDTH + 1-1:0] start_divisor_ext;
+  assign start_divisor_ext = (WIDTH + 1)'($unsigned(divisor));
+  logic [WIDTH-1:0] start_remainder_low;
+  assign start_remainder_low = 0;
+  logic [WIDTH + 1-1:0] start_shifted_remainder;
+  assign start_shifted_remainder = {start_remainder_low, dividend[WIDTH - 1]};
+  logic [WIDTH + 1-1:0] start_subtracted;
+  assign start_subtracted = ($bits(start_shifted_remainder) > $bits(start_divisor_ext) ? $bits(start_shifted_remainder) : $bits(start_divisor_ext))'(start_shifted_remainder - start_divisor_ext);
+  logic start_can_subtract;
+  assign start_can_subtract = start_shifted_remainder >= start_divisor_ext;
+  logic [WIDTH + 1-1:0] start_remainder_next;
+  assign start_remainder_next = start_can_subtract ? start_subtracted : start_shifted_remainder;
+  logic [WIDTH-1:0] start_quotient_next;
+  assign start_quotient_next = start_can_subtract ? 1 : 0;
+  logic [WIDTH + 1-1:0] run_divisor_ext;
+  assign run_divisor_ext = (WIDTH + 1)'($unsigned(divisor_r));
+  logic [WIDTH-1:0] run_remainder_low;
+  assign run_remainder_low = remainder_r[WIDTH - 1:0];
+  logic [WIDTH + 1-1:0] run_shifted_remainder;
+  assign run_shifted_remainder = {run_remainder_low, dividend_r[WIDTH - 1]};
+  logic [WIDTH + 1-1:0] run_subtracted;
+  assign run_subtracted = ($bits(run_shifted_remainder) > $bits(run_divisor_ext) ? $bits(run_shifted_remainder) : $bits(run_divisor_ext))'(run_shifted_remainder - run_divisor_ext);
+  logic run_can_subtract;
+  assign run_can_subtract = run_shifted_remainder >= run_divisor_ext;
+  logic [WIDTH + 1-1:0] run_remainder_next;
+  assign run_remainder_next = run_can_subtract ? run_subtracted : run_shifted_remainder;
+  logic [WIDTH-1:0] quotient_shifted;
+  assign quotient_shifted = quotient_r << 1;
+  logic [WIDTH-1:0] quotient_with_one;
+  assign quotient_with_one = quotient_shifted | 1;
+  logic [WIDTH-1:0] run_quotient_next;
+  assign run_quotient_next = run_can_subtract ? quotient_with_one : quotient_shifted;
+  logic [WIDTH-1:0] dividend_shifted;
+  assign dividend_shifted = dividend_r << 1;
+  logic [COUNT_W-1:0] iter_next;
+  assign iter_next = (COUNT_W > 1 ? COUNT_W : 1)'(iter_idx + 1);
+  logic start_finishes;
+  assign start_finishes = WIDTH == 1;
+  logic last_iteration;
+  assign last_iteration = iter_idx == WIDTH - 1;
+  logic width_power_two;
+  assign width_power_two = WIDTH_IS_POWER_TWO;
+  
+  always_ff @(posedge clk or negedge rst) begin
+    if ((!rst)) begin
+      state_r <= IDLE;
+      quotient_r <= 0;
+      remainder_r <= 0;
+      dividend_r <= 0;
+      divisor_r <= 0;
+      iter_idx <= 0;
+    end else begin
+      state_r <= state_next;
+      unique case (state_r)
+        IDLE: begin
+          if (start) begin
+            quotient_r <= start_quotient_next;
+            remainder_r <= start_remainder_next;
+            dividend_r <= dividend << 1;
+            divisor_r <= divisor;
+            iter_idx <= 1;
+          end else begin
+            quotient_r <= 0;
+            remainder_r <= 0;
+            dividend_r <= 0;
+            divisor_r <= 0;
+            iter_idx <= 0;
+          end
+        end
+        RUNNING: begin
+          quotient_r <= run_quotient_next;
+          remainder_r <= run_remainder_next;
+          dividend_r <= dividend_shifted;
+          iter_idx <= iter_next;
+        end
+        DONE: begin
+          if (start) begin
+            quotient_r <= start_quotient_next;
+            remainder_r <= start_remainder_next;
+            dividend_r <= dividend << 1;
+            divisor_r <= divisor;
+            iter_idx <= 1;
+          end
+        end
+        default: ;
+      endcase
+    end
+  end
+  
+  always_comb begin
+    state_next = state_r; // hold by default
+    unique case (state_r)
+      IDLE: begin
+        if (start && start_finishes && width_power_two) state_next = DONE;
+        else if (start && start_finishes && !width_power_two) state_next = WAITNONPOWER;
+        else if (start && !start_finishes) state_next = RUNNING;
+      end
+      RUNNING: begin
+        if (last_iteration && width_power_two) state_next = DONE;
+        else if (last_iteration && !width_power_two) state_next = WAITNONPOWER;
+      end
+      WAITNONPOWER: begin
+        state_next = DONE;
+      end
+      DONE: begin
+        if (start && start_finishes && width_power_two) state_next = DONE;
+        else if (start && start_finishes && !width_power_two) state_next = WAITNONPOWER;
+        else if (start && !start_finishes) state_next = RUNNING;
+        else if (!start) state_next = IDLE;
+      end
+      default: state_next = state_r;
+    endcase
+  end
+  
+  always_comb begin
+    quotient = quotient_r;
+    remainder = remainder_r[WIDTH - 1:0];
+    valid = 1'b0;
+    unique case (state_r)
+      IDLE: begin
+      end
+      RUNNING: begin
+      end
+      WAITNONPOWER: begin
+      end
+      DONE: begin
+        valid = 1'b1;
+      end
+      default: ;
+    endcase
+  end
+  
+  // synopsys translate_off
+  _auto_reach_Idle: cover property (@(posedge clk) state_r == IDLE);
+  _auto_reach_Running: cover property (@(posedge clk) state_r == RUNNING);
+  _auto_reach_WaitNonPower: cover property (@(posedge clk) state_r == WAITNONPOWER);
+  _auto_reach_Done: cover property (@(posedge clk) state_r == DONE);
+  _auto_tr_IDLE_to_DONE: cover property (@(posedge clk) state_r == IDLE && state_next == DONE);
+  _auto_tr_IDLE_to_WAITNONPOWER: cover property (@(posedge clk) state_r == IDLE && state_next == WAITNONPOWER);
+  _auto_tr_IDLE_to_RUNNING: cover property (@(posedge clk) state_r == IDLE && state_next == RUNNING);
+  _auto_tr_RUNNING_to_DONE: cover property (@(posedge clk) state_r == RUNNING && state_next == DONE);
+  _auto_tr_RUNNING_to_WAITNONPOWER: cover property (@(posedge clk) state_r == RUNNING && state_next == WAITNONPOWER);
+  _auto_tr_WAITNONPOWER_to_DONE: cover property (@(posedge clk) state_r == WAITNONPOWER && state_next == DONE);
+  _auto_tr_DONE_to_DONE: cover property (@(posedge clk) state_r == DONE && state_next == DONE);
+  _auto_tr_DONE_to_WAITNONPOWER: cover property (@(posedge clk) state_r == DONE && state_next == WAITNONPOWER);
+  _auto_tr_DONE_to_RUNNING: cover property (@(posedge clk) state_r == DONE && state_next == RUNNING);
+  _auto_tr_DONE_to_IDLE: cover property (@(posedge clk) state_r == DONE && state_next == IDLE);
+  // synopsys translate_on
+
+endmodule
+

@@ -1,0 +1,1359 @@
+{
+  "id": "cvdp_copilot_clock_jitter_detection_module_0003",
+  "lane": "arch",
+  "runtime": "osvb-docker",
+  "status": "fail",
+  "returncode": 1,
+  "workdir": "/var/folders/t9/v1b5k29j301gs_lsdrnlvdjw0000gn/T/cvdp_cvdp_copilot_clock_jitter_detection_module_0003_osvb_j61aeu04"
+}
+--- STDOUT_FULL ---
+============================= test session starts ==============================
+platform linux -- Python 3.9.2, pytest-8.3.2, pluggy-1.5.0 -- /usr/bin/python3
+cachedir: /code/rundir/.cache
+rootdir: /src
+collecting ... collected 6 items
+
+../../src/test_runner.py::test_clock_jitter_detection[0-5] [DEBUG] Running simulation with JITTER_THRESHOLD=5
+[DEBUG] Parameters: {'JITTER_THRESHOLD': 5}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=5 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783352935
+     0.00ns INFO     cocotb.regression                  running test_clock_jitter_detection.test_clock_jitter_detection (1/1)
+                                                            Testbench for clock jitter detection module.
+JITTER_THRESHOLD = 5
+[INFO] System clock generation started.
+[INFO] Clocks started.
+Running for 434 cycles...
+Test setup:
+Jitter start  : 35
+Jitter cycles : 4
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 2!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+[INFO] Expected Jitter detected at cycle 41!
+[INFO] Actual Jitter detected at cycle 41!
+actual_jitter_detected: 1, expected_jitter_detected_r1: 0
+  4089.00ns INFO     cocotb.regression                  test_clock_jitter_detection.test_clock_jitter_detection failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_clock_jitter_detection.py", line 97, in test_clock_jitter_detection
+                                                            assert actual_jitter_detected == expected_jitter_detected_r1, (
+                                                        AssertionError: actual_jitter_detected (1) != expected_jitter_detected_r1 (0)
+                                                        assert 1 == 0
+  4089.00ns INFO     cocotb.regression                  *****************************************************************************************************************
+                                                        ** TEST                                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************
+                                                        ** test_clock_jitter_detection.test_clock_jitter_detection   FAIL        4089.00           0.02     179620.34  **
+                                                        *****************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                          4089.00           0.03     117767.69  **
+                                                        *****************************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/clock_jitter_detection_module.fst opened for output.
+FAILED
+../../src/test_runner.py::test_clock_jitter_detection[0-7] [DEBUG] Running simulation with JITTER_THRESHOLD=7
+[DEBUG] Parameters: {'JITTER_THRESHOLD': 7}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=7 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783352936
+     0.00ns INFO     cocotb.regression                  running test_clock_jitter_detection.test_clock_jitter_detection (1/1)
+                                                            Testbench for clock jitter detection module.
+JITTER_THRESHOLD = 7
+[INFO] System clock generation started.
+[INFO] Clocks started.
+Running for 291 cycles...
+Test setup:
+Jitter start  : 59
+Jitter cycles : 5
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 4!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 14!
+[INFO] Expected Jitter detected at cycle 73!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 1
+   800.00ns INFO     cocotb.regression                  test_clock_jitter_detection.test_clock_jitter_detection failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_clock_jitter_detection.py", line 97, in test_clock_jitter_detection
+                                                            assert actual_jitter_detected == expected_jitter_detected_r1, (
+                                                        AssertionError: actual_jitter_detected (0) != expected_jitter_detected_r1 (1)
+                                                        assert 0 == 1
+   800.00ns INFO     cocotb.regression                  *****************************************************************************************************************
+                                                        ** TEST                                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************
+                                                        ** test_clock_jitter_detection.test_clock_jitter_detection   FAIL         800.00           0.03      29776.67  **
+                                                        *****************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                           800.00           0.04      20831.17  **
+                                                        *****************************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/clock_jitter_detection_module.fst opened for output.
+FAILED
+../../src/test_runner.py::test_clock_jitter_detection[0-10] [DEBUG] Running simulation with JITTER_THRESHOLD=10
+[DEBUG] Parameters: {'JITTER_THRESHOLD': 10}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=10 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783352936
+     0.00ns INFO     cocotb.regression                  running test_clock_jitter_detection.test_clock_jitter_detection (1/1)
+                                                            Testbench for clock jitter detection module.
+JITTER_THRESHOLD = 10
+[INFO] System clock generation started.
+[INFO] Clocks started.
+Running for 291 cycles...
+Test setup:
+Jitter start  : 59
+Jitter cycles : 5
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 20!
+[INFO] Expected Jitter detected at cycle 76!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 1
+  1079.00ns INFO     cocotb.regression                  test_clock_jitter_detection.test_clock_jitter_detection failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_clock_jitter_detection.py", line 97, in test_clock_jitter_detection
+                                                            assert actual_jitter_detected == expected_jitter_detected_r1, (
+                                                        AssertionError: actual_jitter_detected (0) != expected_jitter_detected_r1 (1)
+                                                        assert 0 == 1
+  1079.00ns INFO     cocotb.regression                  *****************************************************************************************************************
+                                                        ** TEST                                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************
+                                                        ** test_clock_jitter_detection.test_clock_jitter_detection   FAIL        1079.00           0.03      40682.60  **
+                                                        *****************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                          1079.00           0.04      28146.19  **
+                                                        *****************************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/clock_jitter_detection_module.fst opened for output.
+FAILED
+../../src/test_runner.py::test_clock_jitter_detection[1-5] [DEBUG] Running simulation with JITTER_THRESHOLD=5
+[DEBUG] Parameters: {'JITTER_THRESHOLD': 5}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=5 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783352937
+     0.00ns INFO     cocotb.regression                  running test_clock_jitter_detection.test_clock_jitter_detection (1/1)
+                                                            Testbench for clock jitter detection module.
+JITTER_THRESHOLD = 5
+[INFO] System clock generation started.
+[INFO] Clocks started.
+Running for 288 cycles...
+Test setup:
+Jitter start  : 38
+Jitter cycles : 2
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 2!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 5!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 6!
+[INFO] Expected Jitter detected at cycle 42!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 1
+  2695.00ns INFO     cocotb.regression                  test_clock_jitter_detection.test_clock_jitter_detection failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_clock_jitter_detection.py", line 97, in test_clock_jitter_detection
+                                                            assert actual_jitter_detected == expected_jitter_detected_r1, (
+                                                        AssertionError: actual_jitter_detected (0) != expected_jitter_detected_r1 (1)
+                                                        assert 0 == 1
+  2695.00ns INFO     cocotb.regression                  *****************************************************************************************************************
+                                                        ** TEST                                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************
+                                                        ** test_clock_jitter_detection.test_clock_jitter_detection   FAIL        2695.00           0.02     117442.95  **
+                                                        *****************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                          2695.00           0.04      75175.24  **
+                                                        *****************************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/clock_jitter_detection_module.fst opened for output.
+FAILED
+../../src/test_runner.py::test_clock_jitter_detection[1-7] [DEBUG] Running simulation with JITTER_THRESHOLD=7
+[DEBUG] Parameters: {'JITTER_THRESHOLD': 7}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=7 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783352938
+     0.00ns INFO     cocotb.regression                  running test_clock_jitter_detection.test_clock_jitter_detection (1/1)
+                                                            Testbench for clock jitter detection module.
+JITTER_THRESHOLD = 7
+[INFO] System clock generation started.
+[INFO] Clocks started.
+Running for 903 cycles...
+Test setup:
+Jitter start  : 41
+Jitter cycles : 4
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 4!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 9!
+[INFO] Expected Jitter detected at cycle 47!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 1
+  3078.00ns INFO     cocotb.regression                  test_clock_jitter_detection.test_clock_jitter_detection failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_clock_jitter_detection.py", line 97, in test_clock_jitter_detection
+                                                            assert actual_jitter_detected == expected_jitter_detected_r1, (
+                                                        AssertionError: actual_jitter_detected (0) != expected_jitter_detected_r1 (1)
+                                                        assert 0 == 1
+  3078.00ns INFO     cocotb.regression                  *****************************************************************************************************************
+                                                        ** TEST                                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************
+                                                        ** test_clock_jitter_detection.test_clock_jitter_detection   FAIL        3078.00           0.03     110175.78  **
+                                                        *****************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                          3078.00           0.04      74243.15  **
+                                                        *****************************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/clock_jitter_detection_module.fst opened for output.
+FAILED
+../../src/test_runner.py::test_clock_jitter_detection[1-10] [DEBUG] Running simulation with JITTER_THRESHOLD=10
+[DEBUG] Parameters: {'JITTER_THRESHOLD': 10}
+
+-------------------------------- live log call ---------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=10 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:79   in set_program_name_in_venv        Did not detect Python virtual environment. Using system-wide Python interpreter
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 13.0 (devel)
+     0.00ns INFO     cocotb                             Running tests with cocotb v2.0.0.dev0+8d6c1a63 from /usr/local/lib/python3.9/dist-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1783352938
+     0.00ns INFO     cocotb.regression                  running test_clock_jitter_detection.test_clock_jitter_detection (1/1)
+                                                            Testbench for clock jitter detection module.
+JITTER_THRESHOLD = 10
+[INFO] System clock generation started.
+[INFO] Clocks started.
+Running for 903 cycles...
+Test setup:
+Jitter start  : 41
+Jitter cycles : 4
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 7!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 10!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 0, sys_clk_r2: 0
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 0
+Posedge detected, counter: 11!
+[INFO] Expected Jitter detected at cycle 47!
+actual_jitter_detected: 0, expected_jitter_detected_r1: 0
+sys_clk: 1, sys_clk_r2: 1
+actual_jitter_detected: 0, expected_jitter_detected_r1: 1
+  3240.00ns INFO     cocotb.regression                  test_clock_jitter_detection.test_clock_jitter_detection failed
+                                                        Traceback (most recent call last):
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/regression.py", line 166, in func
+                                                            res = await cocotb.triggers.with_timeout(
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 1076, in with_timeout
+                                                            res = await First(timeout_timer, trigger)
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/triggers.py", line 913, in _wait
+                                                            return completed[0].get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 268, in __await__
+                                                            return self.result()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/task.py", line 226, in result
+                                                            return self._outcome.get()
+                                                          File "/usr/local/lib/python3.9/dist-packages/cocotb/_outcomes.py", line 57, in get
+                                                            raise self.error
+                                                          File "/src/test_clock_jitter_detection.py", line 97, in test_clock_jitter_detection
+                                                            assert actual_jitter_detected == expected_jitter_detected_r1, (
+                                                        AssertionError: actual_jitter_detected (0) != expected_jitter_detected_r1 (1)
+                                                        assert 0 == 1
+  3240.00ns INFO     cocotb.regression                  *****************************************************************************************************************
+                                                        ** TEST                                                     STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************************
+                                                        ** test_clock_jitter_detection.test_clock_jitter_detection   FAIL        3240.00           0.02     141983.71  **
+                                                        *****************************************************************************************************************
+                                                        ** TESTS=1 PASS=0 FAIL=1 SKIP=0                                          3240.00           0.03      92721.53  **
+                                                        *****************************************************************************************************************
+                                                        
+FST info: dumpfile /code/rundir/sim_build/clock_jitter_detection_module.fst opened for output.
+FAILED
+
+=================================== FAILURES ===================================
+_______________________ test_clock_jitter_detection[0-5] _______________________
+
+JITTER_THRESHOLD = 5, test = 0
+
+    @pytest.mark.parametrize("JITTER_THRESHOLD", [5,7,10])  # Different threshold values to test
+    @pytest.mark.parametrize("test", range(2))
+    def test_clock_jitter_detection(JITTER_THRESHOLD, test):
+        """Test clock jitter detection with different JITTER_THRESHOLD values."""
+>       runner(JITTER_THRESHOLD=JITTER_THRESHOLD)
+
+/src/test_runner.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+JITTER_THRESHOLD = 5, system_clk = 0
+
+    def runner(JITTER_THRESHOLD: int=5, system_clk : int=0):
+        # Define plusargs and parameters to pass into the simulator
+        plusargs = [f'+system_clk={system_clk}']
+        parameter = {"JITTER_THRESHOLD": JITTER_THRESHOLD}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with JITTER_THRESHOLD={JITTER_THRESHOLD}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Create a simulator runner instance
+        runner = get_runner(sim)
+    
+        # Build the simulation
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the tests
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:44: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=5 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+_______________________ test_clock_jitter_detection[0-7] _______________________
+
+JITTER_THRESHOLD = 7, test = 0
+
+    @pytest.mark.parametrize("JITTER_THRESHOLD", [5,7,10])  # Different threshold values to test
+    @pytest.mark.parametrize("test", range(2))
+    def test_clock_jitter_detection(JITTER_THRESHOLD, test):
+        """Test clock jitter detection with different JITTER_THRESHOLD values."""
+>       runner(JITTER_THRESHOLD=JITTER_THRESHOLD)
+
+/src/test_runner.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+JITTER_THRESHOLD = 7, system_clk = 0
+
+    def runner(JITTER_THRESHOLD: int=5, system_clk : int=0):
+        # Define plusargs and parameters to pass into the simulator
+        plusargs = [f'+system_clk={system_clk}']
+        parameter = {"JITTER_THRESHOLD": JITTER_THRESHOLD}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with JITTER_THRESHOLD={JITTER_THRESHOLD}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Create a simulator runner instance
+        runner = get_runner(sim)
+    
+        # Build the simulation
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the tests
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:44: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=7 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+______________________ test_clock_jitter_detection[0-10] _______________________
+
+JITTER_THRESHOLD = 10, test = 0
+
+    @pytest.mark.parametrize("JITTER_THRESHOLD", [5,7,10])  # Different threshold values to test
+    @pytest.mark.parametrize("test", range(2))
+    def test_clock_jitter_detection(JITTER_THRESHOLD, test):
+        """Test clock jitter detection with different JITTER_THRESHOLD values."""
+>       runner(JITTER_THRESHOLD=JITTER_THRESHOLD)
+
+/src/test_runner.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+JITTER_THRESHOLD = 10, system_clk = 0
+
+    def runner(JITTER_THRESHOLD: int=5, system_clk : int=0):
+        # Define plusargs and parameters to pass into the simulator
+        plusargs = [f'+system_clk={system_clk}']
+        parameter = {"JITTER_THRESHOLD": JITTER_THRESHOLD}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with JITTER_THRESHOLD={JITTER_THRESHOLD}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Create a simulator runner instance
+        runner = get_runner(sim)
+    
+        # Build the simulation
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the tests
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:44: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=10 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+_______________________ test_clock_jitter_detection[1-5] _______________________
+
+JITTER_THRESHOLD = 5, test = 1
+
+    @pytest.mark.parametrize("JITTER_THRESHOLD", [5,7,10])  # Different threshold values to test
+    @pytest.mark.parametrize("test", range(2))
+    def test_clock_jitter_detection(JITTER_THRESHOLD, test):
+        """Test clock jitter detection with different JITTER_THRESHOLD values."""
+>       runner(JITTER_THRESHOLD=JITTER_THRESHOLD)
+
+/src/test_runner.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+JITTER_THRESHOLD = 5, system_clk = 0
+
+    def runner(JITTER_THRESHOLD: int=5, system_clk : int=0):
+        # Define plusargs and parameters to pass into the simulator
+        plusargs = [f'+system_clk={system_clk}']
+        parameter = {"JITTER_THRESHOLD": JITTER_THRESHOLD}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with JITTER_THRESHOLD={JITTER_THRESHOLD}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Create a simulator runner instance
+        runner = get_runner(sim)
+    
+        # Build the simulation
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the tests
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:44: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=5 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+_______________________ test_clock_jitter_detection[1-7] _______________________
+
+JITTER_THRESHOLD = 7, test = 1
+
+    @pytest.mark.parametrize("JITTER_THRESHOLD", [5,7,10])  # Different threshold values to test
+    @pytest.mark.parametrize("test", range(2))
+    def test_clock_jitter_detection(JITTER_THRESHOLD, test):
+        """Test clock jitter detection with different JITTER_THRESHOLD values."""
+>       runner(JITTER_THRESHOLD=JITTER_THRESHOLD)
+
+/src/test_runner.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+JITTER_THRESHOLD = 7, system_clk = 0
+
+    def runner(JITTER_THRESHOLD: int=5, system_clk : int=0):
+        # Define plusargs and parameters to pass into the simulator
+        plusargs = [f'+system_clk={system_clk}']
+        parameter = {"JITTER_THRESHOLD": JITTER_THRESHOLD}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with JITTER_THRESHOLD={JITTER_THRESHOLD}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Create a simulator runner instance
+        runner = get_runner(sim)
+    
+        # Build the simulation
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the tests
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:44: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=7 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+______________________ test_clock_jitter_detection[1-10] _______________________
+
+JITTER_THRESHOLD = 10, test = 1
+
+    @pytest.mark.parametrize("JITTER_THRESHOLD", [5,7,10])  # Different threshold values to test
+    @pytest.mark.parametrize("test", range(2))
+    def test_clock_jitter_detection(JITTER_THRESHOLD, test):
+        """Test clock jitter detection with different JITTER_THRESHOLD values."""
+>       runner(JITTER_THRESHOLD=JITTER_THRESHOLD)
+
+/src/test_runner.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+JITTER_THRESHOLD = 10, system_clk = 0
+
+    def runner(JITTER_THRESHOLD: int=5, system_clk : int=0):
+        # Define plusargs and parameters to pass into the simulator
+        plusargs = [f'+system_clk={system_clk}']
+        parameter = {"JITTER_THRESHOLD": JITTER_THRESHOLD}
+    
+        # Debug information
+        print(f"[DEBUG] Running simulation with JITTER_THRESHOLD={JITTER_THRESHOLD}")
+        print(f"[DEBUG] Parameters: {parameter}")
+    
+        # Create a simulator runner instance
+        runner = get_runner(sim)
+    
+        # Build the simulation
+        runner.build(
+            build_args=["-gno-assertions"],
+            sources=verilog_sources,
+            hdl_toplevel=toplevel,
+            parameters=parameter,
+            always=True,
+            clean=True,
+            waves=True,
+            verbose=True,
+            timescale=("1ns", "1ns"),
+            log_file="sim.log"
+        )
+    
+        # Run the tests
+>       runner.test(hdl_toplevel=toplevel, test_module=module, waves=True)
+E       SystemExit: ERROR: Failed 1 of 1 tests.
+
+/src/test_runner.py:44: SystemExit
+------------------------------ Captured log call -------------------------------
+INFO     Icarus:runner.py:480 Removing: /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command iverilog -o /code/rundir/sim_build/sim.vvp -s clock_jitter_detection_module -g2012 -Pclock_jitter_detection_module.JITTER_THRESHOLD=10 -gno-assertions -s cocotb_iverilog_dump -f /code/rundir/sim_build/cmds.f /code/rtl/clock_jitter_detection_module.sv /code/rundir/sim_build/cocotb_iverilog_dump.v in directory /code/rundir/sim_build
+INFO     Icarus:runner.py:468 Running command vvp -M /usr/local/lib/python3.9/dist-packages/cocotb/libs -m libcocotbvpi_icarus /code/rundir/sim_build/sim.vvp -fst in directory /code/rundir/sim_build
+=========================== short test summary info ============================
+FAILED ../../src/test_runner.py::test_clock_jitter_detection[0-5] - SystemExi...
+FAILED ../../src/test_runner.py::test_clock_jitter_detection[0-7] - SystemExi...
+FAILED ../../src/test_runner.py::test_clock_jitter_detection[0-10] - SystemEx...
+FAILED ../../src/test_runner.py::test_clock_jitter_detection[1-5] - SystemExi...
+FAILED ../../src/test_runner.py::test_clock_jitter_detection[1-7] - SystemExi...
+FAILED ../../src/test_runner.py::test_clock_jitter_detection[1-10] - SystemEx...
+============================== 6 failed in 3.31s ===============================
+
+--- STDERR_FULL ---
+

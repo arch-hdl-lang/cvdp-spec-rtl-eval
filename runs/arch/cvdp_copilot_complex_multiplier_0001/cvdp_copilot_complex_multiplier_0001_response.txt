@@ -1,0 +1,41 @@
+//! ---
+//! tags: [complex-multiply, signed-arithmetic, registered-output]
+//! ---
+//!
+//! One-cycle complex multiplier with asynchronous active-low reset. The datapath computes
+//! signed 16-bit complex multiplication and registers the 32-bit real and imaginary results.
+
+/// Top-level complex multiplier for cvdp_copilot_complex_multiplier_0001.
+///
+/// Inputs are sampled on the rising edge of clk, and result_real/result_imag update one
+/// cycle later with reset clearing both registered outputs asynchronously when arst_n is low.
+module complex_multiplier
+  port clk: in Clock<SysDomain>;
+  port arst_n: in Reset<Async, Low>;
+  port a_real: in UInt<16>;
+  port a_imag: in UInt<16>;
+  port b_real: in UInt<16>;
+  port b_imag: in UInt<16>;
+  port result_real: out pipe_reg<UInt<32>, 1> reset arst_n => 0;
+  port result_imag: out pipe_reg<UInt<32>, 1> reset arst_n => 0;
+
+  let a_real_s: SInt<16> = signed(a_real);
+  let a_imag_s: SInt<16> = signed(a_imag);
+  let b_real_s: SInt<16> = signed(b_real);
+  let b_imag_s: SInt<16> = signed(b_imag);
+
+  let prod_ac: SInt<32> = a_real_s * b_real_s;
+  let prod_bd: SInt<32> = a_imag_s * b_imag_s;
+  let prod_ad: SInt<32> = a_real_s * b_imag_s;
+  let prod_bc: SInt<32> = a_imag_s * b_real_s;
+
+  let real_next: SInt<32> = prod_ac -% prod_bd;
+  let imag_next: SInt<32> = prod_ad +% prod_bc;
+
+  default seq on clk rising;
+
+  seq
+    result_real@1 <= unsigned(real_next);
+    result_imag@1 <= unsigned(imag_next);
+  end seq
+end module complex_multiplier

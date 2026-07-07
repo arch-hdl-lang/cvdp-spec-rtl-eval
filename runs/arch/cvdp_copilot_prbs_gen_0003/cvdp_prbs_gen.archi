@@ -1,0 +1,10 @@
+module cvdp_prbs_gen
+  param CHECK_MODE: const = 0;
+  param POLY_LENGTH: const = 31;
+  param POLY_TAP: const = 3;
+  param WIDTH: const = 16;
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Sync>;
+  port data_in: in UInt<WIDTH>;
+  port data_out: out pipe_reg<UInt<WIDTH>, 1> reset rst => 0;
+end module cvdp_prbs_gen

@@ -1,0 +1,15 @@
+{
+  "problem_id": "cvdp_copilot_Carry_Lookahead_Adder_0001",
+  "top_module": "GP",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_Carry_Lookahead_Adder_0001/GP.arch",
+    "response": "runs/arch/cvdp_copilot_Carry_Lookahead_Adder_0001/cvdp_copilot_Carry_Lookahead_Adder_0001_response.txt",
+    "systemverilog": "runs/arch/cvdp_copilot_Carry_Lookahead_Adder_0001/GP.sv",
+    "interface": "runs/arch/cvdp_copilot_Carry_Lookahead_Adder_0001/GP.archi",
+    "build_output": "runs/arch/cvdp_copilot_Carry_Lookahead_Adder_0001/build"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

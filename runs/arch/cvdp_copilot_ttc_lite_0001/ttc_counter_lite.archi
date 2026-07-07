@@ -1,0 +1,12 @@
+module ttc_counter_lite
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Sync>;
+  port axi_addr: in UInt<4>;
+  port axi_wdata: in UInt<32>;
+  port axi_write_en: in Bool;
+  port axi_read_en: in Bool;
+  port axi_rdata: out UInt<32> comb_dep_on(axi_addr);
+  port interrupt: out Bool comb_dep_on();
+  port enable: out Bool comb_dep_on();
+  port count: out UInt<16> comb_dep_on();
+end module ttc_counter_lite

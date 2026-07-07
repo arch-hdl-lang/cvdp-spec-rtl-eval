@@ -1,0 +1,16 @@
+problem_id,top_module,attempt_count,repaired,passing_attempt,final_status,first_pass_failure_summary
+cvdp_copilot_axi_stream_upscale_0001,axis_upscale,1,True,1,pass,Protocol/timing mismatch: evaluator expected s_axis_ready to be 0 but observed 1 at 250 ns; check/build/lint passed.
+cvdp_copilot_clock_jitter_detection_module_0003,clock_jitter_detection_module,2,True,2,pass,Algorithmic/timing mismatch: jitter detection cocotb parameterizations failed after Icarus simulation; check/build/lint passed.
+cvdp_copilot_convolutional_encoder_0001,convolutional_encoder,1,True,1,pass,Protocol/timing mismatch: reset-focused cocotb test failed while other encoder tests passed; check/build/lint passed.
+cvdp_copilot_data_bus_controller_0001,data_bus_controller,1,True,1,pass,"Interface mismatch: evaluator expected DUT child port s_ready, but generated module did not expose it; check/build/lint passed."
+cvdp_copilot_decode_firstbit_0001,cvdp_copilot_decode_firstbit,2,True,2,pass,Algorithmic mismatch: evaluator reported Out_Found signal mismatch; check/build/lint passed.
+cvdp_copilot_digital_dice_roller_0001,digital_dice_roller,2,True,2,pass,"Interface mismatch: evaluator expected DUT child port reset, but generated module did not expose it; check/build/lint passed."
+cvdp_copilot_digital_stopwatch_0001,dig_stopwatch,4,False,,fail,Protocol/timing mismatch: stopwatch cocotb parameterizations failed after simulation; check/build/lint passed.
+cvdp_copilot_fibonacci_series_0001,fibonacci_series,3,True,3,pass,Algorithmic mismatch: evaluator expected 0 but observed 3 from DUT; check/build/lint passed.
+cvdp_copilot_packet_controller_0001,packet_controller,4,False,,fail,Algorithmic/protocol mismatch: packet controller failed invalid checksum/header cocotb cases; check/build/lint passed.
+cvdp_copilot_perf_counters_0001,cvdp_copilot_perf_counters,4,True,4,pass,"Algorithmic mismatch: performance counter cocotb tests failed, including overflow behavior; check/build/lint passed."
+cvdp_copilot_prbs_gen_0003,cvdp_prbs_gen,1,True,1,pass,Build/lint/simulation mismatch: evaluator failed multiple PRBS parameterizations via subprocess failure; ARCH check/build/lint passed with a comb-SCC warning.
+cvdp_copilot_restoring_division_0001,restoring_division,2,True,2,pass,Algorithmic mismatch: restoring division failed parameterized WIDTH tests after simulation; check/build/lint passed.
+cvdp_copilot_static_branch_predict_0001,static_branch_predict,3,True,3,pass,"Interface mismatch: evaluator expected DUT child port register_addr_i, but generated module did not expose it; check/build/lint passed."
+cvdp_copilot_ttc_lite_0001,ttc_counter_lite,2,True,2,pass,"Interface mismatch: evaluator expected DUT child port enable, but generated module did not expose it; check/build/lint passed."
+cvdp_copilot_vending_machine_0001,vending_machine,4,False,,fail,Protocol/timing mismatch: vending machine failed all parameterized cocotb cases after simulation; check/build/lint passed.

@@ -1,0 +1,12 @@
+module cascaded_adder
+  param IN_DATA_WIDTH: const = 16;
+  param IN_DATA_NS: const = 4;
+  local param IN_TOTAL_WIDTH: const = (IN_DATA_WIDTH * IN_DATA_NS);
+  local param OUT_DATA_WIDTH: const = (IN_DATA_WIDTH + clog2(IN_DATA_NS));
+  port clk: in Clock<SysDomain>;
+  port rst_n: in Reset<Async, Low>;
+  port i_valid: in Bool;
+  port i_data: in UInt<IN_TOTAL_WIDTH>;
+  port o_valid: out pipe_reg<Bool, 1> reset rst_n => false;
+  port o_data: out pipe_reg<UInt<OUT_DATA_WIDTH>, 1> reset rst_n => 0;
+end module cascaded_adder

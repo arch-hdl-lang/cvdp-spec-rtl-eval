@@ -1,0 +1,10 @@
+module qam16_mapper_interpolated
+  param N: const = 4;
+  param IN_WIDTH: const = 4;
+  param OUT_WIDTH: const = 3;
+  local param PAIRS: const = (N / 2);
+  local param OUT_COUNT: const = (N + PAIRS);
+  port bits: in UInt<(N * IN_WIDTH)>;
+  port I: out UInt<(OUT_COUNT * OUT_WIDTH)> comb_dep_on();
+  port Q: out UInt<(OUT_COUNT * OUT_WIDTH)> comb_dep_on();
+end module qam16_mapper_interpolated

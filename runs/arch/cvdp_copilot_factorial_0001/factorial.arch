@@ -1,0 +1,85 @@
+//! ---
+//! tags: [factorial, fsm, iterative, arithmetic]
+//! ---
+//!
+//! Iterative factorial unit for the CVDP factorial prompt. The unit accepts
+//! `start` in IDLE, performs one multiply per BUSY cycle, and presents `done`
+//! for one cycle with the 64-bit factorial result.
+
+/// Three-state factorial controller and datapath.
+///
+/// Timing/type notes: `clk` samples inputs on rising edges, `arst_n` is an
+/// asynchronous active-low reset, `busy` and `done` are state-derived
+/// combinational outputs, and `fact` is driven from a registered result.
+/// Transition table:
+/// input condition                  | current state | next state | output
+/// reset asserted                   | any           | IDLE       | busy=0, done=0, fact=1
+/// start=0                          | IDLE          | IDLE       | busy=0, done=0
+/// start=1 and num_in=0             | IDLE          | DONE       | fact assigned 1, visible with done next cycle
+/// start=1 and num_in!=0            | IDLE          | BUSY       | load count and accumulator
+/// factor_r!=1                      | BUSY          | BUSY       | busy=1, multiply once this cycle
+/// factor_r==1                      | BUSY          | DONE       | busy=1, final multiply this cycle; done next cycle
+/// unconditional                    | DONE          | IDLE       | done=1 for one cycle with fact
+fsm factorial
+  port clk: in Clock<SysDomain>;
+  port arst_n: in Reset<Async, Low>;
+  port num_in: in UInt<5>;
+  port start: in Bool;
+  port busy: out Bool;
+  port fact: out UInt<64>;
+  port done: out Bool;
+
+  reg acc_r: UInt<64> reset arst_n => 64'd1;
+  reg fact_r: UInt<64> reset arst_n => 64'd1;
+  reg factor_r: UInt<5> reset arst_n => 0;
+
+  let factor_wide: UInt<64> = factor_r.zext<64>();
+  let product: UInt<64> = acc_r *% factor_wide;
+  let factor_dec: UInt<5> = factor_r -% 1;
+  let fact = fact_r;
+
+  state [IDLE, BUSY, DONE]
+  default state IDLE;
+
+  default
+    comb
+      busy = false;
+      done = false;
+    end comb
+  end default
+
+  state IDLE
+    seq on clk rising
+      if start
+        acc_r <= 64'd1;
+        fact_r <= 64'd1;
+        factor_r <= num_in;
+      end if
+    end seq
+
+    -> DONE when start and (num_in == 0);
+    -> BUSY when start and (num_in != 0);
+  end state IDLE
+
+  state BUSY
+    comb
+      busy = true;
+    end comb
+
+    seq on clk rising
+      acc_r <= product;
+      fact_r <= product;
+      factor_r <= factor_dec;
+    end seq
+
+    -> DONE when factor_r == 1;
+  end state BUSY
+
+  state DONE
+    comb
+      done = true;
+    end comb
+
+    -> IDLE;
+  end state DONE
+end fsm factorial

@@ -1,0 +1,27 @@
+//! ---
+//! tags: [edge-detect, synchronous, async-reset]
+//! refs: []
+//! ---
+//!
+//! Synchronous positive and negative edge detector for a glitch-free debounced input. The design samples the input on i_clk, clears state with active-low asynchronous reset, and emits one-cycle registered pulses for rising and falling transitions.
+
+/// Detects rising and falling transitions on i_detection_signal.
+///
+/// The previous sampled input value is retained so each transition produces a one-clock pulse on the matching output.
+module sync_pos_neg_edge_detector
+  port i_clk: in Clock<SysDomain>;
+  port i_rstb: in Reset<Async, Low>;
+  port i_detection_signal: in Bool;
+  port o_positive_edge_detected: out pipe_reg<Bool, 1> reset i_rstb => 0;
+  port o_negative_edge_detected: out pipe_reg<Bool, 1> reset i_rstb => 0;
+
+  reg previous_detection_signal: Bool reset i_rstb => 0;
+
+  default seq on i_clk rising;
+
+  seq
+    o_positive_edge_detected <= i_detection_signal and not previous_detection_signal;
+    o_negative_edge_detected <= (not i_detection_signal) and previous_detection_signal;
+    previous_detection_signal <= i_detection_signal;
+  end seq
+end module sync_pos_neg_edge_detector

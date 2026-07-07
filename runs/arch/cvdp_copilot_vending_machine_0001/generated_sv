@@ -1,0 +1,258 @@
+//! ---
+//! spec_md: runs/arch/cvdp_copilot_vending_machine_0001/cvdp_copilot_vending_machine_0001_fullprompt.txt
+//! tags: [vending, fsm, coins, refund]
+//! ---
+//!
+//! Vending machine controller generated from the CVDP natural-language spec.
+//! The design tracks item selection, coin accumulation, dispensing, change return,
+//! cancellation, and invalid-operation refund handling in one FSM.
+/// Top-level vending machine FSM.
+///
+/// Inputs are sampled on `clk` rising edges; `rst` is asynchronous active high.
+/// `item_button` and `cancel` are converted to one-cycle rising-edge events.
+/// Outputs are combinational/state-derived and are high for the active FSM state.
+/// The problem statement names four valid IDs but does not specify prices; this
+/// implementation uses the conventional 5, 10, 15, and 20 unit mapping.
+///
+/// Transition table:
+/// Current state        | Input condition                                      | Next state          | Externally visible outputs in current state
+/// Idle                 | coin_input != 0 and no item_button rising edge       | ReturnMoney         | all outputs low, item_price 0
+/// Idle                 | item_button rising edge                              | ItemSelection       | all outputs low, item_price 0
+/// Idle                 | otherwise                                            | Idle                | all outputs low, item_price 0
+/// ItemSelection        | cancel rising edge                                   | ReturnMoney         | item_price shows selected valid input price, otherwise 0
+/// ItemSelection        | item_selected != 0 and invalid item ID               | ReturnMoney         | item_price 0
+/// ItemSelection        | valid item_selected                                  | PaymentValidation   | item_price shows selected input price
+/// ItemSelection        | otherwise                                            | ItemSelection       | item_price 0
+/// PaymentValidation    | cancel rising edge                                   | ReturnMoney         | item_price held at selected price
+/// PaymentValidation    | coin_input != 0 and invalid coin value               | ReturnMoney         | item_price held at selected price
+/// PaymentValidation    | valid coin makes accumulated total >= item_price     | DispensingItem      | item_price held at selected price
+/// PaymentValidation    | otherwise                                            | PaymentValidation   | item_price held at selected price
+/// DispensingItem       | computed change_amount > 0                           | ReturnChange        | dispense_item 1, dispense_item_id selected ID
+/// DispensingItem       | computed change_amount == 0                          | Idle                | dispense_item 1, dispense_item_id selected ID
+/// ReturnChange         | unconditional                                        | Idle                | return_change 1, change_amount computed excess
+/// ReturnMoney          | unconditional                                        | Idle                | error 1, return_money 1 iff accumulated money is nonzero
+module vending_machine (
+  input logic clk,
+  input logic rst,
+  input logic item_button,
+  input logic [2:0] item_selected,
+  input logic [3:0] coin_input,
+  input logic cancel,
+  output logic dispense_item,
+  output logic return_change,
+  output logic [4:0] item_price,
+  output logic [4:0] change_amount,
+  output logic [2:0] dispense_item_id,
+  output logic error,
+  output logic return_money
+);
+
+  typedef enum logic [2:0] {
+    IDLE = 3'd0,
+    ITEMSELECTION = 3'd1,
+    PAYMENTVALIDATION = 3'd2,
+    DISPENSINGITEM = 3'd3,
+    RETURNCHANGE = 3'd4,
+    RETURNMONEY = 3'd5
+  } vending_machine_state_t;
+  
+  vending_machine_state_t state_r, state_next;
+  
+  logic item_button_prev;
+  logic cancel_prev;
+  logic [2:0] selected_item_r;
+  logic [4:0] selected_price_r;
+  logic [4:0] coins_accumulated_r;
+  logic [4:0] change_amount_r;
+  
+  logic item_button_edge;
+  assign item_button_edge = item_button && !item_button_prev;
+  logic cancel_edge;
+  assign cancel_edge = cancel && !cancel_prev;
+  logic coin_present;
+  assign coin_present = coin_input != 4'd0;
+  logic coin_valid;
+  assign coin_valid = coin_input == 4'd1 || coin_input == 4'd2 || coin_input == 4'd5 || coin_input == 4'd10;
+  logic item_valid;
+  assign item_valid = item_selected == 3'd1 || item_selected == 3'd2 || item_selected == 3'd3 || item_selected == 3'd4;
+  logic item_nonzero;
+  assign item_nonzero = item_selected != 3'd0;
+  logic item_invalid;
+  assign item_invalid = item_nonzero && !item_valid;
+  logic coin_invalid;
+  assign coin_invalid = coin_present && !coin_valid;
+  logic [4:0] selected_input_price;
+  assign selected_input_price = item_selected == 3'd1 ? 5'd5 : item_selected == 3'd2 ? 5'd10 : item_selected == 3'd3 ? 5'd15 : item_selected == 3'd4 ? 5'd20 : 5'd0;
+  logic [4:0] coin_value_5;
+  assign coin_value_5 = 5'($unsigned(coin_input));
+  logic [4:0] accumulated_next;
+  assign accumulated_next = (5 > $bits(coin_value_5) ? 5 : $bits(coin_value_5))'(coins_accumulated_r + coin_value_5);
+  logic [4:0] change_next;
+  assign change_next = ($bits(accumulated_next) > 5 ? $bits(accumulated_next) : 5)'(accumulated_next - selected_price_r);
+  
+  always_ff @(posedge clk or posedge rst) begin
+    if (rst) begin
+      state_r <= IDLE;
+      item_button_prev <= 1'b0;
+      cancel_prev <= 1'b0;
+      selected_item_r <= 3'd0;
+      selected_price_r <= 5'd0;
+      coins_accumulated_r <= 5'd0;
+      change_amount_r <= 5'd0;
+    end else begin
+      state_r <= state_next;
+      unique case (state_r)
+        IDLE: begin
+          item_button_prev <= item_button;
+          cancel_prev <= cancel;
+          selected_item_r <= 3'd0;
+          selected_price_r <= 5'd0;
+          change_amount_r <= 5'd0;
+          if (coin_present && !item_button_edge) begin
+            coins_accumulated_r <= coin_value_5;
+          end else begin
+            coins_accumulated_r <= 5'd0;
+          end
+        end
+        ITEMSELECTION: begin
+          item_button_prev <= item_button;
+          cancel_prev <= cancel;
+          if (item_valid) begin
+            selected_item_r <= item_selected;
+            selected_price_r <= selected_input_price;
+            coins_accumulated_r <= 5'd0;
+            change_amount_r <= 5'd0;
+          end
+        end
+        PAYMENTVALIDATION: begin
+          item_button_prev <= item_button;
+          cancel_prev <= cancel;
+          if (coin_present && coin_valid) begin
+            coins_accumulated_r <= accumulated_next;
+            if (accumulated_next >= selected_price_r) begin
+              change_amount_r <= change_next;
+            end else begin
+              change_amount_r <= 5'd0;
+            end
+          end
+        end
+        DISPENSINGITEM: begin
+          item_button_prev <= item_button;
+          cancel_prev <= cancel;
+        end
+        RETURNCHANGE: begin
+          item_button_prev <= item_button;
+          cancel_prev <= cancel;
+          selected_item_r <= 3'd0;
+          selected_price_r <= 5'd0;
+          coins_accumulated_r <= 5'd0;
+          change_amount_r <= 5'd0;
+        end
+        RETURNMONEY: begin
+          item_button_prev <= item_button;
+          cancel_prev <= cancel;
+          selected_item_r <= 3'd0;
+          selected_price_r <= 5'd0;
+          coins_accumulated_r <= 5'd0;
+          change_amount_r <= 5'd0;
+        end
+        default: ;
+      endcase
+    end
+  end
+  
+  always_comb begin
+    state_next = state_r; // hold by default
+    unique case (state_r)
+      IDLE: begin
+        if (coin_present && !item_button_edge) state_next = RETURNMONEY;
+        else if (item_button_edge) state_next = ITEMSELECTION;
+      end
+      ITEMSELECTION: begin
+        if (cancel_edge) state_next = RETURNMONEY;
+        else if (item_invalid) state_next = RETURNMONEY;
+        else if (item_valid) state_next = PAYMENTVALIDATION;
+      end
+      PAYMENTVALIDATION: begin
+        if (cancel_edge) state_next = RETURNMONEY;
+        else if (coin_invalid) state_next = RETURNMONEY;
+        else if (coin_present && coin_valid && accumulated_next >= selected_price_r) state_next = DISPENSINGITEM;
+      end
+      DISPENSINGITEM: begin
+        if (change_amount_r > 5'd0) state_next = RETURNCHANGE;
+        else if (change_amount_r == 5'd0) state_next = IDLE;
+      end
+      RETURNCHANGE: begin
+        state_next = IDLE;
+      end
+      RETURNMONEY: begin
+        state_next = IDLE;
+      end
+      default: state_next = state_r;
+    endcase
+  end
+  
+  always_comb begin
+    dispense_item = 1'b0;
+    return_change = 1'b0;
+    item_price = selected_price_r;
+    change_amount = 5'd0;
+    dispense_item_id = 3'd0;
+    error = 1'b0;
+    return_money = 1'b0;
+    unique case (state_r)
+      IDLE: begin
+        item_price = 5'd0;
+      end
+      ITEMSELECTION: begin
+        if (item_valid) begin
+          item_price = selected_input_price;
+        end else begin
+          item_price = 5'd0;
+        end
+      end
+      PAYMENTVALIDATION: begin
+      end
+      DISPENSINGITEM: begin
+        dispense_item = 1'b1;
+        dispense_item_id = selected_item_r;
+        change_amount = change_amount_r;
+      end
+      RETURNCHANGE: begin
+        return_change = 1'b1;
+        change_amount = change_amount_r;
+      end
+      RETURNMONEY: begin
+        item_price = 5'd0;
+        error = 1'b1;
+        return_money = coins_accumulated_r > 5'd0;
+      end
+      default: ;
+    endcase
+  end
+  
+  // synopsys translate_off
+  _auto_legal_state: assert property (@(posedge clk) !rst |-> state_r < 6)
+    else $fatal(1, "FSM ILLEGAL STATE: vending_machine.state_r = %0d", state_r);
+  _auto_reach_Idle: cover property (@(posedge clk) state_r == IDLE);
+  _auto_reach_ItemSelection: cover property (@(posedge clk) state_r == ITEMSELECTION);
+  _auto_reach_PaymentValidation: cover property (@(posedge clk) state_r == PAYMENTVALIDATION);
+  _auto_reach_DispensingItem: cover property (@(posedge clk) state_r == DISPENSINGITEM);
+  _auto_reach_ReturnChange: cover property (@(posedge clk) state_r == RETURNCHANGE);
+  _auto_reach_ReturnMoney: cover property (@(posedge clk) state_r == RETURNMONEY);
+  _auto_tr_IDLE_to_RETURNMONEY: cover property (@(posedge clk) state_r == IDLE && state_next == RETURNMONEY);
+  _auto_tr_IDLE_to_ITEMSELECTION: cover property (@(posedge clk) state_r == IDLE && state_next == ITEMSELECTION);
+  _auto_tr_ITEMSELECTION_to_RETURNMONEY: cover property (@(posedge clk) state_r == ITEMSELECTION && state_next == RETURNMONEY);
+  _auto_tr_ITEMSELECTION_to_RETURNMONEY_1: cover property (@(posedge clk) state_r == ITEMSELECTION && state_next == RETURNMONEY);
+  _auto_tr_ITEMSELECTION_to_PAYMENTVALIDATION: cover property (@(posedge clk) state_r == ITEMSELECTION && state_next == PAYMENTVALIDATION);
+  _auto_tr_PAYMENTVALIDATION_to_RETURNMONEY: cover property (@(posedge clk) state_r == PAYMENTVALIDATION && state_next == RETURNMONEY);
+  _auto_tr_PAYMENTVALIDATION_to_RETURNMONEY_1: cover property (@(posedge clk) state_r == PAYMENTVALIDATION && state_next == RETURNMONEY);
+  _auto_tr_PAYMENTVALIDATION_to_DISPENSINGITEM: cover property (@(posedge clk) state_r == PAYMENTVALIDATION && state_next == DISPENSINGITEM);
+  _auto_tr_DISPENSINGITEM_to_RETURNCHANGE: cover property (@(posedge clk) state_r == DISPENSINGITEM && state_next == RETURNCHANGE);
+  _auto_tr_DISPENSINGITEM_to_IDLE: cover property (@(posedge clk) state_r == DISPENSINGITEM && state_next == IDLE);
+  _auto_tr_RETURNCHANGE_to_IDLE: cover property (@(posedge clk) state_r == RETURNCHANGE && state_next == IDLE);
+  _auto_tr_RETURNMONEY_to_IDLE: cover property (@(posedge clk) state_r == RETURNMONEY && state_next == IDLE);
+  // synopsys translate_on
+
+endmodule
+

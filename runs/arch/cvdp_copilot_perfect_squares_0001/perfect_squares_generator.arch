@@ -1,0 +1,39 @@
+//! ---
+//! tags: [perfect_squares, sequence, saturation]
+//! ---
+//!
+//! Generates a sequence of 32-bit perfect squares from an active-high asynchronous reset.
+//! The datapath uses the odd-increment recurrence and saturates the output at 32'hFFFFFFFF before wrapping.
+
+/// Top-level perfect square sequence generator.
+///
+/// On reset the visible square is 1; each subsequent positive clock edge advances to the next square until saturation.
+module perfect_squares_generator
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, High>;
+  port sqr_o: out pipe_reg<UInt<32>, 1> reset reset => 32'h00000001;
+
+  reg odd_step: UInt<32> reset reset => 32'h00000003;
+
+  let sqr_ext: UInt<33> = sqr_o.zext<33>();
+  let odd_ext: UInt<33> = odd_step.zext<33>();
+  let sum_ext: UInt<33> = sqr_ext +% odd_ext;
+  let max_ext: UInt<33> = 33'h0FFFFFFFF;
+  let next_square: UInt<32> = sum_ext[31:0];
+  let next_odd: UInt<32> = odd_step +% 32'd2;
+
+  default seq on clk rising;
+
+  seq
+    if sqr_o == 32'hFFFFFFFF
+      sqr_o@1 <= 32'hFFFFFFFF;
+      odd_step <= odd_step;
+    elsif sum_ext > max_ext
+      sqr_o@1 <= 32'hFFFFFFFF;
+      odd_step <= odd_step;
+    else
+      sqr_o@1 <= next_square;
+      odd_step <= next_odd;
+    end if
+  end seq
+end module perfect_squares_generator

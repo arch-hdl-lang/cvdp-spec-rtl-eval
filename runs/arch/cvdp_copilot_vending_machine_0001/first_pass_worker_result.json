@@ -1,0 +1,13 @@
+{
+  "problem_id": "cvdp_copilot_vending_machine_0001",
+  "top_module": "vending_machine",
+  "arch_version": "arch 0.70.6",
+  "candidate_arch": "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.arch",
+  "raw_response": "runs/arch/cvdp_copilot_vending_machine_0001/cvdp_copilot_vending_machine_0001_response.txt",
+  "generated_sv": "runs/arch/cvdp_copilot_vending_machine_0001/generated_sv",
+  "interface_file": "runs/arch/cvdp_copilot_vending_machine_0001/vending_machine.archi",
+  "write_and_check_status": "pass",
+  "build_status": "pass",
+  "verilator_lint_status": "pass",
+  "evaluated": false
+}

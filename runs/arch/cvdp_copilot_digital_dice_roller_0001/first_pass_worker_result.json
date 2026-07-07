@@ -1,0 +1,15 @@
+{
+  "problem_id": "cvdp_copilot_digital_dice_roller_0001",
+  "top_module": "digital_dice_roller",
+  "arch_version": "arch 0.70.6",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_digital_dice_roller_0001/digital_dice_roller.arch",
+    "raw_response": "runs/arch/cvdp_copilot_digital_dice_roller_0001/cvdp_copilot_digital_dice_roller_0001_response.txt",
+    "generated_sv": "runs/arch/cvdp_copilot_digital_dice_roller_0001/generated_sv",
+    "arch_interface": "runs/arch/cvdp_copilot_digital_dice_roller_0001/digital_dice_roller.archi"
+  },
+  "check_status": "pass",
+  "build_status": "pass",
+  "lint_status": "pass",
+  "notes": "Initial build/lint exposed a missing generated helper function; arch_advise returned no matches, and the final candidate uses inline typed FSM lets."
+}

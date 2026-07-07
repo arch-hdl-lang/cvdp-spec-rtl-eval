@@ -1,0 +1,42 @@
+//! ---
+//! tags: [clock_jitter, level_detection, interval_counter, synchronous_reset]
+//! refs: []
+//! ---
+//!
+//! Clock jitter detection by counting primary clock cycles while system_clk is low.
+//! A sampled high level on system_clk terminates the interval and reports whether the low interval exceeded JITTER_THRESHOLD.
+/// Counts clk cycles between high samples of system_clk and flags late intervals.
+///
+/// Timing: system_clk is sampled on the rising edge of clk. jitter_detected is a registered value that is high on a sampled system_clk high level when the preceding low interval count exceeds JITTER_THRESHOLD.
+module clock_jitter_detection_module #(
+  parameter int JITTER_THRESHOLD = 5
+) (
+  input logic clk,
+  input logic system_clk,
+  input logic rst,
+  output logic jitter_detected
+);
+
+  logic late_jitter;
+  logic [31:0] edge_count;
+  logic [31:0] edge_count_r;
+  assign late_jitter = edge_count > JITTER_THRESHOLD;
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      edge_count <= 0;
+      edge_count_r <= 0;
+      jitter_detected <= 1'b0;
+    end else begin
+      if (system_clk) begin
+        edge_count_r <= edge_count;
+        jitter_detected <= late_jitter;
+        edge_count <= 0;
+      end else begin
+        jitter_detected <= 1'b0;
+        edge_count <= 32'(edge_count + 32'd1);
+      end
+    end
+  end
+
+endmodule
+

@@ -1,0 +1,63 @@
+//! ---
+//! tags: [stopwatch, clock-divider, counters, pause-resume]
+//! refs: []
+//! ---
+//!
+//! Digital stopwatch with an internal one-second pulse divider. The stopwatch preserves partial-second divider progress while paused and holds at one hour once reached.
+
+/// Top-level digital stopwatch implementation.
+///
+/// Timing/type notes:
+/// - `clk` is sampled on its rising edge.
+/// - `reset` is asynchronous active-high and clears divider, seconds, minutes, and hour.
+/// - `start_stop` is level-sensitive: high runs the stopwatch and low pauses it.
+/// - `seconds`, `minutes`, and `hour` are combinational views of internal registers.
+module dig_stopwatch
+  param CLK_FREQ: const = 50000000;
+  local param DIV_WIDTH: const = $clog2(CLK_FREQ + 1);
+
+  port clk: in Clock<SysDomain>;
+  port reset: in Reset<Async, High>;
+  port start_stop: in Bool;
+  port seconds: out UInt<6>;
+  port minutes: out UInt<6>;
+  port hour: out Bool;
+
+  reg default: reset reset => 0;
+  reg div_count: UInt<DIV_WIDTH>;
+  reg sec_value: UInt<6>;
+  reg min_value: UInt<6>;
+  reg hour_value: Bool;
+
+  let seconds = sec_value;
+  let minutes = min_value;
+  let hour = hour_value;
+
+  let div_last: Bool = (div_count == (CLK_FREQ - 1));
+  let sec_last: Bool = (sec_value == 6'd59);
+  let min_last: Bool = (min_value == 6'd59);
+  let tick_enabled: Bool = start_stop and not hour_value;
+
+  default seq on clk rising;
+
+  seq
+    if tick_enabled
+      if div_last
+        div_count <= 0;
+        if sec_last
+          sec_value <= 0;
+          if min_last
+            min_value <= 0;
+            hour_value <= true;
+          else
+            min_value <= min_value +% 6'd1;
+          end if
+        else
+          sec_value <= sec_value +% 6'd1;
+        end if
+      else
+        div_count <= div_count +% 1;
+      end if
+    end if
+  end seq
+end module dig_stopwatch

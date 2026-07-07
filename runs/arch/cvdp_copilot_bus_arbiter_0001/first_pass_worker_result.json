@@ -1,0 +1,9 @@
+{
+  "problem_id": "cvdp_copilot_bus_arbiter_0001",
+  "top_module": "cvdp_copilot_bus_arbiter",
+  "arch_path": "runs/arch/cvdp_copilot_bus_arbiter_0001/cvdp_copilot_bus_arbiter.arch",
+  "response_path": "runs/arch/cvdp_copilot_bus_arbiter_0001/cvdp_copilot_bus_arbiter_0001_response.txt",
+  "check_status": "passed",
+  "build_status": "passed",
+  "failure_summary": ""
+}

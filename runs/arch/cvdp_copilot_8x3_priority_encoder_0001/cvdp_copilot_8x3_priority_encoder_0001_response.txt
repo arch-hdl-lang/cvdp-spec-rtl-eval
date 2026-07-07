@@ -1,0 +1,22 @@
+//! ---
+//! tags: [priority-encoder, combinational, cvdp]
+//! ---
+//!
+//! Implements the CVDP 8x3 priority encoder specification. The output is a same-cycle binary index for the highest asserted input bit, defaulting to zero when no input bit is active.
+
+/// 8-bit to 3-bit combinational priority encoder.
+///
+/// Input bit 7 has the highest priority and input bit 0 has the lowest priority.
+module priority_encoder_8x3
+  port in: in UInt<8>;
+  port out: out UInt<3>;
+
+  let out = in[7] ? 3'b111 :
+            in[6] ? 3'b110 :
+            in[5] ? 3'b101 :
+            in[4] ? 3'b100 :
+            in[3] ? 3'b011 :
+            in[2] ? 3'b010 :
+            in[1] ? 3'b001 :
+                    3'b000;
+end module priority_encoder_8x3

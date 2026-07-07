@@ -1,0 +1,9 @@
+{
+  "problem_id": "cvdp_copilot_16qam_mapper_0001",
+  "top_module": "qam16_mapper_interpolated",
+  "arch_path": "runs/arch/cvdp_copilot_16qam_mapper_0001/qam16_mapper_interpolated.arch",
+  "response_path": "runs/arch/cvdp_copilot_16qam_mapper_0001/cvdp_copilot_16qam_mapper_0001_response.txt",
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS"
+}

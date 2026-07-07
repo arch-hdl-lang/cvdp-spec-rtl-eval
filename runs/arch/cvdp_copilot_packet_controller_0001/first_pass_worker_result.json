@@ -1,0 +1,12 @@
+{
+  "problem_id": "cvdp_copilot_packet_controller_0001",
+  "top_module": "packet_controller",
+  "arch_version": "arch 0.70.6",
+  "check_status": "pass",
+  "build_lint_status": "pass",
+  "arch_path": "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.arch",
+  "response_path": "runs/arch/cvdp_copilot_packet_controller_0001/cvdp_copilot_packet_controller_0001_response.txt",
+  "generated_sv_dir": "runs/arch/cvdp_copilot_packet_controller_0001/generated_sv",
+  "archi_path": "runs/arch/cvdp_copilot_packet_controller_0001/packet_controller.archi",
+  "compile_error_advice_used": false
+}

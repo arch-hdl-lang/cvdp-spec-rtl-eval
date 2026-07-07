@@ -1,0 +1,229 @@
+//! ---
+//! tags: [hebbian, fsm, training, logic-gates]
+//! ---
+//!
+//! Hebbian-rule trainer for two signed bipolar inputs. The design captures each input pair, selects a bipolar target for AND/OR/NAND/NOR behavior, computes signed Hebbian deltas, and accumulates the trained weights and bias over four input samples.
+
+/// Moore FSM implementing the Hebbian training sequence.
+///
+/// Timing/type notes: `clk` is sampled on the rising edge, `rst` is an asynchronous active-low reset, input samples are captured in State_1, and `w1`, `w2`, `bias`, `present_state`, and `next_state` are combinational views of FSM registers/state.
+/// Transition table:
+/// current | input condition | next | externally visible outputs
+/// State_0 | start=1 | State_1 | weights/bias hold prior reset or completed training values; next_state=1
+/// State_0 | start=0 | State_0 | weights/bias hold; next_state=0
+/// State_1 | gate_select=00 | State_2 | captures a,b on this clock; next_state=2
+/// State_1 | gate_select=01 | State_3 | captures a,b on this clock; next_state=3
+/// State_1 | gate_select=10 | State_4 | captures a,b on this clock; next_state=4
+/// State_1 | gate_select=11 | State_5 | captures a,b on this clock; next_state=5
+/// State_2 | unconditional | State_6 | AND target is registered on this clock; next_state=6
+/// State_3 | unconditional | State_6 | OR target is registered on this clock; next_state=6
+/// State_4 | unconditional | State_6 | NAND target is registered on this clock; next_state=6
+/// State_5 | unconditional | State_6 | NOR target is registered on this clock; next_state=6
+/// State_6 | unconditional | State_7 | target is held for delta computation; next_state=7
+/// State_7 | unconditional | State_8 | delta registers receive x1*t, x2*t, and t; next_state=8
+/// State_8 | unconditional | State_9 | weights and bias accumulate deltas on this clock; next_state=9
+/// State_9 | iteration<3 | State_1 | iteration counter increments; next_state=1
+/// State_9 | iteration=3 | State_10 | completed four training samples; next_state=10
+/// State_10 | unconditional | State_0 | final trained weights/bias remain visible; next_state=0
+fsm hebb_gates
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, Low>;
+  port start: in Bool;
+  port a: in SInt<4>;
+  port b: in SInt<4>;
+  port gate_select: in UInt<2>;
+  port w1: out SInt<4>;
+  port w2: out SInt<4>;
+  port bias: out SInt<4>;
+  port present_state: out UInt<4>;
+  port next_state: out UInt<4>;
+
+  reg x1_r: SInt<4> reset rst => 0;
+  reg x2_r: SInt<4> reset rst => 0;
+  reg target_r: SInt<4> reset rst => 0;
+  reg delta_w1_r: SInt<4> reset rst => 0;
+  reg delta_w2_r: SInt<4> reset rst => 0;
+  reg delta_b_r: SInt<4> reset rst => 0;
+  reg weight1_r: SInt<4> reset rst => 0;
+  reg weight2_r: SInt<4> reset rst => 0;
+  reg bias_r: SInt<4> reset rst => 0;
+  reg iter_idx: UInt<3> reset rst => 0;
+
+  let pos_val: SInt<4> = signed(4'h1);
+  let neg_val: SInt<4> = signed(4'hF);
+  let both_pos: Bool = (x1_r == pos_val) and (x2_r == pos_val);
+  let any_pos: Bool = (x1_r == pos_val) or (x2_r == pos_val);
+  let target_and: SInt<4> = both_pos ? pos_val : neg_val;
+  let target_or: SInt<4> = any_pos ? pos_val : neg_val;
+  let target_nand: SInt<4> = both_pos ? neg_val : pos_val;
+  let target_nor: SInt<4> = any_pos ? neg_val : pos_val;
+  let done_four: Bool = (iter_idx == 3'd3);
+  let calc_delta_w1: SInt<4> = x1_r *% target_r;
+  let calc_delta_w2: SInt<4> = x2_r *% target_r;
+
+  state [State_0, State_1, State_2, State_3, State_4, State_5, State_6, State_7, State_8, State_9, State_10]
+  default state State_0;
+
+  default
+    comb
+      w1 = weight1_r;
+      w2 = weight2_r;
+      bias = bias_r;
+      present_state = 4'd0;
+      next_state = 4'd0;
+    end comb
+  end default
+
+  state State_0
+    comb
+      present_state = 4'd0;
+      if start
+        next_state = 4'd1;
+      else
+        next_state = 4'd0;
+      end if
+    end comb
+    seq on clk rising
+      if start
+        x1_r <= 0;
+        x2_r <= 0;
+        target_r <= 0;
+        delta_w1_r <= 0;
+        delta_w2_r <= 0;
+        delta_b_r <= 0;
+        weight1_r <= 0;
+        weight2_r <= 0;
+        bias_r <= 0;
+        iter_idx <= 0;
+      end if
+    end seq
+    -> State_1 when start;
+  end state State_0
+
+  state State_1
+    comb
+      present_state = 4'd1;
+      if gate_select == 2'b00
+        next_state = 4'd2;
+      elsif gate_select == 2'b01
+        next_state = 4'd3;
+      elsif gate_select == 2'b10
+        next_state = 4'd4;
+      else
+        next_state = 4'd5;
+      end if
+    end comb
+    seq on clk rising
+      x1_r <= a;
+      x2_r <= b;
+    end seq
+    -> State_2 when gate_select == 2'b00;
+    -> State_3 when gate_select == 2'b01;
+    -> State_4 when gate_select == 2'b10;
+    -> State_5 when gate_select == 2'b11;
+  end state State_1
+
+  state State_2
+    comb
+      present_state = 4'd2;
+      next_state = 4'd6;
+    end comb
+    seq on clk rising
+      target_r <= target_and;
+    end seq
+    -> State_6;
+  end state State_2
+
+  state State_3
+    comb
+      present_state = 4'd3;
+      next_state = 4'd6;
+    end comb
+    seq on clk rising
+      target_r <= target_or;
+    end seq
+    -> State_6;
+  end state State_3
+
+  state State_4
+    comb
+      present_state = 4'd4;
+      next_state = 4'd6;
+    end comb
+    seq on clk rising
+      target_r <= target_nand;
+    end seq
+    -> State_6;
+  end state State_4
+
+  state State_5
+    comb
+      present_state = 4'd5;
+      next_state = 4'd6;
+    end comb
+    seq on clk rising
+      target_r <= target_nor;
+    end seq
+    -> State_6;
+  end state State_5
+
+  state State_6
+    comb
+      present_state = 4'd6;
+      next_state = 4'd7;
+    end comb
+    -> State_7;
+  end state State_6
+
+  state State_7
+    comb
+      present_state = 4'd7;
+      next_state = 4'd8;
+    end comb
+    seq on clk rising
+      delta_w1_r <= calc_delta_w1;
+      delta_w2_r <= calc_delta_w2;
+      delta_b_r <= target_r;
+    end seq
+    -> State_8;
+  end state State_7
+
+  state State_8
+    comb
+      present_state = 4'd8;
+      next_state = 4'd9;
+    end comb
+    seq on clk rising
+      weight1_r <= weight1_r +% delta_w1_r;
+      weight2_r <= weight2_r +% delta_w2_r;
+      bias_r <= bias_r +% delta_b_r;
+    end seq
+    -> State_9;
+  end state State_8
+
+  state State_9
+    comb
+      present_state = 4'd9;
+      if done_four
+        next_state = 4'd10;
+      else
+        next_state = 4'd1;
+      end if
+    end comb
+    seq on clk rising
+      if not done_four
+        iter_idx <= iter_idx +% 3'd1;
+      end if
+    end seq
+    -> State_10 when done_four;
+    -> State_1 when not done_four;
+  end state State_9
+
+  state State_10
+    comb
+      present_state = 4'd10;
+      next_state = 4'd0;
+    end comb
+    -> State_0;
+  end state State_10
+end fsm hebb_gates

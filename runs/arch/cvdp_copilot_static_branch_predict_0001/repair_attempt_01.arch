@@ -1,0 +1,57 @@
+//! ---
+//! tags: [riscv, branch_prediction, rv32i, combinational]
+//! refs:
+//!   - "Problem cvdp_copilot_static_branch_predict_0001"
+//! ---
+//!
+//! Static branch predictor for RV32I control-transfer instructions. The module
+//! assumes any RV32C branch or jump has already been decompressed to its
+//! equivalent 32-bit RV32I encoding before it reaches this combinational block.
+
+/// Combinational static branch and jump predictor.
+///
+/// Decodes RV32I JAL, JALR, and conditional branch opcodes, predicts jumps as
+/// taken, predicts branches as taken when their encoded offset is negative, and
+/// forms the target address from either the fetch PC or the supplied register
+/// address for JALR.
+module static_branch_predict
+  port fetch_rdata_i: in UInt<32>;
+  port fetch_pc_i: in UInt<32>;
+  port register_addr_i: in UInt<32>;
+  port fetch_valid_i: in Bool;
+  port predict_branch_taken_o: out Bool;
+  port predict_branch_pc_o: out UInt<32>;
+
+  let opcode: UInt<7> = fetch_rdata_i[6:0];
+  let funct3: UInt<3> = fetch_rdata_i[14:12];
+
+  let is_branch_funct3: Bool = (funct3 == 3'b000) ||
+                               (funct3 == 3'b001) ||
+                               (funct3 == 3'b100) ||
+                               (funct3 == 3'b101) ||
+                               (funct3 == 3'b110) ||
+                               (funct3 == 3'b111);
+
+  let instr_jal: Bool = opcode == 7'h6F;
+  let instr_jalr: Bool = (opcode == 7'h67) && (funct3 == 3'b000);
+  let instr_branch: Bool = (opcode == 7'h63) && is_branch_funct3;
+  let instr_jump: Bool = instr_jal || instr_jalr;
+  let recognized_control: Bool = instr_jump || instr_branch;
+
+  let imm_j_type: UInt<32> = {{12{fetch_rdata_i[31]}}, fetch_rdata_i[19:12], fetch_rdata_i[20], fetch_rdata_i[30:21], 1'b0};
+  let imm_i_type: UInt<32> = {{20{fetch_rdata_i[31]}}, fetch_rdata_i[31:20]};
+  let imm_b_type: UInt<32> = {{19{fetch_rdata_i[31]}}, fetch_rdata_i[31], fetch_rdata_i[7], fetch_rdata_i[30:25], fetch_rdata_i[11:8], 1'b0};
+
+  let pc_based_imm: UInt<32> = instr_jal ? imm_j_type : imm_b_type;
+  let pc_based_target: UInt<32> = fetch_pc_i +% pc_based_imm;
+  let jalr_target_sum: UInt<32> = register_addr_i +% imm_i_type;
+  let jalr_target: UInt<32> = {jalr_target_sum[31:1], 1'b0};
+  let target_pc: UInt<32> = instr_jalr ? jalr_target : pc_based_target;
+
+  let instr_b_taken: Bool = instr_branch && imm_b_type[31];
+  let predicted_taken: Bool = fetch_valid_i && (instr_jump || instr_b_taken);
+  let target_valid: Bool = fetch_valid_i && recognized_control;
+
+  let predict_branch_taken_o = predicted_taken;
+  let predict_branch_pc_o = target_valid ? target_pc : fetch_pc_i;
+end module static_branch_predict

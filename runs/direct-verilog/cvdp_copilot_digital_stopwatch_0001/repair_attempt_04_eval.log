@@ -1,0 +1,19 @@
+Command:
+CVDP_FORCE_WAVE=1 python3 scripts/evaluate_candidate.py --lane direct-verilog --problem cvdp_copilot_digital_stopwatch_0001 --runtime osvb-docker --keep-workdir
+
+Attempt: repair_attempt_04.sv
+Status: fail
+Return code: 1
+Kept workdir: /Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_digital_stopwatch_0001_osvb_rn093cgr
+
+Evaluator evidence:
+{"id": "cvdp_copilot_digital_stopwatch_0001", "lane": "direct-verilog", "runtime": "osvb-docker", "status": "fail", "returncode": 1}
+Pytest cases failed for CLK_FREQ parameterizations 3, 50, and 63.
+Short test summary: 3 failed in 1.78s.
+
+Cocotb XML evidence from kept workdir:
+random_seed=1783402009
+testcase=test_dig_stopwatch
+sim_time_ns=5000000.0
+failure message="Test failed with RANDOM_SEED=1783402009"
+

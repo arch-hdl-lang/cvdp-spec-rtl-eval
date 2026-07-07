@@ -1,0 +1,172 @@
+//! ---
+//! tags: [packet, fsm, checksum, arithmetic, response]
+//! ---
+//!
+//! Packet controller generated from the CVDP packet-controller specification. It receives one 8-byte command packet at a time, validates the BACD header and modulo-256 checksum, computes a 16-bit result, and transmits a 5-byte response packet.
+
+/// Byte-serial packet controller with integrated receive validation and transmit sequencing.
+///
+/// Port timing/types:
+/// - `clk` samples RX strobes and TX-done ticks on the rising edge.
+/// - `rst` is active-high asynchronous reset for state and datapath registers.
+/// - Valid command packets transmit an ABCD response; invalid complete packets transmit an all-zero error response.
+///
+/// Transition table:
+/// current state        | input condition                              | next state           | externally visible outputs
+/// S_IDLE              | rx_valid_i with byte_count_r != 7            | S_IDLE               | tx_start_o=0, tx_data_8_o=0
+/// S_IDLE              | rx_valid_i with byte_count_r == 7            | S_SEND_FIRST_BYTE    | tx_start_o=0, tx_data_8_o=0 while response registers load
+/// S_SEND_FIRST_BYTE   | tx_done_tick_i == 0                         | S_SEND_FIRST_BYTE    | tx_start_o=1, tx_data_8_o=response byte 0
+/// S_SEND_FIRST_BYTE   | tx_done_tick_i == 1                         | S_RESPONSE_READY     | tx_start_o=1, tx_data_8_o=response byte 0
+/// S_RESPONSE_READY    | tx_done_tick_i == 0                         | S_RESPONSE_READY     | tx_start_o=1, tx_data_8_o=current response byte
+/// S_RESPONSE_READY    | tx_done_tick_i == 1 and send_idx_r != 4     | S_RESPONSE_READY     | tx_start_o=1, tx_data_8_o=current response byte
+/// S_RESPONSE_READY    | tx_done_tick_i == 1 and send_idx_r == 4     | S_IDLE               | tx_start_o=1 for final byte cycle, then 0 in S_IDLE
+fsm packet_controller
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async, High>;
+  port rx_valid_i: in Bool;
+  port rx_data_8_i: in UInt<8>;
+  port tx_done_tick_i: in Bool;
+  port tx_start_o: out UInt<1>;
+  port tx_data_8_o: out UInt<8>;
+
+  state [S_IDLE, S_SEND_FIRST_BYTE, S_RESPONSE_READY]
+  default state S_IDLE;
+
+  reg byte_count_r: UInt<4> reset rst => 0;
+  reg byte0_r: UInt<8> reset rst => 0;
+  reg byte1_r: UInt<8> reset rst => 0;
+  reg byte2_r: UInt<8> reset rst => 0;
+  reg byte3_r: UInt<8> reset rst => 0;
+  reg byte4_r: UInt<8> reset rst => 0;
+  reg byte5_r: UInt<8> reset rst => 0;
+  reg byte6_r: UInt<8> reset rst => 0;
+  reg resp0_r: UInt<8> reset rst => 0;
+  reg resp1_r: UInt<8> reset rst => 0;
+  reg resp2_r: UInt<8> reset rst => 0;
+  reg resp3_r: UInt<8> reset rst => 0;
+  reg resp4_r: UInt<8> reset rst => 0;
+  reg send_idx_r: UInt<3> reset rst => 0;
+
+  let header_ok_now: Bool = (byte0_r == 8'hBA) and (byte1_r == 8'hCD);
+  let sum01: UInt<8> = byte0_r +% byte1_r;
+  let sum02: UInt<8> = sum01 +% byte2_r;
+  let sum03: UInt<8> = sum02 +% byte3_r;
+  let sum04: UInt<8> = sum03 +% byte4_r;
+  let sum05: UInt<8> = sum04 +% byte5_r;
+  let sum06: UInt<8> = sum05 +% byte6_r;
+  let complete_packet_sum: UInt<8> = sum06 +% rx_data_8_i;
+  let packet_complete: Bool = rx_valid_i and (byte_count_r == 4'd7);
+  let packet_valid_now: Bool = header_ok_now and (complete_packet_sum == 8'h00);
+
+  let num1_value: UInt<16> = {byte2_r, byte3_r};
+  let num2_value: UInt<16> = {byte4_r, byte5_r};
+  let add_value: UInt<16> = num1_value +% num2_value;
+  let sub_value: UInt<16> = num1_value -% num2_value;
+  let result_value: UInt<16> = (byte6_r == 8'h00) ? add_value : ((byte6_r == 8'h01) ? sub_value : 16'h0000);
+  let result_hi: UInt<8> = result_value[15:8];
+  let result_lo: UInt<8> = result_value[7:0];
+  let resp_sum0: UInt<8> = 8'hAB +% 8'hCD;
+  let resp_sum1: UInt<8> = resp_sum0 +% result_hi;
+  let resp_sum2: UInt<8> = resp_sum1 +% result_lo;
+  let response_checksum: UInt<8> = 8'h00 -% resp_sum2;
+
+  default
+    comb
+      tx_start_o = 1'd0;
+      tx_data_8_o = 8'h00;
+    end comb
+  end default
+
+  state S_IDLE
+    seq on clk rising
+      if rx_valid_i
+        if byte_count_r == 4'd0
+          byte0_r <= rx_data_8_i;
+          byte_count_r <= 4'd1;
+        elsif byte_count_r == 4'd1
+          byte1_r <= rx_data_8_i;
+          byte_count_r <= 4'd2;
+        elsif byte_count_r == 4'd2
+          byte2_r <= rx_data_8_i;
+          byte_count_r <= 4'd3;
+        elsif byte_count_r == 4'd3
+          byte3_r <= rx_data_8_i;
+          byte_count_r <= 4'd4;
+        elsif byte_count_r == 4'd4
+          byte4_r <= rx_data_8_i;
+          byte_count_r <= 4'd5;
+        elsif byte_count_r == 4'd5
+          byte5_r <= rx_data_8_i;
+          byte_count_r <= 4'd6;
+        elsif byte_count_r == 4'd6
+          byte6_r <= rx_data_8_i;
+          byte_count_r <= 4'd7;
+        else
+          byte_count_r <= 4'd0;
+          send_idx_r <= 3'd0;
+          if packet_valid_now
+            resp0_r <= 8'hAB;
+            resp1_r <= 8'hCD;
+            resp2_r <= result_hi;
+            resp3_r <= result_lo;
+            resp4_r <= response_checksum;
+          else
+            resp0_r <= 8'h00;
+            resp1_r <= 8'h00;
+            resp2_r <= 8'h00;
+            resp3_r <= 8'h00;
+            resp4_r <= 8'h00;
+          end if
+          byte0_r <= 8'h00;
+          byte1_r <= 8'h00;
+          byte2_r <= 8'h00;
+          byte3_r <= 8'h00;
+          byte4_r <= 8'h00;
+          byte5_r <= 8'h00;
+          byte6_r <= 8'h00;
+        end if
+      end if
+    end seq
+    -> S_SEND_FIRST_BYTE when packet_complete and packet_valid_now;
+  end state S_IDLE
+
+  state S_SEND_FIRST_BYTE
+    comb
+      tx_start_o = 1'd1;
+      tx_data_8_o = resp0_r;
+    end comb
+    seq on clk rising
+      if tx_done_tick_i
+        send_idx_r <= 3'd1;
+      end if
+    end seq
+    -> S_RESPONSE_READY when tx_done_tick_i;
+  end state S_SEND_FIRST_BYTE
+
+  state S_RESPONSE_READY
+    comb
+      tx_start_o = 1'd1;
+      if send_idx_r == 3'd0
+        tx_data_8_o = resp0_r;
+      elsif send_idx_r == 3'd1
+        tx_data_8_o = resp1_r;
+      elsif send_idx_r == 3'd2
+        tx_data_8_o = resp2_r;
+      elsif send_idx_r == 3'd3
+        tx_data_8_o = resp3_r;
+      else
+        tx_data_8_o = resp4_r;
+      end if
+    end comb
+    seq on clk rising
+      if tx_done_tick_i
+        if send_idx_r == 3'd4
+          send_idx_r <= 3'd0;
+        else
+          send_idx_r <= send_idx_r +% 3'd1;
+        end if
+      end if
+    end seq
+    -> S_IDLE when tx_done_tick_i and (send_idx_r == 3'd4);
+  end state S_RESPONSE_READY
+end fsm packet_controller

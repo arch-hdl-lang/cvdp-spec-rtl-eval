@@ -1,0 +1,44 @@
+//! ---
+//! tags: [palindrome, stream, detector]
+//! ---
+//!
+//! Three-bit streaming palindrome detector. After synchronous active-high reset, the detector samples one bit per rising clock edge and raises the output when the current sample matches the sample from two cycles earlier.
+
+/// Top-level three-bit palindrome detector for a serial input stream.
+///
+/// The output is driven from a registered detection result and is suppressed until three post-reset samples have been observed.
+module palindrome_detect
+  param N: const = 3;
+
+  port clk: in Clock<SysDomain>;
+  port reset: in Bool;
+  port bit_stream: in Bool;
+  port palindrome_detected: out Bool;
+
+  reg prev_bit_1: Bool;
+  reg prev_bit_2: Bool;
+  reg sample_count: UInt<2>;
+  reg detected_reg: Bool;
+
+  let palindrome_detected = detected_reg;
+
+  seq on clk rising
+    if reset
+      prev_bit_1 <= false;
+      prev_bit_2 <= false;
+      sample_count <= 0;
+      detected_reg <= false;
+    else
+      prev_bit_2 <= prev_bit_1;
+      prev_bit_1 <= bit_stream;
+
+      if sample_count == 2
+        sample_count <= sample_count;
+        detected_reg <= bit_stream == prev_bit_2;
+      else
+        sample_count <= sample_count +% 1;
+        detected_reg <= false;
+      end if
+    end if
+  end seq
+end module palindrome_detect

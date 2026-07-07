@@ -1,0 +1,18 @@
+//! ---
+//! tags: [decoder, one_hot, combinational]
+//! ---
+//!
+//! Parameterized binary to one-hot decoder. The output is purely combinational and selects the output bit named by the binary input.
+
+/// Converts a BINARY_WIDTH-bit binary input into an OUTPUT_WIDTH-bit one-hot output.
+///
+/// Selections beyond the configured output width produce no asserted output bit.
+module binary_to_one_hot_decoder
+  param BINARY_WIDTH: const = 5;
+  param OUTPUT_WIDTH: const = 32;
+
+  port binary_in: in UInt<BINARY_WIDTH>;
+  port one_hot_out: out UInt<OUTPUT_WIDTH>;
+
+  let one_hot_out = onehot(binary_in);
+end module binary_to_one_hot_decoder

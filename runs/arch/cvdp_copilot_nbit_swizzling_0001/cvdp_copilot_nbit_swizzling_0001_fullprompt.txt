@@ -1,0 +1,68 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `nbit_swizzling` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_nbit_swizzling_0001
+
+Natural-language specification:
+Design a System Verilog module `nbit_swizzling` that performs selective bit-reversal with `sel` input signal. The module should take a `DATA_WIDTH`-bit wide input and reverse the bits in the following configurations based on a 2-bit selection signal `sel`.
+
+
+##### Interface of Module `nbit_swizzling`
+
+#### Parameter
+- The default value of `DATA_WIDTH` is 64.
+#### Inputs
+- `data_in([DATA_WIDTH-1:0])`: Input data of size `DATA_WIDTH`
+- `sel([1:0])`: 2-bit selection signal 
+
+#### Outputs
+- `data_out([DATA_WIDTH-1:0])`: Output data of size `DATA_WIDTH` 
+
+#### Specification
+#### 1. Operation
+- When `sel` = 0, reverse the entire input.
+- When `sel` = 1, divide `data_in` into two equal sizes of bit arrays and reverse each half separately.
+- When `sel` = 2, divide `data_in` into four equal sizes of bit arrays and reverse each section individually.
+- When `sel` = 3, divide `data_in` into eight equal sizes of bit arrays and reverse each section individually.
+- In the default case, the output should match the input.
+#### 2. Constraints
+- The `DATA_WIDTH` must be greater than or equal to 16 and multiples of 8.
+- Assume that `data_in` will always handle of 1s and 0s. Therefore, there is no need to handle invalid input cases explicitly.
+- The design must follow combinational logic
+
+#### Example
+
+`DATA_WIDTH`: 16
+
+```wavedrom
+ 
+{"signal": [
+  { "name": "data_in[DATA_WIDTH-1:0]", "wave": "x.=.=.=.=.=.=.=.=.x", "data": ["2a5c","2cbe","2df9","32cb","34d0","47f6","410a","2859"] },
+  { "name": "sel[1:0]", "wave": "x.=.=.=.=.=.=.=.=.x", "data": ["0","0","1","1","2","2","3","3"] },
+  { "name": "data_out[DATA_WIDTH-1:0]", "wave": "x.=.=.=.=.=.=.=.=.x", "data": ["3a54","7d34","b49f","4cd3","c2b0","2ef6","8205","14a6"] },
+{ "name": "DATA_WIDTH", "wave": "x.=...............x", "data": ["16"] }
+],
+"head": {
+"text": "Module:: nbit_swizzling, data_in and data_out represented in hex format"
+}
+}
+
+```
+

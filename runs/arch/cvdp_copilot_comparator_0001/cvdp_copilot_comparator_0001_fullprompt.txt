@@ -1,0 +1,67 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `signed_unsigned_comparator` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_comparator_0001
+
+Natural-language specification:
+Create a fully parameterized SystemVerilog module for a comparator that can operate in two modes: "signed mode" and "magnitude mode." The module should compare two signed integers of parameterized bit width and output signals to indicate whether one input is greater than, less than, or equal to the other. The design should be a purely combinational circuit and include an enabled input that activates the comparison.
+
+### Specifications
+
+1. **Module Name:** `signed_unsigned_comparator`
+2. **Parameterization:**
+   - `WIDTH`: Defines the bit-width of the inputs (default value: 5).
+3. **Inputs and Outputs:**
+
+| Signal      | Direction | Bit Width     | Active State | Description                                                                                          |
+|-------------|-----------|---------------|--------------|------------------------------------------------------------------------------------------------------|
+| `i_A`       | Input     | `WIDTH`       | N/A          | `WIDTH`-bit integer input value, to be compared with `i_B`.                                          |
+| `i_B`       | Input     | `WIDTH`       | N/A          | `WIDTH`-bit integer input value, to be compared with `i_A`.                                          |
+| `i_enable`  | Input     | 1             | High         | Enable signal for comparison. When low, all outputs (`o_greater`, `o_less`, `o_equal`) are inactive. |
+| `i_mode`    | Input     | 1             | High         | Mode selection signal: high for "signed mode," low for "magnitude mode".                             |
+| `o_greater` | Output    | 1             | High         | Output signal indicating `i_A` > `i_B`. Active when `i_enable` is high and `i_A` is greater than `i_B`. |
+| `o_less`    | Output    | 1             | High         | Output signal indicating `i_A` < `i_B`. Active when `i_enable` is high and `i_A` is less than `i_B`.   |
+| `o_equal`   | Output    | 1             | High         | Output signal indicating `i_A` == `i_B`. Active when `i_enable` is high and `i_A` equals `i_B`.        |
+
+### Behavioral Requirements
+
+- The module should support two comparison modes:
+  - **Signed Mode:** If `i_mode` is high, the comparison interprets `i_A` and `i_B` as signed integers, where the most significant bit (MSB) represents the sign (1 for negative, 0 for positive).
+  - **Magnitude Mode:** If `i_mode` is low, the comparison ignores the sign bit and treats both inputs as unsigned magnitudes.
+  
+- When `i_enable` is high, the module should perform the comparison according to the selected mode:
+  - If `i_A` > `i_B`, `o_greater` should be high, and `o_less` and `o_equal` should be low.
+  - If `i_A` < `i_B`, `o_less` should be high, and `o_greater` and `o_equal` should be low.
+  - If `i_A` == `i_B`, `o_equal` should be high, and `o_greater` and `o_less` should be low.
+  
+- When `i_enable` is low, all outputs (`o_greater`, `o_less`, `o_equal`) should be set to low, regardless of the comparison mode or inputs.
+
+### Constraints and Edge Cases
+
+- Ensure the module correctly handles edge cases for maximum positive and maximum negative values in signed mode, as well as for the largest and smallest possible magnitudes in magnitude mode.
+- The design should fully handle the `i_enable` signal, keeping outputs low when disabled.
+- Ensure that parameterization for `WIDTH` is respected throughout the design, allowing easy modification of input bit-width without further changes to the logic.
+
+### Additional Notes
+
+- Follow purely combinational design requirements—no sequential elements.
+- Ensure the module is synthesizable and uses industry-standard terminology throughout the code and documentation.
+
+

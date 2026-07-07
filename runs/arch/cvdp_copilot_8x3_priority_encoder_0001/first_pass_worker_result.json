@@ -1,0 +1,16 @@
+{
+  "problem_id": "cvdp_copilot_8x3_priority_encoder_0001",
+  "top_module": "priority_encoder_8x3",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_8x3_priority_encoder_0001/priority_encoder_8x3.arch",
+    "response": "runs/arch/cvdp_copilot_8x3_priority_encoder_0001/cvdp_copilot_8x3_priority_encoder_0001_response.txt",
+    "result": "runs/arch/cvdp_copilot_8x3_priority_encoder_0001/first_pass_worker_result.json",
+    "build_dir": "runs/arch/cvdp_copilot_8x3_priority_encoder_0001/build",
+    "systemverilog": "runs/arch/cvdp_copilot_8x3_priority_encoder_0001/priority_encoder_8x3.sv",
+    "interface": "runs/arch/cvdp_copilot_8x3_priority_encoder_0001/priority_encoder_8x3.archi"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

@@ -1,0 +1,85 @@
+You are solving a CVDP pure spec-to-RTL task in ARCH HDL.
+
+Rules:
+- Generate ARCH HDL, not SystemVerilog.
+- Use the ARCH 0.70.6 compiler and matching arch-hdl-release-v0706 MCP/skill guidance for generation, checking, and build/lint.
+- Use the top-level module name `glitch_free_mux` so `arch build` emits a matching SystemVerilog module.
+- Preserve design intent with ARCH doc comments.
+- Prefer the simplest ARCH structure that directly matches the specification. For small combinational/datapath blocks, use one `module` with typed `let`s, `comb`, helper `function`s, and plain loops before introducing generated submodules, deeply nested `Vec` intermediates, or extra pipeline buffering.
+- Prefer first-class ARCH constructs such as `fsm`, `fifo`, `ram`, `arbiter`, and `pipeline` when the problem semantics genuinely call for them, but do not split simple control/datapath logic into extra constructs or child modules just to be structural.
+- Prioritize a first-class `fsm` only when the specification describes real control modes, protocol sequencing, arbitration, request/response handshakes, ready/valid control, or externally visible state transitions. If named states are equivalent to a simple enable/hold datapath and no state signal is part of the public or implementation-visible interface, a straightforward sequential `module` is acceptable even when the prose uses the word FSM. Keep ordinary counters, timers, shift registers, recurrence generators, accumulators, and small datapaths with one or two bookkeeping flags as simple sequential `module`s. Before writing an actual FSM, create a transition table in `///` comments that lists current state, input condition, next state, and externally visible outputs for that state. Preserve state-derived/combinational outputs when the prompt implies same-cycle visibility; do not rewrite such control as ad-hoc phase registers or `pipe_reg` outputs unless the specification clearly requires registered outputs.
+- For parameterized packed-vector arithmetic, favor direct packed slice assignments, helper functions, or straightforward runtime loops over `generate_for` plus per-lane instantiated helper modules unless the specification explicitly describes a repeated hardware instance array.
+- Preserve the timing implied by the prompt. Do not add skid buffers, extra registered stages, or backpressure state unless the specification requires them; use combinational ready/valid outputs when the prompt/test likely observes same-cycle handshakes.
+- Keep generated SystemVerilog compatible with Icarus Verilog: do not add ARCH `assert` or `cover` constructs to DUT candidates, do not use `.reverse(...)`, and prefer explicit loops/concats for bit swizzling.
+- Do not use ARCH `inside` set-membership expressions for Icarus-targeted candidates; write membership tests as explicit equality comparisons joined with `||`, or use `match`/`unique match` when selecting among cases.
+- Avoid hoisting simple numeric constants into typed ARCH `let` wires solely for arithmetic or ternary use, such as `let one: UInt<W> = 1;`. For Icarus/cocotb portability, prefer direct numeric literals like `1` or `0` when the surrounding expression already provides the intended width; typed constant helper wires can emit extra SV `logic` nets that some harnesses observe unreliably.
+- For parameterized multi-cycle counters, size the counter to the needed range, for example `local param COUNT_W: const = $clog2(WIDTH + 2); reg count_r: UInt<COUNT_W>;`, and use explicit parameter resizing such as `count_r <= WIDTH.resize<COUNT_W>();`. Avoid broad helper counters such as `UInt<32>` unless the public interface or arithmetic range really requires 32 bits.
+- For modular arithmetic, use ARCH wrapping operators such as `+%`, `-%`, and `*%` instead of slicing arithmetic expressions like `(a + b)[N-1:0]`; assign arithmetic/casts/conversions to named typed intermediates before any bit-select or slice.
+- Return a single complete `.arch` implementation. No explanation.
+- The evaluator will run `arch check`, `arch build`, then the CVDP cocotb harness with Icarus Verilog as a black-box test.
+
+Problem ID: cvdp_copilot_GFCM_0001
+
+Natural-language specification:
+# Glitch-Free Clock Switching (MUX) RTL Design Specification
+
+### Objective:
+Design an RTL module `glitch_free_mux` that switches between two input clock signals (`clk1` and `clk2`) based on a select input signal (`sel`). The output clock (`clkout`) must switch glitch-free. When `sel = 0`, the output clock should be `clk1`; when `sel = 1`, the output clock should be `clk2`. The transition between clocks must happen smoothly without any glitches. `rst_n` is asynchronous active-low reset input signal. When `rst_n` is asserted (`rst_n = 0`), `clkout` should be driven low.
+
+## Requirements
+1. **Glitch-Free Switching**:
+   - The output clock (`clkout`) must switch between `clk1` and `clk2` without any glitches. 
+   - Assume that clk1 and clk2 are synchronous clocks. (Synchronous clocks have a predictable, consistent phase difference.)
+     - The waveform below shows examples of synchronous clocks with a fixed phase difference.
+     - `T` represents the fixed phase difference between `clk1` and `clk2`.
+     - `T` can be any value, as long as the minimum time between launching and capturing edges are greater than the maximum combinational delay between time arcs between `clk1` and `clk2`
+  ---
+   ```wavedrom
+{
+    signal:[
+        {name: "clk1", wave: "010101010101010", node: '.a...c......' },
+        {},
+        {name: "clk2", wave: "0.1.0.1.0.1.0.1",node: '..b...d......' },
+        {},
+        {},
+        {name: "clk1", wave: "0.10101010101010" , node: '..e.f......' },
+        {},
+        {name: "clk2", wave: "010101010101010" , node: '.g.h......'},
+        {},
+        {},
+        {name: "clk1", wave: "0.1.0.1.0.1.0.1.0.1.0.1.0.1.0." , period: 0.5 , node: '..u.......v......'},
+        {},
+        {name: "clk2", wave: "0..1...0...1...0...1...0...1.." , period: 0.5, node: '...k.......l......'},
+        ],
+        edge: [
+    'a~b T', 'c~d T', 'g~e T', 'h~f T', 'u~k T', 'v~l T',
+    ],
+    head: {text:
+  ['tspan',
+    ['tspan', {class:'info h3'}, 'synchronous with fixed phase clocks examples '],
+    
+  ],
+  
+},
+}
+```
+---
+   - The `sel` signal is assumed to be driven by one of the two input clock sources (clk1 or clk2). It is synchronous to one of the input clocks.
+   - When `sel` changes from 0 to 1, `clk1` is disabled on the first positive edge of `clk1` after the `sel` change. Subsequently, `clk2` is enabled on the first positive edge of `clk2` after `clk1` is disabled.
+   - When `sel` changes from 1 to 0, `clk2` is disabled on the first positive edge of `clk2` after the `sel` change. Subsequently, `clk1` is enabled on the first positive edge of `clk1` after `clk2` is disabled.
+   - Glitch-free switching from `clk1` to `clk2` example waveform is shown below
+---   
+```wavedrom
+{
+    signal:[
+        {name: "clk1", wave: "010101010101010" },
+        {name: "clk2", wave: "01.0.1.0.1.0.1."},
+        {name: "sel", wave: "0..1..........."},
+        {name: "clk1_en", wave: "1....0........."},
+        {name: "clk2_en", wave: "0........1....."},
+        {"name":"clkout", "wave" :"01010....1.0.1." },
+        ],
+}
+```
+----
+

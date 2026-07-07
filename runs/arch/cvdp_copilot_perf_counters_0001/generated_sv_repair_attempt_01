@@ -1,0 +1,41 @@
+//! ---
+//! tags: [performance-counter, software-read, active-low-reset]
+//! ---
+//!
+//! Parameterized performance counter for CPU-triggered and software-requested events. The counter wraps naturally at CNT_W bits and continuously exposes the current count.
+/// Counts trigger events and exposes the live wrapping count.
+///
+/// Timing table:
+/// | reset | sw_req_i | cpu_trig_i | count_q next | p_count_o visible now |
+/// | 0     | x        | x          | 0            | 0                     |
+/// | 1     | 1        | x          | count_q + 1  | count_q               |
+/// | 1     | 0        | 1          | count_q + 1  | count_q               |
+/// | 1     | 0        | 0          | count_q      | count_q               |
+module cvdp_copilot_perf_counters #(
+  parameter int CNT_W = 8
+) (
+  input logic clk,
+  input logic reset,
+  input logic sw_req_i,
+  input logic cpu_trig_i,
+  output logic [CNT_W-1:0] p_count_o
+);
+
+  logic [CNT_W-1:0] inc_value;
+  logic event_seen;
+  logic [CNT_W-1:0] count_q;
+  assign inc_value = 1;
+  assign event_seen = sw_req_i || cpu_trig_i;
+  assign p_count_o = count_q;
+  always_ff @(posedge clk or negedge reset) begin
+    if ((!reset)) begin
+      count_q <= 0;
+    end else begin
+      if (event_seen) begin
+        count_q <= CNT_W'(count_q + inc_value);
+      end
+    end
+  end
+
+endmodule
+

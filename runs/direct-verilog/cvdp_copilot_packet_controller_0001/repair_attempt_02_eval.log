@@ -1,0 +1,21 @@
+Command:
+CVDP_FORCE_WAVE=1 python3 scripts/evaluate_candidate.py --lane direct-verilog --problem cvdp_copilot_packet_controller_0001 --runtime osvb-docker --keep-workdir
+
+Attempt status: fail
+Return code: 1
+Kept workdir:
+/Users/shuqingzhao/github/verilog-eval-arch/.codex-tmp/cvdp_cvdp_copilot_packet_controller_0001_osvb_lh4ukv_h
+
+Evaluator evidence:
+{"id": "cvdp_copilot_packet_controller_0001", "lane": "direct-verilog", "runtime": "osvb-docker", "status": "fail", "returncode": 1}
+
+Pytest/cocotb summary:
+TESTS=10 PASS=8 FAIL=2 SKIP=0
+Failed tests:
+- test_packet_controller.test_invalid_checksum
+- test_packet_controller.test_invalid_header
+
+Observed stdout tail included:
+ERROR: Failed 2 of 10 tests.
+FST info: dumpfile /code/rundir/sim_build/packet_controller.fst opened for output.
+FAILED

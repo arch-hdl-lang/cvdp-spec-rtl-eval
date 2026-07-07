@@ -1,0 +1,13 @@
+{
+  "problem_id": "cvdp_copilot_bcd_counter_0001",
+  "top_module": "bcd_counter",
+  "paths": {
+    "arch": "runs/arch/cvdp_copilot_bcd_counter_0001/bcd_counter.arch",
+    "response": "runs/arch/cvdp_copilot_bcd_counter_0001/cvdp_copilot_bcd_counter_0001_response.txt",
+    "result": "runs/arch/cvdp_copilot_bcd_counter_0001/first_pass_worker_result.json"
+  },
+  "check_status": "PASS",
+  "build_status": "PASS",
+  "eval_status": "PASS",
+  "failure_summary": ""
+}

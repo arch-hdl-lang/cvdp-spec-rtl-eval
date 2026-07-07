@@ -1,0 +1,15 @@
+module vending_machine
+  port clk: in Clock<SysDomain>;
+  port rst: in Reset<Async>;
+  port item_button: in Bool;
+  port item_selected: in UInt<3>;
+  port coin_input: in UInt<4>;
+  port cancel: in Bool;
+  port dispense_item: out Bool comb_dep_on();
+  port return_change: out Bool comb_dep_on();
+  port item_price: out UInt<5> comb_dep_on();
+  port change_amount: out UInt<5> comb_dep_on();
+  port dispense_item_id: out UInt<3> comb_dep_on();
+  port error: out Bool comb_dep_on();
+  port return_money: out Bool comb_dep_on();
+end module vending_machine

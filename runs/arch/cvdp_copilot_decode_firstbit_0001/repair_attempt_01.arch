@@ -1,0 +1,84 @@
+//! ---
+//! tags: [firstbit, decoder, valid, parameterized]
+//! ---
+//!
+//! Parameterized first-set-bit decoder for CVDP. The design can optionally sample inputs and outputs while reporting whether any input bit is asserted independently of the valid bit.
+
+/// First-set-bit decoder with optional input and output registers.
+///
+/// Timing table:
+/// - InReg_g == 1 samples In_Data and In_Valid on Clk; otherwise current inputs feed the scan.
+/// - OutReg_g == 1 registers the decoded first bit, found flag, and valid flag; otherwise they are combinational.
+/// - Out_Found reports whether selected data contains any asserted bit; Out_Valid reports the selected valid bit.
+module cvdp_copilot_decode_firstbit
+  param InWidth_g: const = 32;
+  param InReg_g: const = 1;
+  param OutReg_g: const = 1;
+  param PlRegs_g: const = 1;
+
+  local param BinBits_c: const = $clog2(InWidth_g);
+
+  port Clk: in Clock<SysDomain>;
+  port Rst: in Reset<Async, High>;
+  port In_Data: in UInt<InWidth_g>;
+  port In_Valid: in Bool;
+  port Out_FirstBit: out UInt<BinBits_c>;
+  port Out_Found: out Bool;
+  port Out_Valid: out Bool;
+
+  reg default: reset Rst => 0;
+  reg in_data_q: UInt<InWidth_g>;
+  reg in_valid_q: Bool;
+  reg out_first_q: UInt<BinBits_c>;
+  reg out_found_q: Bool;
+  reg out_valid_q: Bool;
+
+  let selected_data: UInt<InWidth_g> = (InReg_g == 1) ? in_data_q : In_Data;
+  let selected_valid: Bool = (InReg_g == 1) ? in_valid_q : In_Valid;
+  let selected_neg: UInt<InWidth_g> = 0 -% selected_data;
+  let lowest_mask: UInt<InWidth_g> = selected_data & selected_neg;
+  let scan_found: Bool = selected_data != 0;
+
+  wire scan_first: UInt<BinBits_c>;
+  wire first_value: UInt<BinBits_c>;
+  wire found_value: Bool;
+  wire valid_value: Bool;
+
+  comb
+    scan_first = 0;
+    for bit_pos in 0..InWidth_g-1
+      if lowest_mask[bit_pos] == 1
+        scan_first = bit_pos;
+      end if
+    end for
+  end comb
+
+  let first_value = scan_found ? scan_first : 0;
+  let found_value = scan_found;
+  let valid_value = selected_valid;
+
+  comb
+    if OutReg_g == 1
+      Out_FirstBit = out_first_q;
+      Out_Found = out_found_q;
+      Out_Valid = out_valid_q;
+    else
+      Out_FirstBit = first_value;
+      Out_Found = found_value;
+      Out_Valid = valid_value;
+    end if
+  end comb
+
+  default seq on Clk rising;
+
+  seq
+    if InReg_g == 1
+      in_data_q <= In_Data;
+      in_valid_q <= In_Valid;
+    end if
+
+    out_first_q <= first_value;
+    out_found_q <= found_value;
+    out_valid_q <= valid_value;
+  end seq
+end module cvdp_copilot_decode_firstbit
