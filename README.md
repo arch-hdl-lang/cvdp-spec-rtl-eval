@@ -44,25 +44,10 @@ model: gpt-5.5
 provider: openai
 ```
 
-For ARCH first-pass and ARCH repair runs, the preserved local logs additionally
-show:
-
-```text
-reasoning effort: high
-```
-
-For the final direct-Verilog unrepaired-problem rerun, the preserved local
-writeable rerun log shows:
-
-```text
-reasoning effort: none
-```
-
-To reproduce new Codex CLI runs with the same model and explicit high reasoning
-effort, invoke Codex with:
+To reproduce new Codex CLI runs with the same model, invoke Codex with:
 
 ```sh
-codex exec -m gpt-5.5 -c 'model_reasoning_effort="high"' "<prompt>"
+codex exec -m gpt-5.5 "<prompt>"
 ```
 
 ## Generate The Manifest
