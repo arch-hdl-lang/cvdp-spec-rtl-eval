@@ -182,11 +182,20 @@ also means the ARCH lane is not using the full ARCH-native verification stack.
 
 In particular, this run does not credit:
 
-- ARCH-native simulation or structured auto-logging.
+- ARCH-native simulation and source-level debug observability.
+- Structured auto-logging.
 - Auto-generated ARCH assertions as simulator-visible checks.
 - Formal backend proofs over ARCH properties or generated safety properties.
 - ARCH-native transaction/testbench features.
 - Richer structured diagnostics than the black-box cocotb/Icarus failure logs.
+
+The native simulation point is not only about simulator speed. In an ARCH-native
+debug flow, the simulator/debugger can expose objects and intent at the source
+construct level: FSM state names, pipeline stage values, FIFO occupancy, bus
+transaction state, thread-local variables, auto-log events, and assertions tied
+back to ARCH source constructs. In this CVDP setup, those constructs are lowered
+to generated SystemVerilog and judged by a cocotb harness, so repair feedback is
+mostly flattened signal mismatches, Python assertion failures, and Icarus logs.
 
 The CVDP numbers should therefore be read as: can ARCH serve as a source
 language for a Verilog-only benchmark harness? They should not be read as a
