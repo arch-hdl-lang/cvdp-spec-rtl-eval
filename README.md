@@ -1,6 +1,7 @@
 # CVDP Pure Spec-to-RTL Eval Setup
 
-This repository prepares an independent CVDP comparison setup with two lanes:
+This repository prepares an independent Comprehensive Verilog Design Problems
+(CVDP) comparison setup with two lanes:
 
 - `direct-verilog`: generate SystemVerilog directly from a natural-language spec.
 - `arch`: generate ARCH HDL from the same spec, build it to SystemVerilog, then evaluate the generated SystemVerilog.
@@ -17,6 +18,18 @@ The subset is intentionally conservative:
 The current filter selects 50 CVDP tasks.
 
 ## Source Dataset
+
+CVDP means **Comprehensive Verilog Design Problems**. The full benchmark has
+783 problems spanning 13 task categories; the 50 tasks selected here are a
+filtered subset, not the full benchmark. The `cvdp_copilot_*` task IDs are
+upstream identifiers and do not expand the benchmark's name.
+
+Nathaniel Pinckney, Chenhui Deng, Chia-Tung Ho, Yun-Da Tsai, Mingjie Liu,
+Wenfei Zhou, Brucek Khailany, and Haoxing Ren. *Comprehensive Verilog Design
+Problems: A Next-Generation Benchmark Dataset for Evaluating Large Language
+Models and Agents on RTL Design and Verification*. arXiv:2506.14074, 2025.
+[Paper](https://arxiv.org/abs/2506.14074) ·
+[Dataset and harness](https://github.com/NVlabs/cvdp_benchmark).
 
 Expected local dataset:
 
